@@ -16,7 +16,7 @@
                             <i class="bi bi-inbox-fill fs-1"></i>
                         </div>
                         <h6 class="card-subtitle text-muted">Recepcionadas</h6>
-                        <p class="card-text fs-2 fw-bold counter" data-target="187" style="color: #3498db;">0</p>
+                        <p class="card-text fs-2 fw-bold counter" data-target="0" style="color: #3498db;">0</p>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                             <i class="bi bi-check-circle-fill fs-1"></i>
                         </div>
                         <h6 class="card-subtitle text-muted">Completadas</h6>
-                        <p class="card-text fs-2 fw-bold counter" data-target="107" style="color: #27ae60;">0</p>
+                        <p class="card-text fs-2 fw-bold counter" data-target="10" style="color: #27ae60;">0</p>
                     </div>
                 </div>
             </div>
