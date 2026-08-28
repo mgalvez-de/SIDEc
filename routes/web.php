@@ -32,11 +32,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard, Receptions, Rejections -> Supervisor y Area Manager
-    Route::middleware(['role:Supervisor|Area Manager'])->group(function () {
-        Route::get('/dashboard', [SampleEntryController::class, 'dashboard'])->name('dashboard');
-        Route::resource('receptions', ReceptionTemplateController::class);
-        Route::resource('rejections', RejectionTemplateController::class);
-    });
+        Route::middleware(['role:Supervisor|Area Manager'])->group(function () {
+            Route::get('/dashboard', [SampleEntryController::class, 'dashboard'])->name('dashboard');
+            Route::resource('receptions', ReceptionTemplateController::class);
+            Route::resource('rejections', RejectionTemplateController::class);
+        });
 
     // Sample Entry y Bioassays -> Analist, Manager y Area Manager
     Route::middleware(['role:Analist|Manager|Area Manager'])->group(function () {

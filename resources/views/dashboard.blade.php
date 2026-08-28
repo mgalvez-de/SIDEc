@@ -16,7 +16,7 @@
                             <i class="bi bi-inbox-fill fs-1"></i>
                         </div>
                         <h6 class="card-subtitle text-muted">Recepcionadas</h6>
-                        <p class="card-text fs-2 fw-bold counter" data-target="0" style="color: #3498db;">0</p>
+                        <p class="card-text fs-2 fw-bold counter" data-target="12" style="color: #3498db;">0</p>
                     </div>
                 </div>
             </div>

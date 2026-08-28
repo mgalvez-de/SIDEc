@@ -279,9 +279,10 @@
 
                     <!-- Botón para abrir/cerrar sidebar -->
 
-                    <button class="btn btn-outline-secondary me-2 text-white border border-white" id="sidebarToggle">☰</button>
+                    <button class="btn btn-outline-secondary me-2 text-white border border-white"
+                        id="sidebarToggle">☰</button>
 
-                   <!-- Titulo seleccionable SIDEc ucsc -->
+                    <!-- Titulo seleccionable SIDEc ucsc -->
 
                     <a class="navbar-brand d-flex align-items-center gap-2 m-0 text-white fw-bold"
                         href="{{ url('/dashboard') }}">
@@ -331,12 +332,10 @@
 
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
-                                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-
-                                                         document.getElementById('logout-form').submit();">
-
-                                            {{ __('Logout') }}
-
+                                        <a class="dropdown-item logout-link d-flex align-items-center gap-2"
+                                            href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); if(confirm('¿Está seguro de que desea cerrar sesión?')) { document.getElementById('logout-form').submit(); }">
+                                            <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
                                         </a>
 
 
@@ -369,116 +368,118 @@
 
 
 
-                <!-- Botón cerrar -->
+                <!-- Cerrar menu al apretar fuera de este -->
 
-                <button id="sidebarClose" class="text-gray-500 hover:text-red-500">✖</button>
+                <button id="sidebarClose" class="text-gray-500 hover:text-red-500"></button>
 
-
-
-                <h4 class="mb-4 text-dark fw-bold">Menú - SIDEc</h4>
-
-                <ul class="nav flex-column">
-
-
-
-                    {{-- Dashboard: Manager, Area Manager --}}
-
-                    @role('Manager|Area Manager')
-
-                    <li class="nav-item mb-1">
-
-                        <a href="{{ url('/dashboard') }}" class="nav-link text-gray-700 d-flex align-items-center">
-
-                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
-
-                        </a>
-
-                    </li>
-
-                    @endrole
+                <!-- Titulo de menu despelegable con fondo rojo y texto blanco. -->
+                <div class="mb-3 py-2 px-3 d-flex align-items-center justify-content-center text-white rounded-3"
+                    style="background: linear-gradient(90deg, #8B1E1E 0%, #A32323 100%);">
+                    <h4 class="m-0 text-white fw-bold">Menú - SIDEc</h4>
+                </div>
 
 
 
-                    {{-- Recepciones: Manager, Area Manager --}}
+                {{-- Dashboard: Manager, Area Manager --}}
 
-                    @role('Manager|Area Manager')
+                @role('Manager|Area Manager')
 
-                    <li class="nav-item mb-1">
+                <li class="nav-item mb-1">
 
-                        <a href="{{ url('/receptions') }}" class="nav-link text-gray-700 d-flex align-items-center">
+                    <a href="{{ url('/dashboard') }}" class="nav-link text-gray-700 d-flex align-items-center">
 
-                            <i class="bi bi-box-arrow-in-down me-2"></i> Recepciones
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
 
-                        </a>
+                    </a>
 
-                    </li>
+                </li>
 
-                    @endrole
-
-
-
-                    {{-- Sample Entries: Analist, Manager, Area Manager --}}
-
-                    @role('Analist|Manager|Area Manager')
-
-                    <li class="nav-item mb-1">
-
-                        <a href="{{ url('/sample_entries') }}" class="nav-link text-gray-700 d-flex align-items-center">
-
-                            <i class="bi bi-journal-plus me-2"></i> Ingreso de muestras
-
-                        </a>
-
-                    </li>
-
-                    @endrole
+                @endrole
 
 
 
-                    {{-- Rechazos: Manager, Area Manager --}}
+                {{-- Recepciones: Manager, Area Manager --}}
 
-                    @role('Manager|Area Manager')
+                @role('Manager|Area Manager')
 
-                    <li class="nav-item mb-1">
+                <li class="nav-item mb-1">
 
-                        <a href="{{ url('/rejections') }}" class="nav-link text-gray-700 d-flex align-items-center">
+                    <a href="{{ url('/receptions') }}" class="nav-link text-gray-700 d-flex align-items-center">
 
-                            <i class="bi bi-x-circle me-2"></i> Rechazos
+                        <i class="bi bi-box-arrow-in-down me-2"></i> Recepciones
 
-                        </a>
+                    </a>
 
-                    </li>
+                </li>
 
-                    @endrole
+                @endrole
 
 
 
-                    {{-- Bioensayos --}}
+                {{-- Sample Entries: Analist, Manager, Area Manager --}}
 
-                    @role('Analist|Manager|Area Manager')
+                @role('Analist|Manager|Area Manager')
 
-                    <li class="nav-item dropdown mb-1">
+                <li class="nav-item mb-1">
 
-                        <a class="nav-link text-gray-700 d-flex align-items-center dropdown-toggle" href="#"
-                            id="bioassaysDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a href="{{ url('/sample_entries') }}" class="nav-link text-gray-700 d-flex align-items-center">
 
-                            <i class="bi bi-flask me-2"></i> Bioensayos
+                        <i class="bi bi-journal-plus me-2"></i> Ingreso de muestras
 
-                        </a>
+                    </a>
 
-                        <ul class="dropdown-menu" aria-labelledby="bioassaysDropdown">
+                </li>
 
-                            <li><a class="dropdown-item" href="{{ url('/daphnia-magna') }}"><i
-                                        class="bi bi-droplet me-2"></i> Daphnia magna</a></li>
+                @endrole
 
-                            <li><a class="dropdown-item" href="{{ url('/isochrysis-galbana') }}"><i
-                                        class="bi bi-water me-2"></i> Isochrysis galbana (crónico)</a></li>
 
-                            <li><a class="dropdown-item" href="{{ url('/selenastrum') }}"><i class="bi bi-flower3 me-2"></i>
 
-                                    Selenastrum capricornutum</a></li>
+                {{-- Rechazos: Manager, Area Manager --}}
 
-                            <li><a class="dropdown-item disabled-link" href="{{ url('/tisbe-longicornis-water') }}"><i
+                @role('Manager|Area Manager')
+
+                <li class="nav-item mb-1">
+
+                    <a href="{{ url('/rejections') }}" class="nav-link text-gray-700 d-flex align-items-center">
+
+                        <i class="bi bi-x-circle me-2"></i> Rechazos
+
+                    </a>
+
+                </li>
+
+                @endrole
+
+
+
+                {{-- Bioensayos --}}
+
+                @role('Analist|Manager|Area Manager')
+
+                <li class="nav-item dropdown mb-1">
+
+                    <a class="nav-link text-gray-700 d-flex align-items-center dropdown-toggle" href="#"
+                        id="bioassaysDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                        <i class="bi bi-flask me-2"></i> Bioensayos
+
+                    </a>
+
+                    <ul class="dropdown-menu" aria-labelledby="bioassaysDropdown">
+
+                        <li><a class="dropdown-item" href="{{ url('/daphnia-magna') }}"><i class="bi bi-droplet me-2"></i>
+                                Daphnia magna</a></li>
+
+                        <li><a class="dropdown-item" href="{{ url('/isochrysis-galbana') }}"><i
+                                    class="bi bi-water me-2"></i> Isochrysis galbana (crónico)</a></li>
+
+                        <li><a class="dropdown-item" href="{{ url('/selenastrum') }}"><i class="bi bi-flower3 me-2"></i>
+
+                                Selenastrum capricornutum</a></li>
+
+                        <!-- BIOENSAYOS SIN FUNCIONALIDAD   -->
+
+                        <!-- <li><a class="dropdown-item disabled-link" href="{{ url('/tisbe-longicornis-water') }}"><i
                                         class="bi bi-bug me-2"></i> Tisbe
 
                                     longicornis aguas marinas</a></li>
@@ -511,13 +512,13 @@
 
                                 </a>
 
-                            </li>
+                            </li> -->
 
-                        </ul>
+                    </ul>
 
-                    </li>
+                </li>
 
-                    @endrole
+                @endrole
 
 
 
@@ -622,10 +623,10 @@
     <footer class="mt-auto py-3 bg-white border-top text-muted small">
         <div class="container-fluid d-flex flex-column flex-sm-row justify-content-between  px-4 gap-2">
             <div>
-                <strong>SIDEc</strong> 
+                <strong>SIDEc</strong>
             </div>
             <div>
-                <span class="badge bg-light text-secondary ">Laboratorio de Bioensayos</span>
+                <span class="badge bg-light text-secondary border">Laboratorio de Bioensayos</span>
             </div>
         </div>
     </footer>
