@@ -57,6 +57,40 @@
 
 
     <style>
+
+
+
+        /* Hover del botón Cerrar Sesión con Rojo Institucional UCSC */
+        .dropdown-menu .logout-link:hover,
+        .dropdown-menu .logout-link:focus {
+            background-color: #D12421 !important;
+            color: #ffffff !important;
+        }
+
+        /* Botón menú hamburguesa en reposo */
+        #sidebarToggle {
+            background-color: transparent !important;
+            border: 1px solid #ffffff !important;
+            color: #ffffff !important;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Hover: Fondo blanco y 3 líneas rojas */
+        #sidebarToggle:hover {
+            background-color: #ffffff !important;
+            border-color: #D12421 !important;
+            color: #D12421 !important;
+        }
+
+        /* Estado activo / clic */
+        #sidebarToggle:focus,
+        #sidebarToggle:active {
+            background-color: #ffffff !important;
+            border-color: #ffffff !important;
+            color: #8B1E1E !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.4) !important;
+        }
+
         #sidebar {
 
             position: fixed;
@@ -135,11 +169,10 @@
 
         #sidebar .dropdown-menu .dropdown-item:hover {
 
-            background-color: #f3f4f6;
+            background-color: #ffffff;
 
-            color: #111827 !important;
+            color: #ffffff !important;
 
-            /* gris oscuro */
 
             transform: translateX(5px);
 
@@ -241,7 +274,7 @@
 
         #sidebar .dropdown-menu .dropdown-item:hover {
 
-            background-color: #ff0000;
+            background-color: #D12421;
 
             color: #ffffff !important;
 
@@ -273,14 +306,13 @@
         @unless (request()->is('login'))
 
             <nav class="navbar navbar-expand-md navbar-dark shadow-sm"
-                style="background: linear-gradient(90deg, #8B1E1E 0%, #A32323 100%);">
+                style="background: linear-gradient(90deg, #D12421 0%, #D12421 100%);">
 
                 <div class="container-fluid">
 
                     <!-- Botón para abrir/cerrar sidebar -->
 
-                    <button class="btn btn-outline-secondary me-2 text-white border border-white"
-                        id="sidebarToggle">☰</button>
+                    <button class="btn me-2 border border-white" id="sidebarToggle">☰</button>
 
                     <!-- Titulo seleccionable SIDEc ucsc -->
 
@@ -374,7 +406,7 @@
 
                 <!-- Titulo de menu despelegable con fondo rojo y texto blanco. -->
                 <div class="mb-3 py-2 px-3 d-flex align-items-center justify-content-center text-white rounded-3"
-                    style="background: linear-gradient(90deg, #8B1E1E 0%, #A32323 100%);">
+                    style="background: linear-gradient(90deg, #D12421 0%, #D12421 100%);">
                     <h4 class="m-0 text-white fw-bold">Menú - SIDEc</h4>
                 </div>
 
@@ -480,39 +512,39 @@
                         <!-- BIOENSAYOS SIN FUNCIONALIDAD   -->
 
                         <!-- <li><a class="dropdown-item disabled-link" href="{{ url('/tisbe-longicornis-water') }}"><i
-                                        class="bi bi-bug me-2"></i> Tisbe
+                                            class="bi bi-bug me-2"></i> Tisbe
 
-                                    longicornis aguas marinas</a></li>
+                                        longicornis aguas marinas</a></li>
 
-                            <li>
+                                <li>
 
-                                <a class="dropdown-item disabled-link" href="#">
+                                    <a class="dropdown-item disabled-link" href="#">
 
-                                    <i class="bi bi-bezier2 me-2"></i> Tisbe longicornis Sustancias Químicas
+                                        <i class="bi bi-bezier2 me-2"></i> Tisbe longicornis Sustancias Químicas
 
-                                </a>
+                                    </a>
 
-                            </li>
+                                </li>
 
-                            <li>
+                                <li>
 
-                                <a class="dropdown-item disabled-link" href="#">
+                                    <a class="dropdown-item disabled-link" href="#">
 
-                                    <i class="bi bi-egg me-2"></i> Arbacia spatuligera Estado Larval
+                                        <i class="bi bi-egg me-2"></i> Arbacia spatuligera Estado Larval
 
-                                </a>
+                                    </a>
 
-                            </li>
+                                </li>
 
-                            <li>
+                                <li>
 
-                                <a class="dropdown-item disabled-link" href="{{ url('/arbacia_fertilization') }}">
+                                    <a class="dropdown-item disabled-link" href="{{ url('/arbacia_fertilization') }}">
 
-                                    <i class="bi bi-egg-fried me-2"></i> Arbacia spatuligera fecundación
+                                        <i class="bi bi-egg-fried me-2"></i> Arbacia spatuligera fecundación
 
-                                </a>
+                                    </a>
 
-                            </li> -->
+                                </li> -->
 
                     </ul>
 
