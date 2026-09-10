@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <!-- Logo -->
-    <img src="{{ asset('storage/images/xd.webp') }}" alt="Logo SIDEc"
+    <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
         style="height: 80px; display: block; margin: 0 auto 20px auto;">
     <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Arbacia spatuligera (Fecundación)</small></h2>
     <p class="text-center text-black">RT-XX.XX | Versión: 01 | Vigencia: XX.XX.XXXX</p>

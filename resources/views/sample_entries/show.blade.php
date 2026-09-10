@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <!-- Logo -->
-        <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
+        <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
 
         <!-- Título -->
         <h1 class="mb-4 text-secondary text-center"

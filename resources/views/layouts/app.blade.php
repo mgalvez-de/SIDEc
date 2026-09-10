@@ -57,14 +57,10 @@
 
 
     <style>
-
-
-
         /* Hover del botón Cerrar Sesión con Rojo Institucional UCSC */
         .dropdown-menu .logout-link:hover,
         .dropdown-menu .logout-link:focus {
-            background-color: #D12421 !important;
-            color: #ffffff !important;
+            color: #D12421 !important;
         }
 
         /* Botón menú hamburguesa en reposo */
@@ -512,39 +508,39 @@
                         <!-- BIOENSAYOS SIN FUNCIONALIDAD   -->
 
                         <!-- <li><a class="dropdown-item disabled-link" href="{{ url('/tisbe-longicornis-water') }}"><i
-                                            class="bi bi-bug me-2"></i> Tisbe
+                                                class="bi bi-bug me-2"></i> Tisbe
 
-                                        longicornis aguas marinas</a></li>
+                                            longicornis aguas marinas</a></li>
 
-                                <li>
+                                    <li>
 
-                                    <a class="dropdown-item disabled-link" href="#">
+                                        <a class="dropdown-item disabled-link" href="#">
 
-                                        <i class="bi bi-bezier2 me-2"></i> Tisbe longicornis Sustancias Químicas
+                                            <i class="bi bi-bezier2 me-2"></i> Tisbe longicornis Sustancias Químicas
 
-                                    </a>
+                                        </a>
 
-                                </li>
+                                    </li>
 
-                                <li>
+                                    <li>
 
-                                    <a class="dropdown-item disabled-link" href="#">
+                                        <a class="dropdown-item disabled-link" href="#">
 
-                                        <i class="bi bi-egg me-2"></i> Arbacia spatuligera Estado Larval
+                                            <i class="bi bi-egg me-2"></i> Arbacia spatuligera Estado Larval
 
-                                    </a>
+                                        </a>
 
-                                </li>
+                                    </li>
 
-                                <li>
+                                    <li>
 
-                                    <a class="dropdown-item disabled-link" href="{{ url('/arbacia_fertilization') }}">
+                                        <a class="dropdown-item disabled-link" href="{{ url('/arbacia_fertilization') }}">
 
-                                        <i class="bi bi-egg-fried me-2"></i> Arbacia spatuligera fecundación
+                                            <i class="bi bi-egg-fried me-2"></i> Arbacia spatuligera fecundación
 
-                                    </a>
+                                        </a>
 
-                                </li> -->
+                                    </li> -->
 
                     </ul>
 

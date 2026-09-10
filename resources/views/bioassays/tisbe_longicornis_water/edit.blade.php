@@ -4,7 +4,7 @@
 @section('content')
 <div class="container px-4">
     <!-- Logo -->
-    <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc"
+    <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
          style="height: 80px; display: block; margin: 0 auto 20px auto;">
     
     <!-- Título Principal -->

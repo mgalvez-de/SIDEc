@@ -40,7 +40,7 @@ class LoginController extends Controller
 
         if ($user->hasRole('Manager')) {
             // Redirige a la ruta de resource de receptions
-            return redirect()->route('receptions.index');
+            return redirect()->route('sample_entries.index');
         }
 
         if ($user->hasRole('Area Manager')) {
@@ -50,7 +50,7 @@ class LoginController extends Controller
 
         if ($user->hasRole('Supervisor')) {
             // Por ahora no hacemos nada, lo dejamos en /home o donde quieras
-            return redirect(RouteServiceProvider::HOME);
+            return redirect('/dashboard');
         }
 
         // Por seguridad, redirección por defecto si no tiene rol definido

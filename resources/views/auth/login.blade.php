@@ -76,7 +76,7 @@
         <div class="row justify-content-center align-items-center w-100">
             <div class="col-12 col-md-4 me-md-5 mb-4 mb-md-0 text-center">
                 <div class="outer-box row" id="animatedBox">
-                    <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc">
+                    <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc">
                     <h3 class="logo-title mt-1">
                         Sistema de Información<br>Departamento de Ecotoxicología
                     </h3>

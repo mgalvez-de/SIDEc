@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <!-- Logo -->
-        <img src="{{ asset('storage/images/xd.webp') }}" alt="Logo SIDEc"
+        <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
             style="height: 80px; display: block; margin: 0 auto 20px auto;">
         <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Tisbe longicornis Sus</small></h2>
         <p class="text-center text-black">RT-01.05 | Versión: 01 | Vigencia: 06.10.2025</p>
