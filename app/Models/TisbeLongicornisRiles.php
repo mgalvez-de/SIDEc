@@ -13,6 +13,7 @@ class TisbeLongicornisRiles extends Model
 
     protected $fillable = [
         'template_id',
+        'sample_entry_id',
 
         // Temporizadores
         'preliminary_timer_start',
@@ -76,7 +77,7 @@ class TisbeLongicornisRiles extends Model
      */
     public function sampleEntry()
     {
-        return $this->hasOne(SampleEntry::class, 'internal_sample_code', 'sample');
+        return $this->belongsTo(SampleEntry::class);
     }
 
     /**

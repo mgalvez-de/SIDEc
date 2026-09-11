@@ -139,7 +139,7 @@ class TisbeLongicornisWaterController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $tisbe_longicornis_water->sample)->first();
+        $sampleEntry = $tisbe_longicornis_water->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -155,7 +155,7 @@ class TisbeLongicornisWaterController extends Controller
      */
     public function destroy(TisbeLongicornisWater $tisbe_longicornis_water)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $tisbe_longicornis_water->sample)->first();
+        $sampleEntry = $tisbe_longicornis_water->sampleEntry;
 
         $tisbe_longicornis_water->delete();
 

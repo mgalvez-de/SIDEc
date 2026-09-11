@@ -205,7 +205,7 @@ class DaphniaMagnaTemplateController extends Controller
         // ==========================================
         // 6️⃣ REDIRIGIR A SAMPLE_ENTRIES.SHOW
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $daphnia_magna->sample)->first();
+        $sampleEntry = $daphnia_magna->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -231,7 +231,7 @@ class DaphniaMagnaTemplateController extends Controller
     public function destroy(DaphniaMagnaTemplate $daphnia_magna)
     {
         // Obtener sample_entry antes de eliminar
-        $sampleEntry = SampleEntry::where('internal_sample_code', $daphnia_magna->sample)->first();
+        $sampleEntry = $daphnia_magna->sampleEntry;
 
         $daphnia_magna->delete();
 

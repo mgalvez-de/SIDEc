@@ -160,7 +160,7 @@ class SelenastrumCapricornutumController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $selenastrum_capricornutum->sample)->first();
+        $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -176,7 +176,7 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function destroy(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $selenastrum_capricornutum->sample)->first();
+        $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 
         $selenastrum_capricornutum->delete();
 

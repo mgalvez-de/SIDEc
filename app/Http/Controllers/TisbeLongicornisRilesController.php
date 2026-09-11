@@ -207,7 +207,7 @@ class TisbeLongicornisRilesController extends Controller
         // ==========================================
         // 6️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $tisbe_longicornis_riles->sample)->first();
+        $sampleEntry = $tisbe_longicornis_riles->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -223,7 +223,7 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function destroy(TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $tisbe_longicornis_riles->sample)->first();
+        $sampleEntry = $tisbe_longicornis_riles->sampleEntry;
 
         $tisbe_longicornis_riles->delete();
 

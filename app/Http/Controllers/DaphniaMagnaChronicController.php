@@ -150,7 +150,7 @@ class DaphniaMagnaChronicController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $daphnia_magna_chronic->sample)->first();
+        $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -166,7 +166,7 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function destroy(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $daphnia_magna_chronic->sample)->first();
+        $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 
         $daphnia_magna_chronic->delete();
 

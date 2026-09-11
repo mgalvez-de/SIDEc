@@ -142,7 +142,7 @@ class ArbaciaLarvalStageController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_larval_stage->sample)->first();
+        $sampleEntry = $arbacia_larval_stage->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -158,7 +158,7 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function destroy(ArbaciaLarvalStage $arbacia_larval_stage)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_larval_stage->sample)->first();
+        $sampleEntry = $arbacia_larval_stage->sampleEntry;
 
         $arbacia_larval_stage->delete();
 

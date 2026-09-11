@@ -11,7 +11,8 @@ class DaphniaMagnaTemplate extends Model
 
     protected $fillable = [
         'template_id',
-        
+         'sample_entry_id',
+
         // Temporizadores
         'preliminary_timer_start',
         'definitive_timer_start',
@@ -48,19 +49,19 @@ class DaphniaMagnaTemplate extends Model
      * Los atributos que deben ser convertidos a tipos nativos.
      */
     protected $casts = [
-        'preliminary_start_at'                 => 'datetime',
-        'preliminary_end_at'                   => 'datetime',
+        'preliminary_start_at' => 'datetime',
+        'preliminary_end_at' => 'datetime',
         'preliminary_reconstituted_water_date' => 'date',
-        'preliminary_sample_temperature'       => 'decimal:2',
-        'preliminary_sample_ph'                => 'decimal:2',
-        'preliminary_table'                    => 'array',
+        'preliminary_sample_temperature' => 'decimal:2',
+        'preliminary_sample_ph' => 'decimal:2',
+        'preliminary_table' => 'array',
 
-        'definitive_start_at'                 => 'datetime',
-        'definitive_end_at'                   => 'datetime',
+        'definitive_start_at' => 'datetime',
+        'definitive_end_at' => 'datetime',
         'definitive_reconstituted_water_date' => 'date',
-        'definitive_sample_temperature'       => 'decimal:2',
-        'definitive_24h'                      => 'array',
-        'definitive_48h'                      => 'array',
+        'definitive_sample_temperature' => 'decimal:2',
+        'definitive_24h' => 'array',
+        'definitive_48h' => 'array',
     ];
 
     /**
@@ -76,7 +77,7 @@ class DaphniaMagnaTemplate extends Model
      */
     public function sampleEntry()
     {
-        return $this->hasOne(SampleEntry::class, 'internal_sample_code', 'sample');
+        return $this->belongsTo(SampleEntry::class);
     }
 
     /**

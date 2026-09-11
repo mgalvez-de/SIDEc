@@ -138,7 +138,7 @@ class ArbaciaFertilizationController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_fertilization->sample)->first();
+        $sampleEntry = $arbacia_fertilization->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -154,7 +154,7 @@ class ArbaciaFertilizationController extends Controller
      */
     public function destroy(ArbaciaFertilization $arbacia_fertilization)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_fertilization->sample)->first();
+        $sampleEntry = $arbacia_fertilization->sampleEntry;
 
         $arbacia_fertilization->delete();
 

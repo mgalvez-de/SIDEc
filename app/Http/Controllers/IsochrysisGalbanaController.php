@@ -167,7 +167,7 @@ class IsochrysisGalbanaController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR A SAMPLE_ENTRIES.SHOW
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $isochrysis_galbana->sample)->first();
+        $sampleEntry = $isochrysis_galbana->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -185,7 +185,7 @@ class IsochrysisGalbanaController extends Controller
     public function destroy(IsochrysisGalbana $isochrysis_galbana)
     {
         // Obtener sample_entry antes de eliminar
-        $sampleEntry = SampleEntry::where('internal_sample_code', $isochrysis_galbana->sample)->first();
+        $sampleEntry = $isochrysis_galbana->sampleEntry;
 
         $isochrysis_galbana->delete();
 
