@@ -74,6 +74,8 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function update(Request $request, DaphniaMagnaChronic $daphnia_magna_chronic)
     {
+        $this->authorize('update', $daphnia_magna_chronic);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -166,6 +168,8 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function destroy(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
+        $this->authorize('delete', $daphnia_magna_chronic);
+
         $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 
         $daphnia_magna_chronic->delete();
@@ -177,5 +181,17 @@ class DaphniaMagnaChronicController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(DaphniaMagnaChronic $daphnia_magna_chronic)
+    {
+        $this->authorize('validateBioassay', $daphnia_magna_chronic);
+
+        $daphnia_magna_chronic->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

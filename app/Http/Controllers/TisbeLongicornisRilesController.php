@@ -74,6 +74,8 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function update(Request $request, TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
+        $this->authorize('update', $tisbe_longicornis_riles);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -223,6 +225,8 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function destroy(TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
+        $this->authorize('delete', $tisbe_longicornis_riles);
+
         $sampleEntry = $tisbe_longicornis_riles->sampleEntry;
 
         $tisbe_longicornis_riles->delete();
@@ -234,5 +238,17 @@ class TisbeLongicornisRilesController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(TisbeLongicornisRiles $tisbe_longicornis_riles)
+    {
+        $this->authorize('validateBioassay', $tisbe_longicornis_riles);
+
+        $tisbe_longicornis_riles->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

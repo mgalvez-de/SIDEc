@@ -75,6 +75,8 @@ class TisbeLongicornisWaterController extends Controller
      */
     public function update(Request $request, TisbeLongicornisWater $tisbe_longicornis_water)
     {
+        $this->authorize('update', $tisbe_longicornis_water);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -155,6 +157,8 @@ class TisbeLongicornisWaterController extends Controller
      */
     public function destroy(TisbeLongicornisWater $tisbe_longicornis_water)
     {
+        $this->authorize('delete', $tisbe_longicornis_water);
+
         $sampleEntry = $tisbe_longicornis_water->sampleEntry;
 
         $tisbe_longicornis_water->delete();
@@ -166,5 +170,17 @@ class TisbeLongicornisWaterController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(TisbeLongicornisWater $tisbe_longicornis_water)
+    {
+        $this->authorize('validateBioassay', $tisbe_longicornis_water);
+
+        $tisbe_longicornis_water->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

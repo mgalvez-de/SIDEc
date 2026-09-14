@@ -41,11 +41,11 @@ class DaphniaMagnaTemplateController extends Controller
 
         // Crear template por defecto
         $template = Template::create([
-            'title'    => 'Análisis Bioensayo Agudo - Daphnia magna',
-            'code'     => 'RT-01.05',
-            'version'  => '03',
+            'title' => 'Análisis Bioensayo Agudo - Daphnia magna',
+            'code' => 'RT-01.05',
+            'version' => '03',
             'validity' => '01.09.2023',
-            'type'     => 'bioassay',
+            'type' => 'bioassay',
         ]);
 
         $validated['template_id'] = $template->id;
@@ -69,69 +69,72 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function update(Request $request, DaphniaMagnaTemplate $daphnia_magna)
     {
+        $this->authorize('update', $daphnia_magna);
+
+
         // ==========================================
         // 1️⃣ VALIDACIÓN DE TODOS LOS CAMPOS
         // ==========================================
         $validated = $request->validate([
             // === DATOS GENERALES ===
-            'sample'     => 'required|string|max:255',
-            'matrix'     => 'nullable|string|max:255',
+            'sample' => 'required|string|max:255',
+            'matrix' => 'nullable|string|max:255',
             'start_time' => 'nullable|date',
-            'end_time'   => 'nullable|date',
-            'analyst'    => 'nullable|string|max:255',
+            'end_time' => 'nullable|date',
+            'analyst' => 'nullable|string|max:255',
 
             // === TEMPORIZADORES ===
             'preliminary_timer_start' => 'nullable|string',
-            'definitive_timer_start'  => 'nullable|string',
+            'definitive_timer_start' => 'nullable|string',
 
             // === ENSAYO PRELIMINAR ===
-            'sample_temperature'       => 'nullable|numeric',
+            'sample_temperature' => 'nullable|numeric',
             'reconstituted_water_date' => 'nullable|date',
-            'sample_ph'                => 'nullable|numeric',
+            'sample_ph' => 'nullable|numeric',
 
             // === ENSAYO DEFINITIVO (datos generales) ===
-            'def_start_time'               => 'nullable|date',
-            'def_end_time'                 => 'nullable|date',
-            'def_temperature'              => 'nullable|numeric',
+            'def_start_time' => 'nullable|date',
+            'def_end_time' => 'nullable|date',
+            'def_temperature' => 'nullable|numeric',
             'def_reconstituted_water_date' => 'nullable|date',
 
             // === RESULTADOS DE ANÁLISIS ===
             'control_immobility' => 'nullable|string|max:255',
-            'cl50_24h'           => 'nullable|string|max:255',
-            'cl50_48h'           => 'nullable|string|max:255',
-            'observations'       => 'nullable|string',
+            'cl50_24h' => 'nullable|string|max:255',
+            'cl50_48h' => 'nullable|string|max:255',
+            'observations' => 'nullable|string',
         ]);
 
         // ==========================================
         // 2️⃣ MAPEAR DATOS GENERALES
         // ==========================================
         $data = [
-            'sample'  => $validated['sample'],
-            'matrix'  => $validated['matrix'] ?? null,
+            'sample' => $validated['sample'],
+            'matrix' => $validated['matrix'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
             // Temporizadores
             'preliminary_timer_start' => $request->input('preliminary_timer_start'),
-            'definitive_timer_start'  => $request->input('definitive_timer_start'),
+            'definitive_timer_start' => $request->input('definitive_timer_start'),
 
             // Ensayo Preliminar - datos generales
-            'preliminary_start_at'                 => $validated['start_time'] ?? null,
-            'preliminary_end_at'                   => $validated['end_time'] ?? null,
-            'preliminary_sample_temperature'       => $validated['sample_temperature'] ?? null,
+            'preliminary_start_at' => $validated['start_time'] ?? null,
+            'preliminary_end_at' => $validated['end_time'] ?? null,
+            'preliminary_sample_temperature' => $validated['sample_temperature'] ?? null,
             'preliminary_reconstituted_water_date' => $validated['reconstituted_water_date'] ?? null,
-            'preliminary_sample_ph'                => $validated['sample_ph'] ?? null,
+            'preliminary_sample_ph' => $validated['sample_ph'] ?? null,
 
             // Ensayo Definitivo - datos generales
-            'definitive_start_at'                 => $validated['def_start_time'] ?? null,
-            'definitive_end_at'                   => $validated['def_end_time'] ?? null,
-            'definitive_sample_temperature'       => $validated['def_temperature'] ?? null,
+            'definitive_start_at' => $validated['def_start_time'] ?? null,
+            'definitive_end_at' => $validated['def_end_time'] ?? null,
+            'definitive_sample_temperature' => $validated['def_temperature'] ?? null,
             'definitive_reconstituted_water_date' => $validated['def_reconstituted_water_date'] ?? null,
 
             // Resultados de análisis
             'control_immobility' => $validated['control_immobility'] ?? null,
-            'cl50_24h'           => $validated['cl50_24h'] ?? null,
-            'cl50_48h'           => $validated['cl50_48h'] ?? null,
-            'observations'       => $validated['observations'] ?? null,
+            'cl50_24h' => $validated['cl50_24h'] ?? null,
+            'cl50_48h' => $validated['cl50_48h'] ?? null,
+            'observations' => $validated['observations'] ?? null,
         ];
 
         // ==========================================
@@ -141,12 +144,12 @@ class DaphniaMagnaTemplateController extends Controller
         for ($i = 1; $i <= 8; $i++) {
             $preliminary_table[] = [
                 'concentration' => $request->input("pre_concentration_row{$i}"),
-                '24h_rep1'      => $request->input("pre_24h_rep1_row{$i}"),
-                '24h_rep2'      => $request->input("pre_24h_rep2_row{$i}"),
-                '24h_sum'       => $request->input("pre_24h_sum_row{$i}"),
-                '48h_rep1'      => $request->input("pre_48h_rep1_row{$i}"),
-                '48h_rep2'      => $request->input("pre_48h_rep2_row{$i}"),
-                '48h_sum'       => $request->input("pre_48h_sum_row{$i}"),
+                '24h_rep1' => $request->input("pre_24h_rep1_row{$i}"),
+                '24h_rep2' => $request->input("pre_24h_rep2_row{$i}"),
+                '24h_sum' => $request->input("pre_24h_sum_row{$i}"),
+                '48h_rep1' => $request->input("pre_48h_rep1_row{$i}"),
+                '48h_rep2' => $request->input("pre_48h_rep2_row{$i}"),
+                '48h_sum' => $request->input("pre_48h_sum_row{$i}"),
             ];
         }
         $data['preliminary_table'] = $preliminary_table;
@@ -181,9 +184,9 @@ class DaphniaMagnaTemplateController extends Controller
 
             // Totales (sumas)
             $totals = [
-                'is_total'            => true,
-                'control_sum'         => $request->input("def_{$hour}h_control_sum"),
-                'concentrations_sum'  => [],
+                'is_total' => true,
+                'control_sum' => $request->input("def_{$hour}h_control_sum"),
+                'concentrations_sum' => [],
             ];
             for ($c = 1; $c <= $concentrations; $c++) {
                 $totals['concentrations_sum'][] = $request->input("def_{$hour}h_conc{$c}_sum");
@@ -193,7 +196,7 @@ class DaphniaMagnaTemplateController extends Controller
             // Guardar valores de concentración junto con los datos
             $data["definitive_{$hour}h"] = [
                 'concentration_values' => $concentration_values,
-                'rows'                 => $def_array,
+                'rows' => $def_array,
             ];
         }
 
@@ -230,6 +233,9 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function destroy(DaphniaMagnaTemplate $daphnia_magna)
     {
+
+        $this->authorize('delete', $daphnia_magna);
+
         // Obtener sample_entry antes de eliminar
         $sampleEntry = $daphnia_magna->sampleEntry;
 
@@ -242,5 +248,17 @@ class DaphniaMagnaTemplateController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(DaphniaMagnaTemplate $daphnia_magna)
+    {
+        $this->authorize('validateBioassay', $daphnia_magna);
+
+        $daphnia_magna->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

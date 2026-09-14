@@ -74,6 +74,8 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function update(Request $request, ArbaciaLarvalStage $arbacia_larval_stage)
     {
+        $this->authorize('update', $arbacia_larval_stage);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -158,6 +160,8 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function destroy(ArbaciaLarvalStage $arbacia_larval_stage)
     {
+        $this->authorize('delete', $arbacia_larval_stage);
+
         $sampleEntry = $arbacia_larval_stage->sampleEntry;
 
         $arbacia_larval_stage->delete();
@@ -169,5 +173,17 @@ class ArbaciaLarvalStageController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(ArbaciaLarvalStage $arbacia_larval_stage)
+    {
+        $this->authorize('validateBioassay', $arbacia_larval_stage);
+
+        $arbacia_larval_stage->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

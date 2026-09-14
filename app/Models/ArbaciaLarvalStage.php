@@ -14,6 +14,8 @@ class ArbaciaLarvalStage extends Model
     protected $fillable = [
         'template_id',
         'sample_entry_id',
+        'validated_by',
+        'validated_at',
 
         // Temporizador
         'timer_start',
@@ -68,6 +70,7 @@ class ArbaciaLarvalStage extends Model
      * Los atributos que deben ser convertidos a tipos nativos.
      */
     protected $casts = [
+        'validated_at' => 'datetime',
         'bioassay_start'      => 'datetime',
         'count_end_datetime'  => 'datetime',
         'control_data'        => 'array',

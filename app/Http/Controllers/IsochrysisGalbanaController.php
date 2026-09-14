@@ -77,6 +77,8 @@ class IsochrysisGalbanaController extends Controller
      */
     public function update(Request $request, IsochrysisGalbana $isochrysis_galbana)
     {
+        $this->authorize('update', $isochrysis_galbana);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN DE TODOS LOS CAMPOS
         // ==========================================
@@ -184,6 +186,8 @@ class IsochrysisGalbanaController extends Controller
      */
     public function destroy(IsochrysisGalbana $isochrysis_galbana)
     {
+        $this->authorize('delete', $isochrysis_galbana);
+
         // Obtener sample_entry antes de eliminar
         $sampleEntry = $isochrysis_galbana->sampleEntry;
 
@@ -196,5 +200,17 @@ class IsochrysisGalbanaController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(IsochrysisGalbana $isochrysis_galbana)
+    {
+        $this->authorize('validateBioassay', $isochrysis_galbana);
+
+        $isochrysis_galbana->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

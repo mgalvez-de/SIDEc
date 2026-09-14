@@ -14,6 +14,8 @@ class TisbeLongicornisRiles extends Model
     protected $fillable = [
         'template_id',
         'sample_entry_id',
+        'validated_by',
+        'validated_at',
 
         // Temporizadores
         'preliminary_timer_start',
@@ -50,6 +52,7 @@ class TisbeLongicornisRiles extends Model
      * Los atributos que deben ser convertidos a tipos nativos.
      */
     protected $casts = [
+        'validated_at' => 'datetime',
         'preliminary_start_at'           => 'datetime',
         'preliminary_end_at'             => 'datetime',
         'preliminary_control_water_date' => 'date',

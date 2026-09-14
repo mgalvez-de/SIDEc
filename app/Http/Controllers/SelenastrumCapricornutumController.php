@@ -74,6 +74,8 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function update(Request $request, SelenastrumCapricornutum $selenastrum_capricornutum)
     {
+        $this->authorize('update', $selenastrum_capricornutum);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -176,6 +178,8 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function destroy(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
+        $this->authorize('delete', $selenastrum_capricornutum);
+
         $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 
         $selenastrum_capricornutum->delete();
@@ -187,5 +191,17 @@ class SelenastrumCapricornutumController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(SelenastrumCapricornutum $selenastrum_capricornutum)
+    {
+        $this->authorize('validateBioassay', $selenastrum_capricornutum);
+
+        $selenastrum_capricornutum->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

@@ -527,6 +527,20 @@
             <button type="submit" class="btn btn-lime btn-lg px-4">
                 <i class="fas fa-save me-2"></i>Actualizar Bioensayo
             </button>
+
+            @if(auth()->user()->hasRole(['Manager', 'Area Manager']))
+                @if($selenastrum_capricornutum->validated_at)
+                    <span class="btn btn-outline-success btn-lg px-4 disabled">
+                        <i class="fas fa-check-circle me-2"></i>Validado el
+                        {{ $selenastrum_capricornutum->validated_at->format('d/m/Y H:i') }}
+                    </span>
+                @else
+                    <button type="submit" form="validateBioassayForm" class="btn btn-warning btn-lg px-4">
+                        <i class="fas fa-clipboard-check me-2"></i>Marcar como Validado
+                    </button>
+                @endif
+            @endif
+
             <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="window.print()">
                 <i class="fas fa-print me-2"></i>Imprimir
             </button>
@@ -544,6 +558,13 @@
             @endif
         </div>
     </form>
+
+    @if(auth()->user()->hasRole(['Manager', 'Area Manager']) && !$selenastrum_capricornutum->validated_at)
+        <form id="validateBioassayForm" action="{{ route('selenastrum-capricornutum.validate', $selenastrum_capricornutum->id) }}" method="POST" style="display:none">
+            @csrf
+            @method('PATCH')
+        </form>
+    @endif
 </div>
 @endsection
 

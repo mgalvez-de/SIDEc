@@ -14,6 +14,8 @@ class DaphniaMagnaChronic extends Model
     protected $fillable = [
         'template_id',
         'sample_entry_id',
+        'validated_by',
+        'validated_at',
 
         // Temporizador
         'timer_start',
@@ -79,6 +81,7 @@ class DaphniaMagnaChronic extends Model
      * Los atributos que deben ser convertidos a tipos nativos.
      */
     protected $casts = [
+        'validated_at' => 'datetime',
         'bioassay_start'            => 'datetime',
         'bioassay_end'              => 'datetime',
         'sample_temperature'        => 'decimal:1',

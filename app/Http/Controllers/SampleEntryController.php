@@ -268,6 +268,7 @@ class SampleEntryController extends Controller
                 'template_id' => $template->id,
                 'sample' => $sampleEntry->internal_sample_code,
                 'sample_entry_id' => $sampleEntry->id,
+                'created_by' => auth()->id(),
             ]);
 
             \Log::info("Bioensayo creado: {$bioassay} para muestra {$sampleEntry->internal_sample_code}");

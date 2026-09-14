@@ -74,6 +74,8 @@ class ArbaciaFertilizationController extends Controller
      */
     public function update(Request $request, ArbaciaFertilization $arbacia_fertilization)
     {
+        $this->authorize('update', $arbacia_fertilization);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -154,6 +156,8 @@ class ArbaciaFertilizationController extends Controller
      */
     public function destroy(ArbaciaFertilization $arbacia_fertilization)
     {
+        $this->authorize('delete', $arbacia_fertilization);
+
         $sampleEntry = $arbacia_fertilization->sampleEntry;
 
         $arbacia_fertilization->delete();
@@ -165,5 +169,17 @@ class ArbaciaFertilizationController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(ArbaciaFertilization $arbacia_fertilization)
+    {
+        $this->authorize('validateBioassay', $arbacia_fertilization);
+
+        $arbacia_fertilization->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }
