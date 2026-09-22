@@ -8,7 +8,7 @@
     <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Arbacia spatuligera (Fecundación)</small></h2>
     <p class="text-center text-black">RT-XX.XX | Versión: 01 | Vigencia: XX.XX.XXXX</p>
 
-    <form action="{{ route('arbacia_fertilization.store') }}" method="POST">
+    <form action="{{ route('arbacia-fertilization.store') }}" method="POST">
         @csrf
 
         {{-- ================= DATOS GENERALES ================= --}}
@@ -120,7 +120,7 @@
         {{-- ================= BOTONES ================= --}}
         <div class="text-center d-flex justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg">Guardar Bioensayo</button>
-            <a href="{{ route('arbacia_fertilization.index') }}" class="btn btn-secondary btn-lg">Cancelar</a>
+            <a href="{{ route('arbacia-fertilization.index') }}" class="btn btn-secondary btn-lg">Cancelar</a>
             <button type="button" class="btn btn-outline-primary btn-lg" onclick="window.print()">Imprimir</button>
         </div>
     </form>

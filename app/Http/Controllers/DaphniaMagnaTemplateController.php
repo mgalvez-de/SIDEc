@@ -69,7 +69,6 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function update(Request $request, DaphniaMagnaTemplate $daphnia_magna)
     {
-        $this->authorize('update', $daphnia_magna);
 
 
         // ==========================================
@@ -234,7 +233,6 @@ class DaphniaMagnaTemplateController extends Controller
     public function destroy(DaphniaMagnaTemplate $daphnia_magna)
     {
 
-        $this->authorize('delete', $daphnia_magna);
 
         // Obtener sample_entry antes de eliminar
         $sampleEntry = $daphnia_magna->sampleEntry;

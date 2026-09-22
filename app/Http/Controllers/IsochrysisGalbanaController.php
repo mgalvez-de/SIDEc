@@ -77,7 +77,6 @@ class IsochrysisGalbanaController extends Controller
      */
     public function update(Request $request, IsochrysisGalbana $isochrysis_galbana)
     {
-        $this->authorize('update', $isochrysis_galbana);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN DE TODOS LOS CAMPOS
@@ -186,7 +185,6 @@ class IsochrysisGalbanaController extends Controller
      */
     public function destroy(IsochrysisGalbana $isochrysis_galbana)
     {
-        $this->authorize('delete', $isochrysis_galbana);
 
         // Obtener sample_entry antes de eliminar
         $sampleEntry = $isochrysis_galbana->sampleEntry;

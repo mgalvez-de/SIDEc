@@ -5,7 +5,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-secondary">Gestión de Muestras Tisbe Longicornis Sus</h1>
-        <a href="{{ route('tisbelongicornis-substance.create') }}"
+        <a href="{{ route('tisbe-longicornis-riles.create') }}"
            class="btn btn-light text-dark border btn-action">
            <i class="bi bi-plus-circle me-1"></i> Crear Entrada
         </a>
@@ -36,7 +36,7 @@
                                 <td>{{ $bioassay->analyst ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('tisbe-longicornis-water.create') }}"
+                                    <a href="{{ route('tisbe-longicornis-riles.create') }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Comenzar Análisis
                                     </a>
@@ -81,7 +81,7 @@
                                 <td>{{ $bioassay->analyst ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('tisbe-longicornis-water.edit', $bioassay) }}"
+                                    <a href="{{ route('tisbe-longicornis-riles.edit', $bioassay) }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Continuar Análisis
                                     </a>
@@ -134,11 +134,11 @@
                                 <td>{{ $bioassay->analyst ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('tisbe-longicornis-water.edit', $bioassay) }}"
+                                    <a href="{{ route('tisbe-longicornis-riles.edit', $bioassay) }}"
                                        class="btn btn-sm btn-light text-dark border btn-edit me-1">
                                        Editar
                                     </a>
-                                    <form action="{{ route('tisbe-longicornis-water.destroy', $bioassay) }}" method="POST" class="d-inline form-delete">
+                                    <form action="{{ route('tisbe-longicornis-riles.destroy', $bioassay) }}" method="POST" class="d-inline form-delete">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">

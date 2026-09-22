@@ -5,7 +5,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-secondary">Gestión de Muestras Selenastrum</h1>
-        <a href="{{ route('selenastrum.create') }}"
+        <a href="{{ route('selenastrum-capricornutum.create') }}"
            class="btn btn-light text-dark border btn-action">
            <i class="bi bi-plus-circle me-1"></i> Crear Entrada
         </a>
@@ -27,14 +27,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($selenastrum as $sample)
+                        @forelse($bioassays as $sample)
                             <tr>
                                 <td>{{ $sample->id }}</td>
                                 <td>{{ $sample->sample ?? 'N/A' }}</td>
                                 <td>{{ $sample->analyst ?? 'N/A' }}</td>
                                 <td>{{ $sample->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('selenastrum.create') }}"
+                                    <a href="{{ route('selenastrum-capricornutum.create') }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Comenzar Análisis
                                     </a>
@@ -70,14 +70,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($selenastrum as $sample)
+                        @forelse($bioassays as $sample)
                             <tr>
                                 <td>{{ $sample->id }}</td>
                                 <td>{{ $sample->sample ?? 'N/A' }}</td>
                                 <td>{{ $sample->analyst ?? 'N/A' }}</td>
                                 <td>{{ $sample->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('selenastrum.edit', $sample) }}"
+                                    <a href="{{ route('selenastrum-capricornutum.edit', $sample) }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Continuar Análisis
                                     </a>
@@ -118,7 +118,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($selenastrum as $sample)
+                        @forelse($bioassays as $sample)
                             <tr>
                                 <td>
                                     <input type="checkbox" class="row-select" value="{{ $sample->id }}">
@@ -128,11 +128,11 @@
                                 <td>{{ $sample->analyst ?? 'N/A' }}</td>
                                 <td>{{ $sample->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('selenastrum.edit', $sample) }}"
+                                    <a href="{{ route('selenastrum-capricornutum.edit', $sample) }}"
                                        class="btn btn-sm btn-light text-dark border btn-edit me-1">
                                        Editar
                                     </a>
-                                    <form action="{{ route('selenastrum.destroy', $sample) }}" method="POST" class="d-inline form-delete">
+                                    <form action="{{ route('selenastrum-capricornutum.destroy', $sample) }}" method="POST" class="d-inline form-delete">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
                                             Eliminar

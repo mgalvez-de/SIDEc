@@ -77,7 +77,7 @@
                                 <td>{{ $bioassay->analyst ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('daphnia-magna.create') }}"
+                                    <a href="{{ route('daphnia-magna.edit', $bioassay) }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Continuar Análisis
                                     </a>

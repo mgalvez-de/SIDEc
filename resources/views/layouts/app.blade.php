@@ -295,9 +295,9 @@
 
 
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
-    <div id="app">
+    <div id="app" class="flex-grow-1">
 
         @unless (request()->is('login'))
 
@@ -495,52 +495,14 @@
 
                     <ul class="dropdown-menu" aria-labelledby="bioassaysDropdown">
 
-                        <li><a class="dropdown-item" href="{{ url('/daphnia-magna') }}"><i class="bi bi-droplet me-2"></i>
-                                Daphnia magna</a></li>
-
-                        <li><a class="dropdown-item" href="{{ url('/isochrysis-galbana') }}"><i
-                                    class="bi bi-water me-2"></i> Isochrysis galbana (crónico)</a></li>
-
-                        <li><a class="dropdown-item" href="{{ url('/selenastrum') }}"><i class="bi bi-flower3 me-2"></i>
-
-                                Selenastrum capricornutum</a></li>
-
-                        <!-- BIOENSAYOS SIN FUNCIONALIDAD   -->
-
-                        <!-- <li><a class="dropdown-item disabled-link" href="{{ url('/tisbe-longicornis-water') }}"><i
-                                                class="bi bi-bug me-2"></i> Tisbe
-
-                                            longicornis aguas marinas</a></li>
-
-                                    <li>
-
-                                        <a class="dropdown-item disabled-link" href="#">
-
-                                            <i class="bi bi-bezier2 me-2"></i> Tisbe longicornis Sustancias Químicas
-
-                                        </a>
-
-                                    </li>
-
-                                    <li>
-
-                                        <a class="dropdown-item disabled-link" href="#">
-
-                                            <i class="bi bi-egg me-2"></i> Arbacia spatuligera Estado Larval
-
-                                        </a>
-
-                                    </li>
-
-                                    <li>
-
-                                        <a class="dropdown-item disabled-link" href="{{ url('/arbacia_fertilization') }}">
-
-                                            <i class="bi bi-egg-fried me-2"></i> Arbacia spatuligera fecundación
-
-                                        </a>
-
-                                    </li> -->
+                        <li><a class="dropdown-item" href="{{ url('/daphnia-magna') }}"><i class="bi bi-droplet me-2"></i> Daphnia magna (agudo)</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/daphnia-magna-chronic') }}"><i class="bi bi-droplet-half me-2"></i> Daphnia magna (crónico)</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/isochrysis-galbana') }}"><i class="bi bi-water me-2"></i> Isochrysis galbana (crónico)</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/selenastrum-capricornutum') }}"><i class="bi bi-flower3 me-2"></i> Selenastrum capricornutum</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/tisbe-longicornis-water') }}"><i class="bi bi-bug me-2"></i> Tisbe longicornis aguas marinas</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/tisbe-longicornis-riles') }}"><i class="bi bi-bezier2 me-2"></i> Tisbe longicornis sustancias químicas / Riles</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/arbacia-larval-stage') }}"><i class="bi bi-egg me-2"></i> Arbacia spatuligera estado larval</a></li>
+                        <li><a class="dropdown-item" href="{{ url('/arbacia-fertilization') }}"><i class="bi bi-egg-fried me-2"></i> Arbacia spatuligera fecundación</a></li>
 
                     </ul>
 
@@ -643,10 +605,7 @@
     @stack('scripts')
 
     @stack('styles')
-
-</body>
-
-<!-- FOOTER -->
+    <!-- FOOTER -->
 @unless (request()->is('login'))
     <footer class="mt-auto py-3 bg-white border-top text-muted small">
         <div class="container-fluid d-flex flex-column flex-sm-row justify-content-between  px-4 gap-2">
@@ -659,5 +618,9 @@
         </div>
     </footer>
 @endunless
+
+</body>
+
+
 
 </html>

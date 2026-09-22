@@ -424,7 +424,7 @@
                 <i class="fas fa-print me-2"></i>Imprimir
             </button>
             @php
-                $sampleEntry = \App\Models\SampleEntry::where('internal_sample_code', $arbacia_fertilization->sample)->first();
+                $sampleEntry = $arbacia_fertilization->sampleEntry;
             @endphp
             @if($sampleEntry)
                 <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary btn-lg px-4">

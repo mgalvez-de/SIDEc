@@ -74,7 +74,6 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function update(Request $request, SelenastrumCapricornutum $selenastrum_capricornutum)
     {
-        $this->authorize('update', $selenastrum_capricornutum);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -178,7 +177,6 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function destroy(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
-        $this->authorize('delete', $selenastrum_capricornutum);
 
         $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 

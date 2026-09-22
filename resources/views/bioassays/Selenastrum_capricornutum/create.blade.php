@@ -9,7 +9,7 @@
     <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Selenastrum capricornutum</small></h2>
     <p class="text-center text-black">RT-01.05 | Versión: 03 | Vigencia: 01.10.2025</p>
 
-    <form action="{{ route('selenastrum.store') }}" method="POST">
+    <form action="{{ route('selenastrum-capricornutum.store') }}" method="POST">
         @csrf
 
         {{-- ================= FORMULARIO PRINCIPAL ================= --}}

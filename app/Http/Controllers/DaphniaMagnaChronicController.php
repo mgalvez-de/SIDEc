@@ -74,7 +74,6 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function update(Request $request, DaphniaMagnaChronic $daphnia_magna_chronic)
     {
-        $this->authorize('update', $daphnia_magna_chronic);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -168,7 +167,6 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function destroy(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
-        $this->authorize('delete', $daphnia_magna_chronic);
 
         $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 

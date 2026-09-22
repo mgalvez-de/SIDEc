@@ -545,7 +545,7 @@
                 <i class="fas fa-print me-2"></i>Imprimir
             </button>
             @php
-                $sampleEntry = \App\Models\SampleEntry::where('internal_sample_code', $selenastrum_capricornutum->sample)->first();
+                $sampleEntry = $selenastrum_capricornutum->sampleEntry;
             @endphp
             @if($sampleEntry)
                 <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary btn-lg px-4">
@@ -640,8 +640,14 @@
         box-shadow: 0 0 0 0.15rem rgba(132, 204, 22, 0.25);
     }
 
+    .compact-table {
+        width: auto;
+        min-width: 100%;
+    }
+
     .compact-table input {
         height: 26px;
+        min-width: 55px;
     }
 
     .compact-table td {

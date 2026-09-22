@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 text-secondary">Bioensayos de Arbacia spatuligera (Fecundación)</h2>
-        <a href="{{ route('arbacia_fertilization.create') }}" class="btn btn-light text-dark border btn-action">
+        <a href="{{ route('arbacia-fertilization.create') }}" class="btn btn-light text-dark border btn-action">
             <i class="bi bi-plus-circle me-2"></i> Nuevo Bioensayo
         </a>
     </div>
@@ -40,13 +40,13 @@
                                 <td>{{ $bioassay->main_sample }}</td>
                                 <td>{{ $bioassay->fertilization_percentage ?? 'N/A' }}%</td>
                                 <td>
-                                    <a href="{{ route('arbacia_fertilization.show', $bioassay->id) }}" class="btn btn-sm btn-light text-dark border btn-action" title="Ver">
+                                    <a href="{{ route('arbacia-fertilization.show', $bioassay->id) }}" class="btn btn-sm btn-light text-dark border btn-action" title="Ver">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>
-                                    <a href="{{ route('arbacia_fertilization.edit', $bioassay->id) }}" class="btn btn-sm btn-light text-dark border btn-edit me-1" title="Editar">
+                                    <a href="{{ route('arbacia-fertilization.edit', $bioassay->id) }}" class="btn btn-sm btn-light text-dark border btn-edit me-1" title="Editar">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>
-                                    <form action="{{ route('arbacia_fertilization.destroy', $bioassay->id) }}" method="POST" class="d-inline form-delete">
+                                    <form action="{{ route('arbacia-fertilization.destroy', $bioassay->id) }}" method="POST" class="d-inline form-delete">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete" title="Eliminar">

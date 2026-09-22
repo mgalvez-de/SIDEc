@@ -74,7 +74,6 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function update(Request $request, TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
-        $this->authorize('update', $tisbe_longicornis_riles);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -225,7 +224,6 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function destroy(TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
-        $this->authorize('delete', $tisbe_longicornis_riles);
 
         $sampleEntry = $tisbe_longicornis_riles->sampleEntry;
 

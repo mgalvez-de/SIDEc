@@ -8,7 +8,7 @@
         <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Tisbe longicornis Sus</small></h2>
         <p class="text-center text-black">RT-01.05 | Versión: 01 | Vigencia: 06.10.2025</p>
 
-        <form action="{{ route('tisbe-longicornis-substance.store') }}" method="POST">
+        <form action="{{ route('tisbe-longicornis-riles.store') }}" method="POST">
             @csrf
 
             {{-- ================= FORMULARIO PRINCIPAL ================= --}}

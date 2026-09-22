@@ -627,7 +627,7 @@
                     <i class="fas fa-print me-2"></i>Imprimir
                 </button>
                 @php
-                    $sampleEntry = \App\Models\SampleEntry::where('internal_sample_code', $daphnia_magna->sample)->first();
+                    $sampleEntry = $daphnia_magna->sampleEntry;
                 @endphp
                 @if($sampleEntry)
                     <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary btn-lg px-4">

@@ -4,7 +4,7 @@
     <div class="container">
         <h2>Daphnia Magna Bioassays</h2>
 
-        <a href="{{ route('daphnia-magna.create') }}" class="btn btn-success mb-3">+ New Bioassay</a>
+        <a href="{{ route('daphnia-magna-chronic.create') }}" class="btn btn-success mb-3">+ New Bioassay</a>
 
         <table class="table table-bordered">
             <thead>
@@ -24,7 +24,7 @@
                         <td>{{ $bioassay->analyst }}</td>
                         <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                         <td>
-                            <a href="{{ url('daphnia_magna.edit', $bioassay) }}"
+                            <a href="{{ route('daphnia-magna-chronic.edit', $bioassay) }}"
                                 class="btn btn-primary btn-sm">Edit</a>
 
                             <form action="{{ url('daphnia_magna.destroy', $bioassay) }}" method="POST"

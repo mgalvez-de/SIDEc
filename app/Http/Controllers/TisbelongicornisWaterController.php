@@ -75,7 +75,6 @@ class TisbeLongicornisWaterController extends Controller
      */
     public function update(Request $request, TisbeLongicornisWater $tisbe_longicornis_water)
     {
-        $this->authorize('update', $tisbe_longicornis_water);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -157,7 +156,6 @@ class TisbeLongicornisWaterController extends Controller
      */
     public function destroy(TisbeLongicornisWater $tisbe_longicornis_water)
     {
-        $this->authorize('delete', $tisbe_longicornis_water);
 
         $sampleEntry = $tisbe_longicornis_water->sampleEntry;
 
