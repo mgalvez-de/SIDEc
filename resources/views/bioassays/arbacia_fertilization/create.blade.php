@@ -220,7 +220,7 @@
                 locale: "es"
             });
 
-            $('form').on('submit', function(e) {
+            document.querySelector('main form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: '¿Confirmar guardado?',

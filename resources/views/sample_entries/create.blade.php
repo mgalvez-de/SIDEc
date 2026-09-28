@@ -673,7 +673,7 @@
             }
 
             // ============= SWEETALERT PARA CONFIRMACIÓN DEL ENVÍO =============
-            $('#entryForm').on('submit', function(e) {
+            document.getElementById('entryForm').addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 Swal.fire({

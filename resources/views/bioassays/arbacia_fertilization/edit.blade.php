@@ -68,7 +68,7 @@
                     </div>
                 </div>
 
-                <div class="row g-3 mt-1">
+                <div class="row g-3 align-items-end mt-1">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">
                             <i class="fas fa-calendar-alt text-success me-1"></i>Fecha y hora inicio Bioensayo
@@ -108,7 +108,7 @@
                 <i class="fas fa-clock me-2"></i>Tiempos del Ensayo
             </div>
             <div class="card-body bg-light p-3">
-                <div class="row g-3">
+                <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label fw-bold">
                             <i class="fas fa-hourglass-start text-warning me-1"></i>Hora adición de espermios
@@ -402,7 +402,7 @@
         </div>
 
         {{-- ================= BOTONES ================= --}}
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-pink btn-lg px-4">
                 <i class="fas fa-save me-2"></i>Actualizar Bioensayo
             </button>
@@ -525,6 +525,16 @@
         box-shadow: 0 0 0 0.15rem rgba(214, 51, 132, 0.25);
     }
 
+    .modern-table {
+        width: auto;
+        min-width: 100%;
+    }
+
+    .modern-table input {
+        min-width: 55px;
+    }
+    .modern-table input[step], .modern-table input[readonly] { min-width: 80px; }
+
     /* ============================================
        HEADERS DE TABLA COLOREADOS
        ============================================ */
@@ -562,7 +572,11 @@
        INPUT DE FRACCIÓN
        ============================================ */
     .fraction-input {
-        max-width: 120px;
+        flex-wrap: nowrap;
+    }
+
+    .fraction-input > .form-control {
+        min-width: 55px;
     }
 
     .fraction-input input {

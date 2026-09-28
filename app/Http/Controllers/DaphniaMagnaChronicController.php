@@ -46,6 +46,7 @@ class DaphniaMagnaChronicController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = DaphniaMagnaChronic::create($validated);
 

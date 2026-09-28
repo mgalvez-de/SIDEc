@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg px-4">
                 <i class="fas fa-save me-2"></i>Crear Bioensayo
             </button>

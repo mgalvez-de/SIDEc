@@ -70,7 +70,7 @@
                     </div>
                 </div>
 
-                <div class="row g-3 mt-1">
+                <div class="row g-3 align-items-end mt-1">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">
                             <i class="fas fa-calendar-alt text-success me-1"></i>Fecha y hora inicio Bioensayo
@@ -447,7 +447,7 @@
         </div>
 
         {{-- ================= BOTONES ================= --}}
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg px-4">
                 <i class="fas fa-save me-2"></i>Actualizar Bioensayo
             </button>
@@ -520,6 +520,9 @@
     .modern-table tbody tr:hover { background-color: #f8f9fa; }
     .modern-table input { border: 1px solid #ced4da; text-align: center; border-radius: 3px; font-size: 0.75rem; }
     .modern-table input:focus { border-color: #198754; box-shadow: 0 0 0 0.1rem rgba(25, 135, 84, 0.25); }
+    .modern-table { width: auto; min-width: 100%; }
+    .modern-table input { min-width: 55px; }
+    .modern-table input[step], .modern-table input[readonly] { min-width: 80px; }
 
     /* Headers de tabla */
     .table-header-day { background: #6c757d !important; color: white !important; }

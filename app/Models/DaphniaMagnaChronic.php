@@ -14,6 +14,7 @@ class DaphniaMagnaChronic extends Model
     protected $fillable = [
         'template_id',
         'sample_entry_id',
+        'created_by',
         'validated_by',
         'validated_at',
 

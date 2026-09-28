@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <h1 class="text-secondary">Gestión de Muestras Selenastrum</h1>
         <a href="{{ route('selenastrum-capricornutum.create') }}"
            class="btn btn-light text-dark border btn-action">

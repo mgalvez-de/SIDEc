@@ -116,15 +116,15 @@
                                     <th>ID</th>
                                     <th>Código Interno</th>
                                     <th>Estado</th>
-                                    <th style="width: 150px;">Tiempo Restante</th>
+                                    <th style="width: 150px;">Avance</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sampleEntries as $index => $sampleEntry)
+                                @foreach ($inProcessEntries as $sampleEntry)
                                     @php
-                                        // Datos de prueba para temporizadores (10 segundos para testing)
-                                        $tiempoRestante = 10;
+                                        $totalBioassays = $sampleEntry->assignedBioassays()->count();
+                                        $validatedBioassays = $sampleEntry->validatedBioassaysCount();
                                     @endphp
                                     <tr>
                                         <td><input type="checkbox" class="row-select-proceso" value="{{ $sampleEntry->id }}">
@@ -133,20 +133,11 @@
                                         <td>{{ $sampleEntry->internal_sample_code ?? 'Nulo' }}</td>
                                         <td><span class="badge bg-warning text-dark">Bioensayos Pendientes</span></td>
                                         <td>
-                                            <div class="timer-container" data-tiempo="{{ $tiempoRestante }}">
-                                                <!-- Timer de Barra con borde -->
-                                                <div class="timer-view timer-bar-wrapper">
-                                                    <div class="timer-bar-container">
-                                                        <div class="timer-bar-fill"></div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Timer Circular con texto -->
-                                                <div class="timer-view timer-circle-wrapper">
-                                                    <canvas class="timer-canvas" width="20" height="20"></canvas>
-                                                    <div class="timer-text"></div>
-                                                </div>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success"
+                                                    style="width: {{ $totalBioassays ? $validatedBioassays / $totalBioassays * 100 : 0 }}%"></div>
                                             </div>
+                                            <small class="text-muted">{{ $validatedBioassays }} de {{ $totalBioassays }} validados</small>
                                         </td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
@@ -217,24 +208,26 @@
                                 <tr>
                                     <th style="width: 30px;"><input type="checkbox" id="selectAllHistorial"></th>
                                     <th>ID</th>
-                                    <th>Título</th>
-                                    <th>Código</th>
-                                    <th>Versión</th>
-                                    <th>Vigencia</th>
+                                    <th>Código Interno</th>
+                                    <th>Tipo de Muestra</th>
+                                    <th>Analista</th>
+                                    <th>Fecha de Recepción</th>
+                                    <th>Bioensayos</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sampleEntries as $sampleEntry)
+                                @foreach ($completedEntries as $sampleEntry)
                                     <tr>
                                         <td><input type="checkbox" class="row-select-historial"
                                                 value="{{ $sampleEntry->id }}">
                                         </td>
                                         <td>{{ $sampleEntry->id }}</td>
-                                        <td>{{ $sampleEntry->template->title ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->template->code ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->template->version ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->template->validity ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->internal_sample_code ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->sample_type ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->analyst ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->received_at ? \Carbon\Carbon::parse($sampleEntry->received_at)->format('d/m/Y H:i') : 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->assignedBioassays()->keys()->implode(', ') }}</td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
                                                 <a href="{{ route('sample_entries.show', $sampleEntry) }}"
@@ -644,101 +637,6 @@
             font-weight: 600;
         }
 
-        /* Estilos para temporizadores */
-        .timer-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 40px;
-            position: relative;
-        }
-
-        .timer-view {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .timer-view.active {
-            opacity: 1;
-        }
-
-        /* Timer Circular - 20x20px */
-        .timer-circle-wrapper {
-            width: auto;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .timer-canvas {
-            flex-shrink: 0;
-        }
-
-        .timer-text {
-            font-size: 14px;
-            font-weight: 700;
-            color: #000000;
-            white-space: nowrap;
-            min-width: 45px;
-            text-align: left;
-        }
-
-        /* Timer de Barra - 20x160px con borde */
-        .timer-bar-wrapper {
-            width: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .timer-bar-container {
-            width: 160px;
-            height: 20px;
-            background-color: #ffffff;
-            border: 2px solid #000000;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .timer-bar-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #10b981, #3b82f6);
-            transition: width 1s linear;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-        }
-
-        .timer-text-bar {
-            font-size: 14px;
-            font-weight: 700;
-            color: #000000;
-            white-space: nowrap;
-        }
-
-        /* Animación de pulsación */
-        @keyframes pulse {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.05);
-            }
-        }
-
-        .timer-warning .timer-view.active {
-            animation: pulse 1s ease-in-out infinite;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .table-controls-wrapper {
@@ -752,11 +650,6 @@
                 max-width: 100% !important;
             }
 
-            .timer-text,
-            .timer-text-bar,
-            .timer-digital-text {
-                font-size: 11px;
-            }
         }
     </style>
 @endpush
@@ -866,8 +759,6 @@
                     $('.dataTables_info').eq(1).appendTo('#procesoInfo');
                     $('.dataTables_paginate').eq(1).appendTo('#procesoPagination');
                     
-                    // Inicializar temporizadores después de que la tabla esté lista
-                    initTimers();
                 }
             });
 
@@ -902,167 +793,6 @@
                     $('.dataTables_info').eq(2).appendTo('#historialInfo');
                     $('.dataTables_paginate').eq(2).appendTo('#historialPagination');
                 }
-            });
-
-            // Sistema de temporizadores
-            const timers = [];
-            const viewChangeIntervals = [];
-
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            }
-
-            function getColorByTime(percentage) {
-                if (percentage > 50) return '#10b981'; // Verde
-                if (percentage > 25) return '#f59e0b'; // Amarillo
-                return '#ef4444'; // Rojo
-            }
-
-            function drawCircularTimer(canvas, percentage, color) {
-                const ctx = canvas.getContext('2d');
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const radius = 7;
-                
-                // Limpiar canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Círculo de fondo (gris claro - siempre completo)
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = '#e5e7eb';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-                
-                // Círculo de progreso (se desllena de 100% a 0%)
-                // Comienza en la parte superior (-90 grados) y va en sentido horario
-                const startAngle = -Math.PI / 2;
-                const endAngle = startAngle + (2 * Math.PI * percentage / 100);
-                
-                if (percentage > 0) {
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-                    ctx.strokeStyle = color;
-                    ctx.lineWidth = 4;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
-                }
-            }
-
-            function updateTimer(container, remainingTime, totalTime) {
-                const percentage = (remainingTime / totalTime) * 100;
-                const color = getColorByTime(percentage);
-                const timeText = formatTime(remainingTime);
-                
-                // 1. ACTUALIZAR TEXTO DEL TEMPORIZADOR (sin animaciones, solo cambio directo)
-                const circleText = container.find('.timer-circle-wrapper .timer-text');
-                circleText.text(timeText);
-                
-                // 2. ACTUALIZAR CÍRCULO ANIMADO (se desllena según el porcentaje)
-                const canvas = container.find('.timer-canvas')[0];
-                if (canvas) {
-                    drawCircularTimer(canvas, percentage, color);
-                }
-                
-                // 3. ACTUALIZAR BARRA DE PROGRESO (se desllena de 100% a 0%)
-                const barFill = container.find('.timer-bar-fill');
-                
-                // Si el timer se acaba de reiniciar, hacer reset instantáneo
-                if (remainingTime === totalTime) {
-                    barFill.css({
-                        'transition': 'none',
-                        'width': '100%',
-                        'background': `linear-gradient(90deg, ${color}, #3b82f6)`
-                    });
-                    
-                    // Restaurar transición después de 50ms
-                    setTimeout(function() {
-                        barFill.css('transition', 'width 1s linear');
-                    }, 50);
-                } else {
-                    // Actualizar normalmente
-                    barFill.css({
-                        'width': percentage + '%',
-                        'background': `linear-gradient(90deg, ${color}, #3b82f6)`
-                    });
-                }
-                
-                // 4. ANIMACIÓN DE ADVERTENCIA (últimos 5 segundos)
-                if (remainingTime <= 5 && remainingTime > 0) {
-                    container.addClass('timer-warning');
-                } else {
-                    container.removeClass('timer-warning');
-                }
-            }
-
-            function cycleTimerViews(container) {
-                const views = container.find('.timer-view');
-                let currentIndex = 0;
-                
-                // Asegurarse de que solo hay 2 vistas
-                if (views.length !== 2) {
-                    console.error('Se esperan exactamente 2 vistas de timer');
-                    return;
-                }
-                
-                // Mostrar la primera vista inmediatamente
-                views.eq(currentIndex).addClass('active');
-                
-                // Cambiar entre las 2 vistas cada 3 segundos
-                const cycleInterval = setInterval(function() {
-                    // Remover active de la vista actual
-                    views.eq(currentIndex).removeClass('active');
-                    
-                    // Cambiar al siguiente índice (0 o 1)
-                    currentIndex = (currentIndex + 1) % 2;
-                    
-                    // Agregar active a la nueva vista
-                    views.eq(currentIndex).addClass('active');
-                }, 3000);
-                
-                viewChangeIntervals.push(cycleInterval);
-            }
-
-            function initTimers() {
-                $('.timer-container').each(function() {
-                    const container = $(this);
-                    const totalTime = parseInt(container.data('tiempo'));
-                    let remainingTime = totalTime;
-                    
-                    console.log('Inicializando timer con totalTime:', totalTime);
-                    
-                    // Iniciar ciclo de vistas
-                    cycleTimerViews(container);
-                    
-                    // Actualizar inmediatamente con el tiempo inicial
-                    updateTimer(container, remainingTime, totalTime);
-                    
-                    // Crear intervalo para actualizar cada segundo (1000ms)
-                    const interval = setInterval(function() {
-                        remainingTime--;
-                        
-                        console.log('Tiempo restante:', remainingTime);
-                        
-                        if (remainingTime < 0) {
-                            // Modo debug: reiniciar el timer al llegar a 0
-                            console.log('Timer reiniciado');
-                            toastr.warning('¡Tiempo agotado! Reiniciando timer...', 'Debug');
-                            remainingTime = totalTime;
-                        }
-                        
-                        updateTimer(container, remainingTime, totalTime);
-                    }, 1000);
-                    
-                    timers.push(interval);
-                });
-            }
-
-            // Limpiar intervalos al salir
-            $(window).on('beforeunload', function() {
-                timers.forEach(timer => clearInterval(timer));
-                viewChangeIntervals.forEach(interval => clearInterval(interval));
             });
 
             // Botones de exportación

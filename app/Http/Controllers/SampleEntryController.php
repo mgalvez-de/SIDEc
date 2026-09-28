@@ -10,83 +10,67 @@ class SampleEntryController extends Controller
 
     public function dashboard()
     {
-        // -------- SampleEntry base --------
-        $totalSamples = SampleEntry::count();
+        // -------- Datos base --------
+        $receptions = \App\Models\ReceptionTemplate::all();
+        $rejectedCodes = \App\Models\RejectionTemplate::pluck('internal_sample_code');
+        $sampleEntries = SampleEntry::with('reception')->orderByDesc('received_at')->get();
+        $enteredCodes = $sampleEntries->pluck('internal_sample_code');
 
-        $byState = SampleEntry::select('state', \DB::raw('COUNT(*) as total'))
-            ->groupBy('state')
-            ->pluck('total', 'state');
+        // -------- Tarjetas --------
+        $totalRecepcionadas = $receptions->count();
+        $totalRechazadas = $rejectedCodes->count();
 
-        $byType = SampleEntry::select('sample_type', \DB::raw('COUNT(*) as total'))
-            ->groupBy('sample_type')
-            ->pluck('total', 'sample_type');
+        $totalSinIngresar = $receptions->filter(function ($r) use ($enteredCodes, $rejectedCodes) {
+            return !$enteredCodes->contains($r->internal_sample_code)
+                && !$rejectedCodes->contains($r->internal_sample_code);
+        })->count();
 
-        $monthlySamples = SampleEntry::selectRaw('DATE_FORMAT(received_at,"%Y-%m") as month, COUNT(*) as total')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month');
+        // -------- Por cada muestra ingresada: sus bioensayos y si están todos validados --------
+        $totalCompletadas = 0;
+        $totalEnProceso = 0;
+        $sampleRows = [];
 
-        // Estadísticas ambientales
-        $avgPh = SampleEntry::avg('ph');
-        $avgTemp = SampleEntry::avg('temperature');
-        $avgSalinity = SampleEntry::avg('salinity');
-        $avgConductivity = SampleEntry::avg('conductivity');
-        $avgOxygen = SampleEntry::avg('dissolved_oxygen');
+        foreach ($sampleEntries as $entry) {
+            $completed = $entry->isCompleted();
+            $completed ? $totalCompletadas++ : $totalEnProceso++;
+            $bioassayNames = $entry->assignedBioassays()->keys();
 
-        // ---------------- BIOENSAYOS ----------------
+            $sampleRows[] = [
+                'id' => $entry->id,
+                'code' => $entry->internal_sample_code,
+                'bioassays' => $bioassayNames->isNotEmpty() ? $bioassayNames->implode(', ') : 'Sin bioensayos asignados',
+                'client' => $entry->reception->client ?? 'N/A',
+                'state' => $completed ? 'Completada' : 'En Proceso',
+                'received_at' => $entry->received_at,
+            ];
+        }
 
-        $arbacia = \App\Models\ArbaciaFertilization::count();
-        $daphnia = \App\Models\DaphniaMagnaTemplate::count();
-        $isochrysis = \App\Models\IsochrysisGalbana::count();
-        $selenastrum = \App\Models\SelenastrumCapricornutum::count();
-        $tisbeWater = \App\Models\TisbeLongicornisWater::count();
-        $tisbeRiles = \App\Models\TisbeLongicornisRiles::count();
-
-        $bioassayTotals = [
-            'Arbacia fertilization' => $arbacia,
-            'Daphnia magna' => $daphnia,
-            'Isochrysis galbana' => $isochrysis,
-            'Selenastrum capricornutum' => $selenastrum,
-            'Tisbe water' => $tisbeWater,
-            'Tisbe riles' => $tisbeRiles,
-        ];
-
-        // bioensayos asociados a muestras existentes
-        $matchedBioassays = [
-            'arbacia' => \App\Models\ArbaciaFertilization::whereIn(
-                'sample',
-                SampleEntry::pluck('internal_sample_code')
-            )->count(),
-
-            'daphnia' => \App\Models\DaphniaMagnaTemplate::whereIn(
-                'sample',
-                SampleEntry::pluck('internal_sample_code')
-            )->count(),
-        ];
+        // -------- Total por tipo de bioensayo (para los gráficos) --------
+        $bioassayTotals = [];
+        foreach (SampleEntry::BIOASSAY_MODELS as $name => $modelClass) {
+            $bioassayTotals[$name] = $modelClass::count();
+        }
 
         return view('dashboard', compact(
-            'totalSamples',
-            'byState',
-            'byType',
-            'monthlySamples',
-            'avgPh',
-            'avgTemp',
-            'avgSalinity',
-            'avgConductivity',
-            'avgOxygen',
-            'bioassayTotals',
-            'matchedBioassays'
+            'totalRecepcionadas',
+            'totalRechazadas',
+            'totalSinIngresar',
+            'totalEnProceso',
+            'totalCompletadas',
+            'sampleRows',
+            'bioassayTotals'
         ));
     }
 
     public function index()
     {
-        $sampleEntries = SampleEntry::with('template')->latest()->get();
+        [$completedEntries, $inProcessEntries] = SampleEntry::with('reception')->latest()->get()
+            ->partition(fn ($entry) => $entry->isCompleted());
         $newReceptions = \App\Models\ReceptionTemplate::whereDoesntHave('sampleEntry')
             ->with('template')
             ->get();
 
-        return view('sample_entries.index', compact('sampleEntries', 'newReceptions'));
+        return view('sample_entries.index', compact('inProcessEntries', 'completedEntries', 'newReceptions'));
     }
 
     public function create(Request $request)

@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
     flatpickr(".datetimepicker", { enableTime: true, time_24hr: true, dateFormat: "Y-m-d H:i", locale: "es" });
     flatpickr(".datepicker", { dateFormat: "Y-m-d", locale: "es" });
 
-    $('form').on('submit', function(e) {
+    document.querySelector('main form').addEventListener('submit', function(e) {
         e.preventDefault();
         Swal.fire({
             title: '¿Confirmar guardado?',

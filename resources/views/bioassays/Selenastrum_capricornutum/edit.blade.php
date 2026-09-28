@@ -523,7 +523,7 @@
         </div>
 
         {{-- ================= BOTONES ================= --}}
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-lime btn-lg px-4">
                 <i class="fas fa-save me-2"></i>Actualizar Bioensayo
             </button>
@@ -649,6 +649,7 @@
         height: 26px;
         min-width: 55px;
     }
+    .modern-table input[step], .modern-table input[readonly] { min-width: 80px; }
 
     .compact-table td {
         padding: 2px !important;

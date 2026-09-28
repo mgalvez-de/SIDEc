@@ -285,6 +285,11 @@
             /* Efecto de movimiento */
 
         }
+
+        /* En tablet el texto de los botones se partía en dos líneas; mejor que la fila completa baje. */
+        .btn {
+            white-space: nowrap;
+        }
     </style>
 
 

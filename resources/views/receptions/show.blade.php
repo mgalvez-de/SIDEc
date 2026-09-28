@@ -315,7 +315,7 @@
     </div>
 
     {{-- ===================== BOTONES ===================== --}}
-    <div class="d-flex justify-content-center gap-3 mb-5">
+    <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
         <a href="{{ route('receptions.edit', $reception) }}" class="btn btn-success btn-lg px-5">
             <i class="fas fa-edit me-2"></i>Editar Recepción
         </a>

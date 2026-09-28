@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <h2 class="mb-0 text-secondary">Bioensayos de Arbacia spatuligera (Estado Larval)</h2>
         <a href="{{ route('arbacia-larval-stage.create') }}" class="btn btn-light text-dark border btn-action">
             <i class="bi bi-plus-circle me-2"></i> Nuevo Bioensayo
@@ -101,6 +101,3 @@
     </script>
 @endpush
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/views/tisbe.css') }}">
-@endpush

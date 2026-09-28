@@ -2,10 +2,6 @@
 
 @section('content')
     <style>
-        /*Elimina la barra vertical de desplazamiento.*/
-        body {
-            overflow: hidden
-        }
         /* Contenedor cuadrado invisible (define el borde) */
         .outer-box {
             position: relative;
@@ -61,7 +57,8 @@
 
         /* 🔥 NUEVO: centra todo el contenido verticalmente 🔥 */
         .login-wrapper {
-            min-height: 100vh;
+            /* 3rem = padding py-4 del <main> del layout; con 100vh sobraba y aparecía la barra de scroll */
+            min-height: calc(100vh - 3rem);
             /* ocupa toda la pantalla */
             display: flex;
             align-items: center;
@@ -73,8 +70,8 @@
     </style>
 
     <div class="container login-wrapper">
-        <div class="row justify-content-center align-items-center w-100">
-            <div class="col-12 col-md-4 me-md-5 mb-4 mb-md-0 text-center">
+        <div class="row justify-content-center align-items-center w-100 g-4">
+            <div class="col-12 col-lg-6 mb-3 mb-lg-0 text-center">
                 <div class="outer-box row" id="animatedBox">
                     <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc">
                     <h3 class="logo-title mt-1">
@@ -85,52 +82,44 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-4 ms-md-5">
+            <div class="col-12 col-sm-9 col-md-7 col-lg-5 col-xl-4">
                 <div class="card shadow">
                     <div class="card-header">Iniciar sesión</div>
                     <div class="card-body">
                         <form method="POST" action="{{ route('login') }}">
                             @csrf
-                            <div class="row mb-3">
-                                <label for="email" class="col-md-4 col-form-label text-md-end">Credencial</label>
-                                <div class="col-md-6">
-                                    <input id="email" type="email"
-                                        class="rounded-pill form-control @error('email') is-invalid @enderror"
-                                        name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                    @error('email')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Credencial</label>
+                                <input id="email" type="email"
+                                    class="rounded-pill form-control @error('email') is-invalid @enderror"
+                                    name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
 
-                            <div class="row mb-3">
-                                <label for="password" class="col-md-4 col-form-label text-md-end">Contraseña</label>
-                                <div class="col-md-6">
-                                    <input id="password" type="password"
-                                        class="rounded-pill form-control @error('password') is-invalid @enderror"
-                                        name="password" required autocomplete="current-password">
-                                    @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Contraseña</label>
+                                <input id="password" type="password"
+                                    class="rounded-pill form-control @error('password') is-invalid @enderror"
+                                    name="password" required autocomplete="current-password">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
 
-                            <div class="row mb-3">
-                                <div class="col-md-6 offset-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="remember" id="remember"
-                                            {{ old('remember') ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="remember">Recordarme</label>
-                                    </div>
-                                </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                                    {{ old('remember') ? 'checked' : '' }}>
+                                <label class="form-check-label" for="remember">Recordarme</label>
                             </div>
 
                             <div class="row mb-0">
-                                <div class="d-flex justify-content-center gap-5 align-items-center">
+                                <div class="d-flex flex-wrap justify-content-center gap-3 align-items-center">
                                     <button type="submit" class="btn btn-danger">Entrar</button>
                                     @if (Route::has('password.request'))
                                         <a class="btn btn-link p-0" href="{{ route('password.request') }}">

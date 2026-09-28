@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\ReceptionTemplate;
 use App\Models\Template;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ReceptionTemplateController extends Controller
 {
@@ -46,7 +47,10 @@ class ReceptionTemplateController extends Controller
             // Validación para múltiples muestras
             'samples'                        => 'required|array|min:1',
             'samples.*.sample_identifier'    => 'required|string|max:255',
-            'samples.*.internal_sample_code' => 'nullable|string|max:255',
+            'samples.*.internal_sample_code' => 'nullable|string|max:255|distinct|unique:reception_templates,internal_sample_code',
+        ], [
+            'samples.*.internal_sample_code.unique'   => 'El código interno :input ya está registrado en otra recepción.',
+            'samples.*.internal_sample_code.distinct' => 'Hay códigos internos repetidos entre las muestras que estás ingresando.',
         ]);
 
         /* dd($validated); */
@@ -123,11 +127,16 @@ class ReceptionTemplateController extends Controller
             'received_by'           => 'nullable|string|max:255',
             'sample_identifier'     => 'required|string|max:255',
             'matrix'                => 'nullable|string|max:255',
-            'internal_sample_code'  => 'nullable|string|max:255',
+            'internal_sample_code'  => [
+                'nullable', 'string', 'max:255',
+                Rule::unique('reception_templates', 'internal_sample_code')->ignore($reception->id),
+            ],
             'temperature_received'  => 'nullable|numeric',
             'temperature_corrected' => 'nullable|numeric',
             'report_number'         => 'nullable|integer',
             'assigned_bioassays'    => 'nullable|array',
+        ], [
+            'internal_sample_code.unique' => 'El código interno :input ya está registrado en otra recepción.',
         ]);
 
         // Actualizar Template

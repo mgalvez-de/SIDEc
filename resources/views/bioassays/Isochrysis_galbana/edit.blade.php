@@ -468,7 +468,7 @@
         </div>
 
         {{-- ================= BOTONES ================= --}}
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-teal btn-lg px-4">
                 <i class="fas fa-save me-2"></i>Actualizar Bioensayo
             </button>
@@ -585,6 +585,16 @@
         border-color: #20c997;
         box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25);
     }
+
+    .modern-table {
+        width: auto;
+        min-width: 100%;
+    }
+
+    .modern-table input {
+        min-width: 55px;
+    }
+    .modern-table input[step], .modern-table input[readonly] { min-width: 80px; }
 
     /* ============================================
        TÍTULOS DE SECCIÓN

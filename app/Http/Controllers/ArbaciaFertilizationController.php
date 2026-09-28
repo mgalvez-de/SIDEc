@@ -46,6 +46,7 @@ class ArbaciaFertilizationController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = ArbaciaFertilization::create($validated);
 
