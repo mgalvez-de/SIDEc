@@ -37,7 +37,6 @@ class SampleEntry extends Model
         'dissolved_oxygen',
         'temperature',
         'observations',
-        'state',
     ];
 
     public function template()
@@ -48,26 +47,6 @@ class SampleEntry extends Model
     public function reception()
     {
         return $this->belongsTo(ReceptionTemplate::class, 'internal_sample_code', 'internal_sample_code');
-    }
-
-    public function daphniaMagna()
-    {
-        return $this->hasOne(DaphniaMagnaTemplate::class, 'sample', 'internal_sample_code');
-    }
-
-    public function isochrysisGalbana()
-    {
-        return $this->hasOne(IsochrysisGalbana::class, 'sample', 'internal_sample_code');
-    }
-
-    public function selenastrumCapricornutum()
-    {
-        return $this->hasOne(SelenastrumCapricornutum::class, 'sample', 'internal_sample_code');
-    }
-
-    public function tisbeLongicornisWater()
-    {
-        return $this->hasOne(TisbelongicornisWater::class, 'sample', 'internal_sample_code');
     }
 
     /**

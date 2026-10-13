@@ -43,4 +43,21 @@ class AccessByRoleTest extends TestCase
             ->get('/daphnia-magna')
             ->assertForbidden();
     }
+
+    // El menú solo debe mostrar las secciones que las rutas le permiten abrir a cada rol
+    public function test_menu_only_links_to_sections_the_role_can_open()
+    {
+        $this->actingAs($this->userWithRole('Supervisor'))
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee(url('/receptions'))
+            ->assertSee(url('/rejections'));
+
+        $this->actingAs($this->userWithRole('Manager'))
+            ->get(route('sample_entries.index'))
+            ->assertOk()
+            ->assertDontSee(url('/dashboard'))
+            ->assertDontSee(url('/receptions'))
+            ->assertDontSee(url('/rejections'));
+    }
 }

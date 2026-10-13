@@ -43,19 +43,18 @@
                     </div>
 
                     <!-- Barra de controles -->
-                    <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                    <div
+                        class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3 flex-grow-1">
                             <div id="nuevasLengthContainer"></div>
                             <div id="nuevasSearchContainer" class="flex-grow-1" style="max-width: 300px;"></div>
                         </div>
-                        <a href="{{ route('sample_entries.create') }}"
-                            class="btn btn-sm btn-light text-dark border d-inline-flex align-items-center gap-1 btn-add">
-                            <i class="bi bi-plus-lg"></i> Nuevo Ingreso
-                        </a>
+
                     </div>
 
                     <div class="table-responsive table-box-scroll">
-                        <table id="nuevasTable" class="table table-bordered table-striped table-hover align-middle text-center">
+                        <table id="nuevasTable"
+                            class="table table-bordered table-striped table-hover align-middle text-center">
                             <thead>
                                 <tr>
                                     <th>Fecha de Recepción</th>
@@ -100,7 +99,8 @@
                     </div>
 
                     <!-- Barra de controles -->
-                    <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                    <div
+                        class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3 flex-grow-1">
                             <div id="procesoLengthContainer"></div>
                             <div id="procesoSearchContainer" class="flex-grow-1" style="max-width: 300px;"></div>
@@ -135,9 +135,11 @@
                                         <td>
                                             <div class="progress" style="height: 10px;">
                                                 <div class="progress-bar bg-success"
-                                                    style="width: {{ $totalBioassays ? $validatedBioassays / $totalBioassays * 100 : 0 }}%"></div>
+                                                    style="width: {{ $totalBioassays ? $validatedBioassays / $totalBioassays * 100 : 0 }}%">
+                                                </div>
                                             </div>
-                                            <small class="text-muted">{{ $validatedBioassays }} de {{ $totalBioassays }} validados</small>
+                                            <small class="text-muted">{{ $validatedBioassays }} de {{ $totalBioassays }}
+                                                validados</small>
                                         </td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
@@ -175,7 +177,8 @@
                     </div>
 
                     <!-- Barra de controles -->
-                    <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                    <div
+                        class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3 flex-grow-1">
                             <div id="historialLengthContainer"></div>
                             <div id="historialSearchContainer" class="flex-grow-1" style="max-width: 400px;"></div>
@@ -219,14 +222,14 @@
                             <tbody>
                                 @foreach ($completedEntries as $sampleEntry)
                                     <tr>
-                                        <td><input type="checkbox" class="row-select-historial"
-                                                value="{{ $sampleEntry->id }}">
+                                        <td><input type="checkbox" class="row-select-historial" value="{{ $sampleEntry->id }}">
                                         </td>
                                         <td>{{ $sampleEntry->id }}</td>
                                         <td>{{ $sampleEntry->internal_sample_code ?? 'Nulo' }}</td>
                                         <td>{{ $sampleEntry->sample_type ?? 'Nulo' }}</td>
                                         <td>{{ $sampleEntry->analyst ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->received_at ? \Carbon\Carbon::parse($sampleEntry->received_at)->format('d/m/Y H:i') : 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->received_at ? \Carbon\Carbon::parse($sampleEntry->received_at)->format('d/m/Y H:i') : 'Nulo' }}
+                                        </td>
                                         <td>{{ $sampleEntry->assignedBioassays()->keys()->implode(', ') }}</td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
@@ -667,7 +670,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Configuración de Toastr
             toastr.options = {
                 "closeButton": true,
@@ -704,8 +707,8 @@
                 toastr.warning("{{ session('warning') }}");
             @endif
 
-            // Configuración común para DataTables
-            const commonConfig = {
+                // Configuración común para DataTables
+                const commonConfig = {
                 paging: true,
                 ordering: true,
                 info: true,
@@ -737,7 +740,7 @@
             const nuevasTable = $('#nuevasTable').DataTable({
                 ...commonConfig,
                 dom: 'lfrtip',
-                initComplete: function() {
+                initComplete: function () {
                     $('.dataTables_length').eq(0).appendTo('#nuevasLengthContainer');
                     $('.dataTables_filter').eq(0).appendTo('#nuevasSearchContainer');
                     $('.dataTables_info').eq(0).appendTo('#nuevasInfo');
@@ -753,12 +756,12 @@
                     orderable: false,
                     targets: [0, -1]
                 }],
-                initComplete: function() {
+                initComplete: function () {
                     $('.dataTables_length').eq(1).appendTo('#procesoLengthContainer');
                     $('.dataTables_filter').eq(1).appendTo('#procesoSearchContainer');
                     $('.dataTables_info').eq(1).appendTo('#procesoInfo');
                     $('.dataTables_paginate').eq(1).appendTo('#procesoPagination');
-                    
+
                 }
             });
 
@@ -767,27 +770,27 @@
                 ...commonConfig,
                 dom: "<'row'<'col-sm-12'B>>lfrtip",
                 buttons: [{
-                        extend: 'excelHtml5',
-                        title: 'Historial_Muestras_' + new Date().toISOString().slice(0, 10),
-                        className: 'd-none',
-                        exportOptions: {
-                            columns: ':visible:not(:first-child):not(:last-child)'
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        title: 'Historial de Muestras Completadas',
-                        className: 'd-none',
-                        exportOptions: {
-                            columns: ':visible:not(:first-child):not(:last-child)'
-                        }
+                    extend: 'excelHtml5',
+                    title: 'Historial_Muestras_' + new Date().toISOString().slice(0, 10),
+                    className: 'd-none',
+                    exportOptions: {
+                        columns: ':visible:not(:first-child):not(:last-child)'
                     }
+                },
+                {
+                    extend: 'print',
+                    title: 'Historial de Muestras Completadas',
+                    className: 'd-none',
+                    exportOptions: {
+                        columns: ':visible:not(:first-child):not(:last-child)'
+                    }
+                }
                 ],
                 columnDefs: [{
                     orderable: false,
                     targets: [0, -1]
                 }],
-                initComplete: function() {
+                initComplete: function () {
                     $('.dataTables_length').eq(2).appendTo('#historialLengthContainer');
                     $('.dataTables_filter').eq(2).appendTo('#historialSearchContainer');
                     $('.dataTables_info').eq(2).appendTo('#historialInfo');
@@ -796,29 +799,29 @@
             });
 
             // Botones de exportación
-            $('#exportExcel').on('click', function(e) {
+            $('#exportExcel').on('click', function (e) {
                 e.preventDefault();
                 historialTable.button(0).trigger();
                 toastr.success('Exportando a Excel...', 'Éxito');
             });
 
-            $('#exportPrint').on('click', function(e) {
+            $('#exportPrint').on('click', function (e) {
                 e.preventDefault();
                 historialTable.button(1).trigger();
                 toastr.info('Preparando impresión...', 'Información');
             });
 
             // Checkboxes
-            $('#selectAllProceso').on('click', function() {
+            $('#selectAllProceso').on('click', function () {
                 $('.row-select-proceso').prop('checked', this.checked);
             });
 
-            $('#selectAllHistorial').on('click', function() {
+            $('#selectAllHistorial').on('click', function () {
                 $('.row-select-historial').prop('checked', this.checked);
             });
 
             // Confirmación de eliminación
-            $('.form-delete').on('submit', function(e) {
+            $('.form-delete').on('submit', function (e) {
                 e.preventDefault();
                 const form = this;
 
@@ -848,19 +851,19 @@
             });
 
             // Notificaciones para botones de acción
-            $('.btn-action').on('click', function() {
+            $('.btn-action').on('click', function () {
                 toastr.info('Procesando ingreso de muestra...', 'Información');
             });
 
-            $('.btn-view').on('click', function() {
+            $('.btn-view').on('click', function () {
                 toastr.info('Cargando detalles de la muestra...', 'Información');
             });
 
-            $('.btn-edit').on('click', function() {
+            $('.btn-edit').on('click', function () {
                 toastr.info('Abriendo formulario de edición...', 'Información');
             });
 
-            $('.btn-add').on('click', function() {
+            $('.btn-add').on('click', function () {
                 toastr.info('Abriendo formulario para nuevo ingreso...', 'Información');
             });
         });

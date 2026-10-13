@@ -318,7 +318,7 @@
                     <!-- Titulo seleccionable SIDEc ucsc -->
 
                     <a class="navbar-brand d-flex align-items-center gap-2 m-0 text-white fw-bold"
-                        href="{{ url('/dashboard') }}">
+                        href="{{ auth()->check() && auth()->user()->hasAnyRole(['Supervisor', 'Area Manager']) ? url('/dashboard') : url('/sample_entries') }}">
                         <span class="fs-5 tracking-wide">SIDEc</span>
                         <span class="badge bg-white text-dark d-none d-sm-inline-block"
                             style="font-size: 0.7rem;">UCSC</span>
@@ -413,9 +413,9 @@
 
 
 
-                {{-- Dashboard: Manager, Area Manager --}}
+                {{-- Dashboard: Supervisor, Area Manager --}}
 
-                @role('Manager|Area Manager')
+                @role('Supervisor|Area Manager')
 
                 <li class="nav-item mb-1">
 
@@ -431,9 +431,9 @@
 
 
 
-                {{-- Recepciones: Manager, Area Manager --}}
+                {{-- Recepciones: Supervisor, Area Manager --}}
 
-                @role('Manager|Area Manager')
+                @role('Supervisor|Area Manager')
 
                 <li class="nav-item mb-1">
 
@@ -467,9 +467,9 @@
 
 
 
-                {{-- Rechazos: Manager, Area Manager --}}
+                {{-- Rechazos: Supervisor, Area Manager --}}
 
-                @role('Manager|Area Manager')
+                @role('Supervisor|Area Manager')
 
                 <li class="nav-item mb-1">
 
