@@ -87,8 +87,6 @@ class ArbaciaFertilizationController extends Controller
             'analyst' => 'nullable|string|max:255',
             'control_fertilization_percentage' => 'nullable|numeric',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Tiempos del ensayo
             'sperm_addition_time' => 'nullable|string',
@@ -115,8 +113,6 @@ class ArbaciaFertilizationController extends Controller
             'analyst' => $validated['analyst'] ?? null,
             'control_fertilization_percentage' => $validated['control_fertilization_percentage'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Tiempos del ensayo
             'sperm_addition_time' => $validated['sperm_addition_time'] ?? null,

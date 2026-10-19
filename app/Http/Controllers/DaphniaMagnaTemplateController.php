@@ -84,8 +84,6 @@ class DaphniaMagnaTemplateController extends Controller
             'analyst' => 'nullable|string|max:255',
 
             // === TEMPORIZADORES ===
-            'preliminary_timer_start' => 'nullable|string',
-            'definitive_timer_start' => 'nullable|string',
 
             // === ENSAYO PRELIMINAR ===
             'sample_temperature' => 'nullable|numeric',
@@ -113,9 +111,6 @@ class DaphniaMagnaTemplateController extends Controller
             'matrix' => $validated['matrix'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
-            // Temporizadores
-            'preliminary_timer_start' => $request->input('preliminary_timer_start'),
-            'definitive_timer_start' => $request->input('definitive_timer_start'),
 
             // Ensayo Preliminar - datos generales
             'preliminary_start_at' => $validated['start_time'] ?? null,

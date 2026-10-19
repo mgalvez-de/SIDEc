@@ -86,8 +86,6 @@ class ArbaciaLarvalStageController extends Controller
             'bioassay_start' => 'nullable|date',
             'analyst' => 'nullable|string|max:255',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Tiempos del ensayo
             'fertilization_time' => 'nullable|string',
@@ -116,8 +114,6 @@ class ArbaciaLarvalStageController extends Controller
             'bioassay_start' => $validated['bioassay_start'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Tiempos del ensayo
             'fertilization_time' => $validated['fertilization_time'] ?? null,

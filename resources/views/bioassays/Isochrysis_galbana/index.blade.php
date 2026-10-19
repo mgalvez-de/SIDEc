@@ -3,13 +3,11 @@
 @section('content')
 <div class="container">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-        <h1 class="text-secondary">Gestión de Muestras Isochrysis</h1>
-        <a href="{{ route('isochrysis-galbana.create') }}"
-           class="btn btn-light text-dark border btn-action">
-           <i class="bi bi-plus-circle me-1"></i> Crear Entrada
+    <x-page-header title="Isochrysis galbana (crónico)" icon="bi-water" subtitle="Bioensayos">
+        <a href="{{ route('isochrysis-galbana.create') }}" class="btn btn-ucsc">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo bioensayo
         </a>
-    </div>
+    </x-page-header>
 
     <div class="row mb-4">
         <!-- Tabla Muestras Nuevas -->
@@ -132,7 +130,7 @@
                                        class="btn btn-sm btn-light text-dark border btn-edit me-1">
                                        Editar
                                     </a>
-                                    <form action="{{ route('isochrysis-galbana.destroy', $bioassay) }}" method="POST" class="d-inline form-delete">
+                                    <form action="{{ route('isochrysis-galbana.destroy', $bioassay) }}" method="POST" class="d-inline form-delete" data-confirm="¿Eliminar este bioensayo?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-button="Sí, eliminar">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
                                             Eliminar

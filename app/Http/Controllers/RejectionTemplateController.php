@@ -28,6 +28,7 @@ class RejectionTemplateController extends Controller
 
             'internal_sample_code'  => 'nullable|string|max:255',
             'sample_identifier'     => 'nullable|string|max:255',
+            'client'                => 'nullable|string|max:255',
             'reason_for_rejection'  => 'nullable|string|max:255',
             'who_rejects'           => 'nullable|string|max:255',
             'who_informs_the_client'=> 'nullable|string|max:255',

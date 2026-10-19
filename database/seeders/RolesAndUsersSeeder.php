@@ -42,7 +42,7 @@ class RolesAndUsersSeeder extends Seeder
                 'role' => 'Supervisor',
             ],
             [
-                'name' => 'Usuario Encargado',
+                'name' => 'Usuario Encargado de área',
                 'email' => 'manager@a',
                 'password' => Hash::make('12345678'),
                 'role' => 'Manager',

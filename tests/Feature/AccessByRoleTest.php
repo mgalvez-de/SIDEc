@@ -37,10 +37,19 @@ class AccessByRoleTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_supervisor_cannot_open_bioassays()
+    // Acordado con el supervisor del laboratorio: el Supervisor tiene acceso a todo el sistema
+    public function test_supervisor_can_open_sample_entries_and_bioassays()
     {
-        $this->actingAs($this->userWithRole('Supervisor'))
-            ->get('/daphnia-magna')
+        $supervisor = $this->userWithRole('Supervisor');
+
+        $this->actingAs($supervisor)->get(route('sample_entries.index'))->assertOk();
+        $this->actingAs($supervisor)->get('/daphnia-magna')->assertOk();
+    }
+
+    public function test_manager_cannot_open_receptions()
+    {
+        $this->actingAs($this->userWithRole('Manager'))
+            ->get('/receptions')
             ->assertForbidden();
     }
 
@@ -51,13 +60,35 @@ class AccessByRoleTest extends TestCase
             ->get('/dashboard')
             ->assertOk()
             ->assertSee(url('/receptions'))
-            ->assertSee(url('/rejections'));
+            ->assertSee(url('/rejections'))
+            ->assertSee(url('/sample_entries'));
 
         $this->actingAs($this->userWithRole('Manager'))
             ->get(route('sample_entries.index'))
             ->assertOk()
-            ->assertDontSee(url('/dashboard'))
+            ->assertSee(url('/dashboard'))   // el Encargado de área ve el Dashboard (sin clientes)
             ->assertDontSee(url('/receptions'))
             ->assertDontSee(url('/rejections'));
+    }
+
+    // El menú marca la sección actual; "daphnia-magna-chronic" no debe marcar también "daphnia-magna"
+    public function test_menu_marks_the_current_section()
+    {
+        $html = $this->actingAs($this->userWithRole('Analist'))
+            ->get(url('/daphnia-magna-chronic'))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertTrue($this->linkIsActive($html, url('/daphnia-magna-chronic')));
+        $this->assertFalse($this->linkIsActive($html, url('/daphnia-magna')));
+        $this->assertStringContainsString('submenu-toggle active"', $html); // el grupo Bioensayos también
+    }
+
+    // Clases del enlace del menú que apunta a $url
+    private function linkIsActive(string $html, string $url): bool
+    {
+        preg_match('/<a href="' . preg_quote($url, '/') . '"\s+class="([^"]*)"/', $html, $match);
+
+        return in_array('active', explode(' ', $match[1] ?? ''));
     }
 }

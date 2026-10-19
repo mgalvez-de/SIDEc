@@ -3,21 +3,6 @@
 
 @section('content')
 <div class="container">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb breadcrumb-custom">
-            <li class="breadcrumb-item">
-                <a href="{{ route('home') }}"><i class="fas fa-home me-1"></i>Inicio</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{{ route('receptions.index') }}"><i class="fas fa-inbox me-1"></i>Recepciones</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-                <i class="fas fa-eye me-1"></i>{{ $reception->internal_sample_code }}
-            </li>
-        </ol>
-    </nav>
-
     <!-- Logo -->
     <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
          style="height: 80px; display: block; margin: 0 auto 20px auto;">
@@ -35,14 +20,14 @@
     <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
         <div class="card-header bg-warning-subtle text-dark"
             style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <i class="fas fa-file-alt me-2"></i>N° de Informe
+            <i class="bi bi-file-earmark-text me-2"></i>N° de Informe
         </div>
         <div class="card-body bg-light p-3">
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="input-group input-group-lg">
                         <span class="input-group-text bg-warning-subtle border-0">
-                            <i class="fas fa-hashtag text-warning"></i>
+                            <i class="bi bi-hash text-warning"></i>
                         </span>
                         <div class="form-control form-control-lg text-center fw-bold bg-white"
                              style="font-size: 1.5rem; letter-spacing: 2px;">
@@ -58,20 +43,20 @@
     <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
         <div class="card-header bg-info-subtle text-dark"
             style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <i class="fas fa-vial me-2"></i>Identificación de Muestra
+            <i class="bi bi-eyedropper me-2"></i>Identificación de Muestra
         </div>
         <div class="card-body bg-light p-3">
             <div class="sample-card-edit">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-tag text-info me-1"></i>Identificación de la muestra
+                            <i class="bi bi-tag text-info me-1"></i>Identificación de la muestra
                         </label>
                         <div class="form-control bg-white">{{ $reception->sample_identifier ?? 'No especificado' }}</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-barcode text-info me-1"></i>Código Interno de Muestra
+                            <i class="bi bi-upc text-info me-1"></i>Código Interno de Muestra
                         </label>
                         <div class="form-control bg-light fw-bold">{{ $reception->internal_sample_code ?? 'No especificado' }}</div>
                     </div>
@@ -84,28 +69,28 @@
     <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
         <div class="card-header bg-success-subtle text-dark"
             style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <i class="fas fa-clipboard-check me-2"></i>Información de Recepción
+            <i class="bi bi-clipboard-check me-2"></i>Información de Recepción
         </div>
         <div class="card-body bg-light p-3">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-thermometer-half text-danger me-1"></i>Código del Termómetro
+                        <i class="bi bi-thermometer-half text-danger me-1"></i>Código del Termómetro
                     </label>
                     <div class="form-control bg-white">{{ $reception->thermometer_code ?? 'No especificado' }}</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-sliders-h text-primary me-1"></i>Factor de Corrección
+                        <i class="bi bi-sliders text-primary me-1"></i>Factor de Corrección
                     </label>
-                    <div class="form-control bg-white">{{ $reception->correction_factor ?? 'No especificado' }}</div>
+                    <div class="form-control bg-white">{{ \App\Support\NumberFormat::format($reception->correction_factor) ?? 'No especificado' }}</div>
                 </div>
             </div>
 
             <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-calendar-check text-success me-1"></i>Fecha y Hora de Recepción
+                        <i class="bi bi-calendar-check text-success me-1"></i>Fecha y Hora de Recepción
                     </label>
                     <div class="form-control bg-white">
                         @if($reception->received_at)
@@ -117,7 +102,7 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-user text-secondary me-1"></i>Nombre de quien entrega
+                        <i class="bi bi-person text-secondary me-1"></i>Nombre de quien entrega
                     </label>
                     <div class="form-control bg-white">{{ $reception->delivered_by ?? 'No especificado' }}</div>
                 </div>
@@ -126,13 +111,13 @@
             <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-building text-info me-1"></i>Cliente
+                        <i class="bi bi-building text-info me-1"></i>Cliente
                     </label>
                     <div class="form-control bg-white">{{ $reception->client ?? 'No especificado' }}</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-clock text-warning me-1"></i>Fecha y Hora de Muestreo
+                        <i class="bi bi-clock text-warning me-1"></i>Fecha y Hora de Muestreo
                     </label>
                     <div class="form-control bg-white">
                         @if($reception->sampled_at)
@@ -147,13 +132,13 @@
             <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-user-check text-success me-1"></i>Nombre de quien recibe
+                        <i class="bi bi-person-check text-success me-1"></i>Nombre de quien recibe
                     </label>
                     <div class="form-control bg-white">{{ $reception->received_by ?? 'No especificado' }}</div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-water text-primary me-1"></i>Matriz
+                        <i class="bi bi-water text-primary me-1"></i>Matriz
                     </label>
                     <div class="form-control bg-white">
                         @php
@@ -176,19 +161,19 @@
             <div class="row g-3 mt-1">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-temperature-low text-info me-1"></i>Temperatura de Recepción
+                        <i class="bi bi-thermometer-low text-info me-1"></i>Temperatura de Recepción
                     </label>
                     <div class="input-group">
-                        <div class="form-control bg-white">{{ $reception->temperature_received ?? 'No especificado' }}</div>
+                        <div class="form-control bg-white">{{ \App\Support\NumberFormat::format($reception->temperature_received) ?? 'No especificado' }}</div>
                         <span class="input-group-text unit-badge">°C</span>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">
-                        <i class="fas fa-temperature-high text-danger me-1"></i>Temperatura Corregida
+                        <i class="bi bi-thermometer-high text-danger me-1"></i>Temperatura Corregida
                     </label>
                     <div class="input-group">
-                        <div class="form-control bg-white">{{ $reception->temperature_corrected ?? 'No especificado' }}</div>
+                        <div class="form-control bg-white">{{ \App\Support\NumberFormat::format($reception->temperature_corrected) ?? 'No especificado' }}</div>
                         <span class="input-group-text unit-badge">°C</span>
                     </div>
                 </div>
@@ -200,7 +185,7 @@
     <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
         <div class="card-header bg-purple-subtle text-dark d-flex justify-content-between align-items-center"
             style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <span><i class="fas fa-flask me-2"></i>Bioensayos Asignados</span>
+            <span><i class="bi bi-eyedropper me-2"></i>Bioensayos Asignados</span>
             <span class="badge bg-secondary">{{ count($reception->assigned_bioassays ?? []) }} asignado(s)</span>
         </div>
         <div class="card-body bg-light p-3">
@@ -234,9 +219,9 @@
                                 </div>
                                 <div class="bioassay-check">
                                     @if($isAssigned)
-                                        <i class="fas fa-check"></i>
+                                        <i class="bi bi-check-lg"></i>
                                     @else
-                                        <i class="fas fa-times"></i>
+                                        <i class="bi bi-x-lg"></i>
                                     @endif
                                 </div>
                             </div>
@@ -245,7 +230,7 @@
                 </div>
             @else
                 <div class="alert alert-warning border-0 d-flex align-items-center mb-0" style="border-radius: 8px;">
-                    <i class="fas fa-exclamation-triangle fa-lg me-3"></i>
+                    <i class="bi bi-exclamation-triangle fs-5 me-3"></i>
                     <div>No hay bioensayos asignados a esta muestra.</div>
                 </div>
             @endif
@@ -256,7 +241,7 @@
     <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
         <div class="card-header bg-secondary-subtle text-dark"
             style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <i class="fas fa-file-contract me-2"></i>Información de la Plantilla
+            <i class="bi bi-file-earmark-text me-2"></i>Información de la Plantilla
         </div>
         <div class="card-body bg-light p-3">
             <div class="row g-3 align-items-center">
@@ -292,20 +277,20 @@
     <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
         <div class="card-header bg-dark text-white"
             style="font-size: 1.1rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-            <i class="fas fa-history me-2"></i>Información del Sistema
+            <i class="bi bi-clock-history me-2"></i>Información del Sistema
         </div>
         <div class="card-body bg-light p-3">
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-plus-circle text-success"></i>
+                        <i class="bi bi-plus-circle text-success"></i>
                         <span class="text-muted">Creado:</span>
                         <span class="fw-bold">{{ $reception->created_at ? $reception->created_at->format('d/m/Y H:i') : 'N/A' }}</span>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-edit text-primary"></i>
+                        <i class="bi bi-pencil-square text-primary"></i>
                         <span class="text-muted">Última actualización:</span>
                         <span class="fw-bold">{{ $reception->updated_at ? $reception->updated_at->format('d/m/Y H:i') : 'N/A' }}</span>
                     </div>
@@ -317,19 +302,19 @@
     {{-- ===================== BOTONES ===================== --}}
     <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
         <a href="{{ route('receptions.edit', $reception) }}" class="btn btn-success btn-lg px-5">
-            <i class="fas fa-edit me-2"></i>Editar Recepción
+            <i class="bi bi-pencil-square me-2"></i>Editar Recepción
         </a>
         <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="window.print()">
-            <i class="fas fa-print me-2"></i>Imprimir
+            <i class="bi bi-printer me-2"></i>Imprimir
         </button>
         <a href="{{ route('receptions.index') }}" class="btn btn-secondary btn-lg px-4">
-            <i class="fas fa-arrow-left me-2"></i>Volver al Listado
+            <i class="bi bi-arrow-left me-2"></i>Volver al Listado
         </a>
         <form action="{{ route('receptions.destroy', $reception) }}" method="POST" class="d-inline" id="deleteForm">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-outline-danger btn-lg px-4">
-                <i class="fas fa-trash-alt me-2"></i>Eliminar
+                <i class="bi bi-trash me-2"></i>Eliminar
             </button>
         </form>
     </div>
@@ -337,7 +322,6 @@
 @endsection
 
 @push('head')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endpush
 
 @push('styles')
@@ -345,34 +329,6 @@
     /* ============================================
        BREADCRUMB PERSONALIZADO
        ============================================ */
-    .breadcrumb-custom {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 12px 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .breadcrumb-custom .breadcrumb-item a {
-        color: #6c757d;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .breadcrumb-custom .breadcrumb-item a:hover {
-        color: #0d6efd;
-    }
-
-    .breadcrumb-custom .breadcrumb-item.active {
-        color: #495057;
-        font-weight: 500;
-    }
-
-    .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
-        content: "›";
-        font-size: 1.2rem;
-        color: #adb5bd;
-    }
-
     /* ============================================
        COLORES PERSONALIZADOS
        ============================================ */
@@ -573,7 +529,6 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // Confirmación de eliminación
@@ -589,8 +544,8 @@ document.addEventListener("DOMContentLoaded", function() {
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-trash-alt me-1"></i>Sí, eliminar',
-            cancelButtonText: '<i class="fas fa-times me-1"></i>Cancelar'
+            confirmButtonText: '<i class="bi bi-trash me-1"></i>Sí, eliminar',
+            cancelButtonText: '<i class="bi bi-x-lg me-1"></i>Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
                 form.submit();

@@ -7,61 +7,6 @@ use Illuminate\Http\Request;
 
 class SampleEntryController extends Controller
 {
-
-    public function dashboard()
-    {
-        // -------- Datos base --------
-        $receptions = \App\Models\ReceptionTemplate::all();
-        $rejectedCodes = \App\Models\RejectionTemplate::pluck('internal_sample_code');
-        $sampleEntries = SampleEntry::with('reception')->orderByDesc('received_at')->get();
-        $enteredCodes = $sampleEntries->pluck('internal_sample_code');
-
-        // -------- Tarjetas --------
-        $totalRecepcionadas = $receptions->count();
-        $totalRechazadas = $rejectedCodes->count();
-
-        $totalSinIngresar = $receptions->filter(function ($r) use ($enteredCodes, $rejectedCodes) {
-            return !$enteredCodes->contains($r->internal_sample_code)
-                && !$rejectedCodes->contains($r->internal_sample_code);
-        })->count();
-
-        // -------- Por cada muestra ingresada: sus bioensayos y si están todos validados --------
-        $totalCompletadas = 0;
-        $totalEnProceso = 0;
-        $sampleRows = [];
-
-        foreach ($sampleEntries as $entry) {
-            $completed = $entry->isCompleted();
-            $completed ? $totalCompletadas++ : $totalEnProceso++;
-            $bioassayNames = $entry->assignedBioassays()->keys();
-
-            $sampleRows[] = [
-                'id' => $entry->id,
-                'code' => $entry->internal_sample_code,
-                'bioassays' => $bioassayNames->isNotEmpty() ? $bioassayNames->implode(', ') : 'Sin bioensayos asignados',
-                'client' => $entry->reception->client ?? 'N/A',
-                'state' => $completed ? 'Completada' : 'En Proceso',
-                'received_at' => $entry->received_at,
-            ];
-        }
-
-        // -------- Total por tipo de bioensayo (para los gráficos) --------
-        $bioassayTotals = [];
-        foreach (SampleEntry::BIOASSAY_MODELS as $name => $modelClass) {
-            $bioassayTotals[$name] = $modelClass::count();
-        }
-
-        return view('dashboard', compact(
-            'totalRecepcionadas',
-            'totalRechazadas',
-            'totalSinIngresar',
-            'totalEnProceso',
-            'totalCompletadas',
-            'sampleRows',
-            'bioassayTotals'
-        ));
-    }
-
     public function index()
     {
         [$completedEntries, $inProcessEntries] = SampleEntry::with('reception')->latest()->get()

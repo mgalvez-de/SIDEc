@@ -19,16 +19,22 @@
             </div>
             <div class="card-body bg-light">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold text-muted">Código Interno de Muestra</label>
                         <div class="form-control-plaintext bg-white rounded p-2 border">
                             {{ $rejection->internal_sample_code ?? 'No especificado' }}
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold text-muted">Identificación de la Muestra</label>
                         <div class="form-control-plaintext bg-white rounded p-2 border">
                             {{ $rejection->sample_identifier ?? 'No especificado' }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold text-muted">Cliente</label>
+                        <div class="form-control-plaintext bg-white rounded p-2 border">
+                            {{ $rejection->client ?? 'No especificado' }}
                         </div>
                     </div>
                 </div>
@@ -255,7 +261,6 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

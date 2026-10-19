@@ -17,7 +17,9 @@
         </div>
     @endif
 
-    <form action="{{ route('arbacia-larval-stage.store') }}" method="POST">
+    <form action="{{ route('arbacia-larval-stage.store') }}" method="POST"
+        data-confirm="¿Crear el bioensayo?" data-confirm-text="Después se abrirá el formulario completo para cargar los datos."
+        data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, crear">
         @csrf
 
         <div class="card mb-4 shadow-sm">
@@ -43,10 +45,10 @@
 
         <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg px-4">
-                <i class="fas fa-save me-2"></i>Crear Bioensayo
+                <i class="bi bi-floppy me-2"></i>Crear Bioensayo
             </button>
             <a href="{{ route('arbacia-larval-stage.index') }}" class="btn btn-secondary btn-lg px-4">
-                <i class="fas fa-times me-2"></i>Cancelar
+                <i class="bi bi-x-lg me-2"></i>Cancelar
             </a>
         </div>
     </form>

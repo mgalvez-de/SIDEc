@@ -3,13 +3,11 @@
 @section('content')
 <div class="container">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-        <h1 class="text-secondary">Gestión de Muestras Tisbe Longicornis Sus</h1>
-        <a href="{{ route('tisbe-longicornis-riles.create') }}"
-           class="btn btn-light text-dark border btn-action">
-           <i class="bi bi-plus-circle me-1"></i> Crear Entrada
+    <x-page-header title="Tisbe longicornis sustancias químicas / Riles" icon="bi-bezier2" subtitle="Bioensayos">
+        <a href="{{ route('tisbe-longicornis-riles.create') }}" class="btn btn-ucsc">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo bioensayo
         </a>
-    </div>
+    </x-page-header>
 
     <div class="row mb-4">
         <!-- Tabla Muestras Nuevas -->
@@ -138,7 +136,7 @@
                                        class="btn btn-sm btn-light text-dark border btn-edit me-1">
                                        Editar
                                     </a>
-                                    <form action="{{ route('tisbe-longicornis-riles.destroy', $bioassay) }}" method="POST" class="d-inline form-delete">
+                                    <form action="{{ route('tisbe-longicornis-riles.destroy', $bioassay) }}" method="POST" class="d-inline form-delete" data-confirm="¿Eliminar este bioensayo?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-button="Sí, eliminar">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">

@@ -36,11 +36,15 @@ class DemoDataSeederTest extends TestCase
         $this->actingAs(User::where('email', 'areamanager@a')->firstOrFail())
             ->get('/dashboard')
             ->assertOk()
-            ->assertViewHas('totalRecepcionadas', 11)
-            ->assertViewHas('totalRechazadas', 3)
-            ->assertViewHas('totalSinIngresar', 2)
-            ->assertViewHas('totalEnProceso', 4)
-            ->assertViewHas('totalCompletadas', 5);
+            ->assertViewHas('totals', fn ($totals) => $totals['received'] === 11
+                && $totals['rejected'] === 3
+                && $totals['not_entered'] === 2
+                && $totals['in_process'] === 6
+                && $totals['completed'] === 3
+                && $totals['warning'] === 1
+                && $totals['overdue'] === 1)
+            ->assertSee('1 muestra con plazo vencido')
+            ->assertSee('1 muestra por vencer');
     }
 
     public function test_sample_entries_list_separates_in_process_from_completed()
@@ -50,10 +54,22 @@ class DemoDataSeederTest extends TestCase
         $this->actingAs(User::where('email', 'analist@a')->firstOrFail())
             ->get(route('sample_entries.index'))
             ->assertOk()
-            ->assertViewHas('inProcessEntries', fn ($entries) => $codes($entries) === ['M-2026-008', 'M-2026-009', 'M-2026-011', 'M-2026-012'])
-            ->assertViewHas('completedEntries', fn ($entries) => $codes($entries) === ['M-2026-001', 'M-2026-002', 'M-2026-004', 'M-2026-005', 'M-2026-007'])
+            ->assertViewHas('inProcessEntries', fn ($entries) => $codes($entries) === ['M-2026-004', 'M-2026-007', 'M-2026-008', 'M-2026-009', 'M-2026-011', 'M-2026-012'])
+            ->assertViewHas('completedEntries', fn ($entries) => $codes($entries) === ['M-2026-001', 'M-2026-002', 'M-2026-005'])
             ->assertViewHas('newReceptions', fn ($receptions) => $codes($receptions) === ['M-2026-013', 'M-2026-014'])
             ->assertDontSee('Reiniciando timer');
+    }
+
+    // Si una duración del modelo no coincide con el protocolo, los ensayos de demostración saldrían "Fuera de tiempo"
+    public function test_finished_demo_bioassays_are_within_their_duration()
+    {
+        foreach (self::MODULES as $slug => $model) {
+            foreach ($model::all() as $bioassay) {
+                foreach ($bioassay->durationChecks() as $phase => $check) {
+                    $this->assertNotContains($check['status'], ['short', 'long'], "$slug {$bioassay->sample} ($phase)");
+                }
+            }
+        }
     }
 
     public function test_every_demo_record_opens_without_errors()

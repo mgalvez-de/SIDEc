@@ -24,6 +24,18 @@ class BioassayValidationTest extends TestCase
         $this->assertNotNull($bioassay->validated_at);
     }
 
+    public function test_supervisor_can_validate_a_bioassay()
+    {
+        $supervisor = $this->userWithRole('Supervisor');
+        $bioassay = DaphniaMagnaTemplate::create(['sample' => 'M-001']);
+
+        $this->actingAs($supervisor)
+            ->patch(route('daphnia-magna.validate', $bioassay))
+            ->assertRedirect();
+
+        $this->assertSame($supervisor->id, $bioassay->refresh()->validated_by);
+    }
+
     public function test_analist_cannot_validate_a_bioassay()
     {
         $bioassay = DaphniaMagnaTemplate::create(['sample' => 'M-001']);

@@ -23,15 +23,20 @@
                 </div>
                 <div class="card-body bg-light">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Código Interno de Muestra</label>
                             <input type="text" name="internal_sample_code" class="form-control navigable"
                                 value="{{ old('internal_sample_code') }}" placeholder="Ej: COD-2024-001">
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Identificación de la Muestra</label>
                             <input type="text" name="sample_identifier" class="form-control navigable"
                                 value="{{ old('sample_identifier') }}" placeholder="Ej: Muestra-001">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Cliente</label>
+                            <input type="text" name="client" class="form-control navigable"
+                                value="{{ old('client') }}" placeholder="Ej: Acuícola Mar Austral SpA">
                         </div>
                     </div>
 
@@ -214,7 +219,6 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

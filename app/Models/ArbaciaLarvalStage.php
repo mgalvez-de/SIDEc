@@ -3,11 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class ArbaciaLarvalStage extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTestDuration;
+
+    // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
+    public const DURATION_PHASES = [
+        'bioassay' => ['Duración del ensayo (inicio a término de fijación)', 'bioassay_start', 'fixation_time_end', 48 * 60],
+    ];
 
     protected $table = 'arbacia_larval_stages';
 
@@ -17,9 +23,6 @@ class ArbaciaLarvalStage extends Model
         'created_by',
         'validated_by',
         'validated_at',
-
-        // Temporizador
-        'timer_start',
 
         // Datos generales
         'sample',
@@ -92,31 +95,6 @@ class ArbaciaLarvalStage extends Model
     public function sampleEntry()
     {
         return $this->belongsTo(SampleEntry::class);
-    }
-
-    /**
-     * Obtener el estado del temporizador.
-     * Este bioensayo tiene un tiempo límite de 48 horas + 4 horas de gracia.
-     */
-    public function getTimerStatusAttribute()
-    {
-        if (!$this->timer_start) {
-            return 'not_started';
-        }
-
-        $elapsed = now()->timestamp * 1000 - (int) $this->timer_start;
-        $limitMs = 48 * 60 * 60 * 1000;  // 48 horas
-        $totalMs = 52 * 60 * 60 * 1000;  // 52 horas (48 + 4 gracia)
-
-        if ($elapsed >= $totalMs) {
-            return 'expired';
-        } elseif ($elapsed >= $limitMs) {
-            return 'grace';
-        } elseif ($elapsed >= $limitMs * 0.9) {
-            return 'warning';
-        }
-
-        return 'running';
     }
 
     /**

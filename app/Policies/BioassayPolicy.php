@@ -21,7 +21,7 @@ class BioassayPolicy
 
 public function validateBioassay(User $user, $bioassay)
 {
-    return $user->hasRole(['Manager', 'Area Manager']);
+    return $user->hasRole(['Manager', 'Supervisor', 'Area Manager']);
 }
 
 }

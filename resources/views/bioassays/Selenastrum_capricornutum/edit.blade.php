@@ -10,7 +10,7 @@
     <!-- Título Principal -->
     <h1 class="mb-2 text-secondary text-center"
         style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 500;">
-        Editar Bioensayo
+        <span class="d-print-none">Editar</span><span class="d-none d-print-inline">Análisis</span> Bioensayo
     </h1>
     <h2 class="mb-3 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-style: italic; color: #84cc16;">
         Selenastrum capricornutum
@@ -20,7 +20,7 @@
     {{-- Mostrar errores de validación --}}
     @if ($errors->any())
         <div class="alert alert-danger mb-4">
-            <strong><i class="fas fa-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
+            <strong><i class="bi bi-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -37,15 +37,11 @@
         @csrf
         @method('PUT')
 
-        {{-- Campo oculto para temporizador --}}
-        <input type="hidden" name="timer_start" id="timer_start" 
-               value="{{ old('timer_start', $selenastrum_capricornutum->timer_start) }}">
-
         {{-- ================= DATOS GENERALES ================= --}}
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-lime-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-clipboard-list me-2"></i>Datos Generales
+                <i class="bi bi-card-checklist me-2"></i>Datos Generales
             </div>
             <div class="card-body bg-light p-3">
                 <div class="table-responsive">
@@ -100,7 +96,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-lime-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-flask me-2"></i>Datos Preliminares
+                <i class="bi bi-eyedropper me-2"></i>Datos Preliminares
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
@@ -110,7 +106,7 @@
                             <input type="number" step="0.01" class="form-control navigable" 
                                    name="initial_inoculum" 
                                    value="{{ old('initial_inoculum', $selenastrum_capricornutum->initial_inoculum) }}">
-                            <span class="input-group-text unit-badge">10⁴ cel/ml</span>
+                            <span class="input-group-text unit-badge">10⁴ cel/mL</span>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -122,77 +118,7 @@
                     </div>
                 </div>
 
-                {{-- TEMPORIZADOR --}}
-                <div class="timer-container my-4 p-3" id="timerContainer">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <button type="button" class="btn btn-lime btn-lg" id="btnStartTimer" onclick="startTimer()">
-                                <i class="fas fa-play me-2"></i>Iniciar Ensayo
-                            </button>
-                            <button type="button" class="btn btn-outline-danger" id="btnResetTimer" onclick="resetTimer()" style="display: none;">
-                                <i class="fas fa-redo me-1"></i>Reiniciar
-                            </button>
-                        </div>
-                        <div class="timer-display" id="timerDisplay">
-                            <div class="timer-icon">
-                                <i class="fas fa-stopwatch"></i>
-                            </div>
-                            <div class="timer-values">
-                                <span class="timer-elapsed" id="timerElapsed">00:00:00</span>
-                                <span class="timer-separator">/</span>
-                                <span class="timer-limit">96:00:00</span>
-                            </div>
-                            <div class="timer-status" id="timerStatus">
-                                <span class="badge bg-secondary">Sin iniciar</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {{-- Barra de progreso --}}
-                    <div class="progress-container mt-3">
-                        <div class="progress-labels d-flex justify-content-between mb-1">
-                            <small class="text-muted">Inicio</small>
-                            <small class="text-primary fw-bold">96h (Límite)</small>
-                            <small class="text-warning fw-bold">106h (Gracia)</small>
-                        </div>
-                        <div class="progress-wrapper">
-                            <div class="progress" style="height: 25px; border-radius: 12px; background: #e9ecef;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                                     id="progressBar" 
-                                     role="progressbar" 
-                                     style="width: 0%; border-radius: 12px;"
-                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    <span class="progress-text" id="progressText">0%</span>
-                                </div>
-                            </div>
-                            {{-- Marcadores de tiempo --}}
-                            <div class="progress-markers">
-                                <div class="marker marker-24h" style="left: 22.64%;" title="24 horas">
-                                    <div class="marker-line marker-line-light"></div>
-                                    <small class="marker-label">24h</small>
-                                </div>
-                                <div class="marker marker-48h" style="left: 45.28%;" title="48 horas">
-                                    <div class="marker-line marker-line-light"></div>
-                                    <small class="marker-label">48h</small>
-                                </div>
-                                <div class="marker marker-72h" style="left: 67.92%;" title="72 horas">
-                                    <div class="marker-line marker-line-light"></div>
-                                    <small class="marker-label">72h</small>
-                                </div>
-                                <div class="marker marker-limit" style="left: 90.57%;" title="96 horas">
-                                    <div class="marker-line"></div>
-                                    <small class="marker-label">96h</small>
-                                </div>
-                                <div class="marker marker-grace" style="left: 100%;" title="106 horas (fin gracia)">
-                                    <div class="marker-line"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-remaining mt-2 text-center" id="timeRemaining">
-                            <small class="text-muted">Tiempo restante: <strong>96:00:00</strong></small>
-                        </div>
-                    </div>
-                </div>
+                @include('bioassays._duration', ['check' => $selenastrum_capricornutum->durationChecks()['bioassay'], 'start' => 'bioassay_start', 'end' => 'bioassay_end'])
             </div>
         </div>
 
@@ -200,7 +126,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-lime-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-chart-line me-2"></i>Crecimiento y pH (Control)
+                <i class="bi bi-graph-up me-2"></i>Crecimiento y pH (Control)
             </div>
             <div class="card-body bg-light p-3">
                 <h4 class="mb-3 text-center section-title">
@@ -210,13 +136,13 @@
                     <table class="table table-bordered text-center align-middle mb-0 modern-table">
                         <thead>
                             <tr>
-                                <th class="table-header-time">24h</th>
-                                <th class="table-header-time">48h</th>
-                                <th class="table-header-time">72h</th>
-                                <th class="table-header-96h">RC1 (96h)</th>
-                                <th class="table-header-96h">RC2 (96h)</th>
-                                <th class="table-header-96h">RC3 (96h)</th>
-                                <th class="table-header-96h">RC4 (96h)</th>
+                                <th class="table-header-time">24 h</th>
+                                <th class="table-header-time">48 h</th>
+                                <th class="table-header-time">72 h</th>
+                                <th class="table-header-96h">RC1 (96 h)</th>
+                                <th class="table-header-96h">RC2 (96 h)</th>
+                                <th class="table-header-96h">RC3 (96 h)</th>
+                                <th class="table-header-96h">RC4 (96 h)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -288,7 +214,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-lime-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-table me-2"></i>Mediciones
+                <i class="bi bi-table me-2"></i>Mediciones
             </div>
             <div class="card-body bg-light p-3">
                 <h4 class="mb-3 text-center section-title">
@@ -305,7 +231,7 @@
                                 <th colspan="3" class="table-header-r2">R2</th>
                                 <th colspan="3" class="table-header-r3">R3</th>
                                 <th colspan="3" class="table-header-r4">R4</th>
-                                <th colspan="4" class="table-header-96h">96h</th>
+                                <th colspan="4" class="table-header-96h">96 h</th>
                                 <th rowspan="2" class="align-middle">Tasa Crec.</th>
                                 <th rowspan="2" class="align-middle">% Tasa Crec.</th>
                                 <th rowspan="2" class="align-middle">% Inhib.</th>
@@ -314,10 +240,10 @@
                             <tr>
                                 <th>Ini</th>
                                 <th>Fin</th>
-                                <th>24h</th><th>48h</th><th>72h</th>
-                                <th>24h</th><th>48h</th><th>72h</th>
-                                <th>24h</th><th>48h</th><th>72h</th>
-                                <th>24h</th><th>48h</th><th>72h</th>
+                                <th>24 h</th><th>48 h</th><th>72 h</th>
+                                <th>24 h</th><th>48 h</th><th>72 h</th>
+                                <th>24 h</th><th>48 h</th><th>72 h</th>
+                                <th>24 h</th><th>48 h</th><th>72 h</th>
                                 <th>R1</th><th>R2</th><th>R3</th><th>R4</th>
                             </tr>
                         </thead>
@@ -462,7 +388,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-lime-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-chart-bar me-2"></i>Resultados y Observaciones
+                <i class="bi bi-bar-chart me-2"></i>Resultados y Observaciones
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
@@ -495,24 +421,24 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-secondary-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-check-circle me-2"></i>Criterios de Aceptabilidad
+                <i class="bi bi-check-circle me-2"></i>Criterios de Aceptabilidad
             </div>
             <div class="card-body bg-light p-3">
                 <ul class="criteria-list mb-3">
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
-                        Densidad celular inicial: <strong>10⁴ cel/ml</strong>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
+                        Densidad celular inicial: <strong>10⁴ cel/mL</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         Tasa de crecimiento del control: <strong>≥ 0.92 día⁻¹</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         Coeficiente de variación del control: <strong>≤ 7%</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         pH de las muestras: <strong>7.5 a 8.5 unidades</strong>
                     </li>
                 </ul>
@@ -524,43 +450,43 @@
 
         {{-- ================= BOTONES ================= --}}
         <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
-            <button type="submit" class="btn btn-lime btn-lg px-4">
-                <i class="fas fa-save me-2"></i>Actualizar Bioensayo
+            <button type="submit" class="btn btn-success btn-lg px-4">
+                <i class="bi bi-floppy me-2"></i>Actualizar Bioensayo
             </button>
 
-            @if(auth()->user()->hasRole(['Manager', 'Area Manager']))
+            @if(auth()->user()->can('validateBioassay', $selenastrum_capricornutum))
                 @if($selenastrum_capricornutum->validated_at)
                     <span class="btn btn-outline-success btn-lg px-4 disabled">
-                        <i class="fas fa-check-circle me-2"></i>Validado el
+                        <i class="bi bi-check-circle me-2"></i>Validado el
                         {{ $selenastrum_capricornutum->validated_at->format('d/m/Y H:i') }}
                     </span>
                 @else
                     <button type="submit" form="validateBioassayForm" class="btn btn-warning btn-lg px-4">
-                        <i class="fas fa-clipboard-check me-2"></i>Marcar como Validado
+                        <i class="bi bi-clipboard-check me-2"></i>Marcar como Validado
                     </button>
                 @endif
             @endif
 
             <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="window.print()">
-                <i class="fas fa-print me-2"></i>Imprimir
+                <i class="bi bi-printer me-2"></i>Imprimir
             </button>
             @php
                 $sampleEntry = $selenastrum_capricornutum->sampleEntry;
             @endphp
             @if($sampleEntry)
                 <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary btn-lg px-4">
-                    <i class="fas fa-arrow-left me-2"></i>Volver a Muestra
+                    <i class="bi bi-arrow-left me-2"></i>Volver a Muestra
                 </a>
             @else
                 <a href="{{ route('sample_entries.index') }}" class="btn btn-secondary btn-lg px-4">
-                    <i class="fas fa-times me-2"></i>Cancelar
+                    <i class="bi bi-x-lg me-2"></i>Cancelar
                 </a>
             @endif
         </div>
     </form>
 
-    @if(auth()->user()->hasRole(['Manager', 'Area Manager']) && !$selenastrum_capricornutum->validated_at)
-        <form id="validateBioassayForm" action="{{ route('selenastrum-capricornutum.validate', $selenastrum_capricornutum->id) }}" method="POST" style="display:none">
+    @if(auth()->user()->can('validateBioassay', $selenastrum_capricornutum) && !$selenastrum_capricornutum->validated_at)
+        <form id="validateBioassayForm" data-confirm="¿Marcar como validado?" data-confirm-text="Quedará registrado quién lo validó y cuándo. Esta acción no se puede deshacer." data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, validar" action="{{ route('selenastrum-capricornutum.validate', $selenastrum_capricornutum->id) }}" method="POST" style="display:none">
             @csrf
             @method('PATCH')
         </form>
@@ -571,7 +497,6 @@
 @push('head')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endpush
 
 @push('styles')
@@ -581,18 +506,6 @@
        ============================================ */
     .bg-lime-subtle {
         background-color: #ecfccb !important;
-    }
-
-    .btn-lime {
-        background-color: #84cc16;
-        border-color: #84cc16;
-        color: white;
-    }
-
-    .btn-lime:hover {
-        background-color: #65a30d;
-        border-color: #65a30d;
-        color: white;
     }
 
     /* ============================================
@@ -765,37 +678,6 @@
     /* ============================================
        TEMPORIZADOR
        ============================================ */
-    .timer-container {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 12px;
-        border: 2px solid #dee2e6;
-        transition: all 0.3s ease;
-    }
-
-    .timer-container.timer-running {
-        border-color: #84cc16;
-        box-shadow: 0 0 15px rgba(132, 204, 22, 0.2);
-    }
-
-    .timer-container.timer-warning {
-        border-color: #ffc107;
-        box-shadow: 0 0 15px rgba(255, 193, 7, 0.3);
-        background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-    }
-
-    .timer-container.timer-grace {
-        border-color: #fd7e14;
-        box-shadow: 0 0 15px rgba(253, 126, 20, 0.3);
-        background: linear-gradient(135deg, #fff5e6 0%, #ffe5cc 100%);
-        animation: pulse-grace 2s infinite;
-    }
-
-    .timer-container.timer-expired {
-        border-color: #dc3545;
-        box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
-        background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
-        animation: pulse-expired 1s infinite;
-    }
 
     @keyframes pulse-grace {
         0%, 100% { transform: scale(1); }
@@ -807,47 +689,10 @@
         50% { opacity: 0.8; }
     }
 
-    .timer-display {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        background: white;
-        padding: 12px 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .timer-icon {
-        font-size: 1.8rem;
-        color: #6c757d;
-    }
-
-    .timer-icon.running {
-        color: #84cc16;
-        animation: spin 2s linear infinite;
-    }
-
     @keyframes spin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
     }
-
-    .timer-values {
-        font-family: 'Courier New', monospace;
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .timer-elapsed {
-        color: #84cc16;
-    }
-
-    .timer-elapsed.warning { color: #ffc107; }
-    .timer-elapsed.grace { color: #fd7e14; }
-    .timer-elapsed.expired { color: #dc3545; }
-
-    .timer-separator { color: #6c757d; margin: 0 5px; }
-    .timer-limit { color: #6c757d; }
 
     /* ============================================
        BARRA DE PROGRESO
@@ -927,7 +772,7 @@
     @media print {
         @page { size: A4 landscape; margin: 5mm; }
         body { font-size: 7pt; line-height: 1.1; }
-        .btn, button, nav, .navbar, .no-print, .timer-container { display: none !important; }
+        .btn, button, nav, .navbar, .no-print { display: none !important; }
         .card { border: 1px solid #000 !important; box-shadow: none !important; margin-bottom: 5px !important; break-inside: avoid; }
         .card-header { background: #f0f0f0 !important; color: #000 !important; font-weight: bold; padding: 3px 6px !important; font-size: 9pt !important; }
         .card-body { padding: 4px !important; }
@@ -941,17 +786,9 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const LIMIT_HOURS = 96;
-    const GRACE_HOURS = 10;
-    const TOTAL_HOURS = LIMIT_HOURS + GRACE_HOURS;
-    const LIMIT_MS = LIMIT_HOURS * 60 * 60 * 1000;
-    const TOTAL_MS = TOTAL_HOURS * 60 * 60 * 1000;
-
-    let timerState = { startTime: null, interval: null };
 
     flatpickr(".datetimepicker", { enableTime: true, time_24hr: true, dateFormat: "Y-m-d H:i", locale: "es", allowInput: true });
     flatpickr(".datepicker", { dateFormat: "Y-m-d", locale: "es", allowInput: true });
@@ -971,109 +808,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    window.startTimer = function() {
-        const now = Date.now();
-        timerState.startTime = now;
-        document.getElementById('timer_start').value = now;
-        document.getElementById('btnStartTimer').style.display = 'none';
-        document.getElementById('btnResetTimer').style.display = 'inline-block';
-        updateTimerDisplay();
-        timerState.interval = setInterval(updateTimerDisplay, 1000);
-        Swal.fire({ icon: 'success', title: 'Temporizador Iniciado', text: `Tienes ${LIMIT_HOURS} horas para completar el ensayo (+ ${GRACE_HOURS}h de gracia).`, timer: 3000, showConfirmButton: false });
-    };
-
-    window.resetTimer = function() {
-        Swal.fire({
-            title: '¿Reiniciar temporizador?', text: "Esta acción reiniciará el contador a cero.", icon: 'warning',
-            showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, reiniciar', cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if (timerState.interval) clearInterval(timerState.interval);
-                timerState.startTime = null;
-                document.getElementById('timer_start').value = '';
-                document.getElementById('btnStartTimer').style.display = 'inline-block';
-                document.getElementById('btnResetTimer').style.display = 'none';
-                resetTimerUI();
-            }
-        });
-    };
-
-    function updateTimerDisplay() {
-        if (!timerState.startTime) return;
-        const elapsed = Date.now() - timerState.startTime;
-        const percentage = Math.min((elapsed / TOTAL_MS) * 100, 100);
-        document.getElementById('timerElapsed').textContent = formatTime(elapsed);
-        const progressBar = document.getElementById('progressBar');
-        progressBar.style.width = `${percentage}%`;
-        document.getElementById('progressText').textContent = `${percentage.toFixed(1)}%`;
-        const remaining = Math.max(LIMIT_MS - elapsed, 0);
-        const container = document.getElementById('timerContainer');
-        const elapsedSpan = document.getElementById('timerElapsed');
-        const statusSpan = document.getElementById('timerStatus');
-        const remainingContainer = document.getElementById('timeRemaining');
-        const timerIcon = container.querySelector('.timer-icon');
-        container.classList.remove('timer-running', 'timer-warning', 'timer-grace', 'timer-expired');
-        elapsedSpan.classList.remove('warning', 'grace', 'expired');
-        progressBar.classList.remove('bg-lime', 'bg-warning', 'bg-orange', 'bg-danger');
-        timerIcon.classList.add('running');
-        if (elapsed >= TOTAL_MS) {
-            container.classList.add('timer-expired'); elapsedSpan.classList.add('expired'); progressBar.classList.add('bg-danger');
-            statusSpan.innerHTML = '<span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>¡Tiempo Expirado!</span>';
-            remainingContainer.innerHTML = '<small class="text-danger fw-bold"><i class="fas fa-times-circle me-1"></i>Tiempo de gracia agotado</small>';
-        } else if (elapsed >= LIMIT_MS) {
-            container.classList.add('timer-grace'); elapsedSpan.classList.add('grace'); progressBar.classList.add('bg-orange');
-            statusSpan.innerHTML = '<span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Período de Gracia</span>';
-            remainingContainer.innerHTML = `<small class="text-warning fw-bold"><i class="fas fa-clock me-1"></i>Gracia restante: <strong>${formatTime(TOTAL_MS - elapsed)}</strong></small>`;
-        } else if (elapsed >= LIMIT_MS * 0.9) {
-            container.classList.add('timer-warning'); elapsedSpan.classList.add('warning'); progressBar.classList.add('bg-warning');
-            statusSpan.innerHTML = '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation me-1"></i>¡Poco Tiempo!</span>';
-            remainingContainer.innerHTML = `<small class="text-warning"><i class="fas fa-clock me-1"></i>Tiempo restante: <strong>${formatTime(remaining)}</strong></small>`;
-        } else {
-            container.classList.add('timer-running'); progressBar.classList.add('bg-lime');
-            statusSpan.innerHTML = '<span class="badge bg-success"><i class="fas fa-play me-1"></i>En Progreso</span>';
-            remainingContainer.innerHTML = `<small class="text-muted"><i class="fas fa-clock me-1"></i>Tiempo restante: <strong>${formatTime(remaining)}</strong></small>`;
-        }
-    }
-
-    function resetTimerUI() {
-        const container = document.getElementById('timerContainer');
-        const progressBar = document.getElementById('progressBar');
-        container.classList.remove('timer-running', 'timer-warning', 'timer-grace', 'timer-expired');
-        document.getElementById('timerElapsed').classList.remove('warning', 'grace', 'expired');
-        progressBar.classList.remove('bg-lime', 'bg-warning', 'bg-orange', 'bg-danger');
-        container.querySelector('.timer-icon').classList.remove('running');
-        document.getElementById('timerElapsed').textContent = '00:00:00';
-        progressBar.style.width = '0%';
-        document.getElementById('progressText').textContent = '0%';
-        document.getElementById('timerStatus').innerHTML = '<span class="badge bg-secondary">Sin iniciar</span>';
-        document.getElementById('timeRemaining').innerHTML = '<small class="text-muted">Tiempo restante: <strong>96:00:00</strong></small>';
-    }
-
-    function formatTime(ms) {
-        const totalSeconds = Math.floor(ms / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    const savedStart = document.getElementById('timer_start').value;
-    if (savedStart && !isNaN(parseInt(savedStart))) {
-        timerState.startTime = parseInt(savedStart);
-        document.getElementById('btnStartTimer').style.display = 'none';
-        document.getElementById('btnResetTimer').style.display = 'inline-block';
-        updateTimerDisplay();
-        timerState.interval = setInterval(updateTimerDisplay, 1000);
-    }
-
     document.getElementById('bioassayForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const form = this;
         Swal.fire({
             title: '¿Confirmar actualización?', text: "Se guardarán los cambios del bioensayo de Selenastrum capricornutum.",
             icon: 'question', showCancelButton: true, confirmButtonColor: '#84cc16', cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-save me-1"></i> Sí, actualizar', cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar'
+            confirmButtonText: '<i class="bi bi-floppy me-1"></i> Sí, actualizar', cancelButtonText: '<i class="bi bi-x-lg me-1"></i> Cancelar'
         }).then((result) => { if (result.isConfirmed) form.submit(); });
     });
 });

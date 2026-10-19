@@ -87,8 +87,6 @@ class DaphniaMagnaChronicController extends Controller
             'bioassay_end' => 'nullable|date',
             'analyst' => 'nullable|string|max:255',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Datos preliminares
             'sample_temperature' => 'nullable|numeric',
@@ -121,8 +119,6 @@ class DaphniaMagnaChronicController extends Controller
             'bioassay_end' => $validated['bioassay_end'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Datos preliminares
             'sample_temperature' => $validated['sample_temperature'] ?? null,

@@ -31,15 +31,20 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 // Rutas protegidas por autenticación y roles
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard, Receptions, Rejections -> Supervisor y Area Manager
+    // Receptions, Rejections -> Supervisor y Area Manager
     Route::middleware(['role:Supervisor|Area Manager'])->group(function () {
-        Route::get('/dashboard', [SampleEntryController::class, 'dashboard'])->name('dashboard');
         Route::resource('receptions', ReceptionTemplateController::class);
         Route::resource('rejections', RejectionTemplateController::class);
     });
 
-    // Sample Entry y Bioassays -> Analist, Manager y Area Manager
-    Route::middleware(['role:Analist|Manager|Area Manager'])->group(function () {
+    // Dashboard -> Manager, Supervisor y Area Manager (el Manager lo ve sin datos de clientes)
+    Route::middleware(['role:Manager|Supervisor|Area Manager'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::redirect('/seguimiento', '/dashboard'); // Seguimiento ahora es parte del Dashboard
+    });
+
+    // Sample Entry y Bioassays -> Analist, Manager, Supervisor y Area Manager
+    Route::middleware(['role:Analist|Manager|Supervisor|Area Manager'])->group(function () {
         Route::resource('sample_entries', SampleEntryController::class);
 
         // Bioassays

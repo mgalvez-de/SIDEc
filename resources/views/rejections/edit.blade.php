@@ -24,7 +24,7 @@
                 </div>
                 <div class="card-body bg-light">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Código Interno de Muestra</label>
                             <input type="text" name="internal_sample_code" class="form-control navigable"
                                 value="{{ old('internal_sample_code', $rejection->internal_sample_code) }}" 
@@ -33,7 +33,7 @@
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Identificación de la Muestra</label>
                             <input type="text" name="sample_identifier" class="form-control navigable"
                                 value="{{ old('sample_identifier', $rejection->sample_identifier) }}" 
@@ -41,6 +41,12 @@
                             @error('sample_identifier')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Cliente</label>
+                            <input type="text" name="client" class="form-control navigable"
+                                value="{{ old('client', $rejection->client) }}"
+                                placeholder="Ej: Acuícola Mar Austral SpA">
                         </div>
                     </div>
 
@@ -309,7 +315,6 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

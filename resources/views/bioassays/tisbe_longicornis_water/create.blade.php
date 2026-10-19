@@ -47,7 +47,7 @@
                     <table class="table table-bordered text-center mb-0" style="table-layout: fixed;">
                         <thead class="table-light">
                             <tr>
-                                <th>Volumen inóculo inicial (10⁴ cel/ml)</th>
+                                <th>Volumen inóculo inicial (10⁴ cel/mL)</th>
                                 <th>Fecha de Cultivo (Stock)</th>
                             </tr>
                         </thead>
@@ -220,7 +220,6 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

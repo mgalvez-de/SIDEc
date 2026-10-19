@@ -3,11 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class DaphniaMagnaTemplate extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTestDuration;
+
+    // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
+    public const DURATION_PHASES = [
+        'preliminary' => ['Duración del ensayo preliminar', 'preliminary_start_at', 'preliminary_end_at', 48 * 60],
+        'definitive' => ['Duración del ensayo definitivo', 'definitive_start_at', 'definitive_end_at', 48 * 60],
+    ];
 
     protected $fillable = [
         'template_id',
@@ -15,10 +22,6 @@ class DaphniaMagnaTemplate extends Model
          'created_by',
         'validated_by',
         'validated_at',
-
-        // Temporizadores
-        'preliminary_timer_start',
-        'definitive_timer_start',
 
         // Datos generales
         'sample',
@@ -84,51 +87,4 @@ class DaphniaMagnaTemplate extends Model
         return $this->belongsTo(SampleEntry::class);
     }
 
-    /**
-     * Obtener el estado del temporizador preliminar.
-     */
-    public function getPreliminaryTimerStatusAttribute()
-    {
-        if (!$this->preliminary_timer_start) {
-            return 'not_started';
-        }
-
-        $elapsed = now()->timestamp * 1000 - (int) $this->preliminary_timer_start;
-        $limitMs = 48 * 60 * 60 * 1000;
-        $totalMs = 58 * 60 * 60 * 1000;
-
-        if ($elapsed >= $totalMs) {
-            return 'expired';
-        } elseif ($elapsed >= $limitMs) {
-            return 'grace';
-        } elseif ($elapsed >= $limitMs * 0.9) {
-            return 'warning';
-        }
-
-        return 'running';
-    }
-
-    /**
-     * Obtener el estado del temporizador definitivo.
-     */
-    public function getDefinitiveTimerStatusAttribute()
-    {
-        if (!$this->definitive_timer_start) {
-            return 'not_started';
-        }
-
-        $elapsed = now()->timestamp * 1000 - (int) $this->definitive_timer_start;
-        $limitMs = 48 * 60 * 60 * 1000;
-        $totalMs = 58 * 60 * 60 * 1000;
-
-        if ($elapsed >= $totalMs) {
-            return 'expired';
-        } elseif ($elapsed >= $limitMs) {
-            return 'grace';
-        } elseif ($elapsed >= $limitMs * 0.9) {
-            return 'warning';
-        }
-
-        return 'running';
-    }
 }

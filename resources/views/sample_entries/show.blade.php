@@ -54,7 +54,7 @@
                         <div class="concentration-wrapper">
                             <div class="input-group">
                                 <input type="text" class="form-control bg-white"
-                                    value="{{ $sampleEntry->sample_concentration }}" readonly>
+                                    value="{{ \App\Support\NumberFormat::format($sampleEntry->sample_concentration) }}" readonly>
                                 <span class="input-group-text">%</span>
                             </div>
                             @if ($sampleEntry->sample_concentration)
@@ -63,17 +63,17 @@
                                         <div class="col-6">
                                             <div class="input-group input-group-sm">
                                                 <input type="text" class="form-control bg-white"
-                                                    value="{{ number_format($sampleEntry->sample_concentration * 10000, 4) }}"
+                                                    value="{{ \App\Support\NumberFormat::format($sampleEntry->sample_concentration * 10000, 4) }}"
                                                     readonly>
-                                                <span class="input-group-text">PPM</span>
+                                                <span class="input-group-text">ppm</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="input-group input-group-sm">
                                                 <input type="text" class="form-control bg-white"
-                                                    value="{{ number_format($sampleEntry->sample_concentration * 10000000, 1) }}"
+                                                    value="{{ \App\Support\NumberFormat::format($sampleEntry->sample_concentration * 10000000, 1) }}"
                                                     readonly>
-                                                <span class="input-group-text">PPB</span>
+                                                <span class="input-group-text">ppb</span>
                                             </div>
                                         </div>
                                     </div>
@@ -98,12 +98,12 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">pH</label>
-                        <input type="text" class="form-control bg-white" value="{{ $sampleEntry->ph }}" readonly>
+                        <input type="text" class="form-control bg-white" value="{{ \App\Support\NumberFormat::format($sampleEntry->ph) }}" readonly>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Salinidad</label>
                         <div class="input-group">
-                            <input type="text" class="form-control bg-white" value="{{ $sampleEntry->salinity }}"
+                            <input type="text" class="form-control bg-white" value="{{ \App\Support\NumberFormat::format($sampleEntry->salinity) }}"
                                 readonly>
                             <span class="input-group-text unit-badge">S‰</span>
                         </div>
@@ -114,7 +114,7 @@
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Conductividad</label>
                         <div class="input-group">
-                            <input type="text" class="form-control bg-white" value="{{ $sampleEntry->conductivity }}"
+                            <input type="text" class="form-control bg-white" value="{{ \App\Support\NumberFormat::format($sampleEntry->conductivity) }}"
                                 readonly>
                             <span class="input-group-text unit-badge">μS/cm</span>
                         </div>
@@ -123,14 +123,14 @@
                         <label class="form-label fw-bold">Oxígeno Disuelto</label>
                         <div class="input-group">
                             <input type="text" class="form-control bg-white"
-                                value="{{ $sampleEntry->dissolved_oxygen }}" readonly>
+                                value="{{ \App\Support\NumberFormat::format($sampleEntry->dissolved_oxygen) }}" readonly>
                             <span class="input-group-text unit-badge">mg O₂/L</span>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Temperatura</label>
                         <div class="input-group">
-                            <input type="text" class="form-control bg-white" value="{{ $sampleEntry->temperature }}"
+                            <input type="text" class="form-control bg-white" value="{{ \App\Support\NumberFormat::format($sampleEntry->temperature) }}"
                                 readonly>
                             <span class="input-group-text unit-badge">°C</span>
                         </div>
@@ -148,7 +148,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-info text-white"
                 style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-flask me-2"></i>Bioensayos Asignados
+                <i class="bi bi-eyedropper me-2"></i>Bioensayos Asignados
             </div>
             <div class="card-body bg-light">
                 <div class="row" id="bioassaysContainer">
@@ -213,25 +213,8 @@
                         @php
                             $isAssigned = in_array($bio, $assignedBioassays ?? []);
                             $config = $bioConfig[$bio] ?? null;
-                            $bioassayRecord = null;
-                            $timerStatus = null;
-
-                            // Buscar el registro del bioensayo si está asignado y tiene modelo
-                            if ($isAssigned && $config && $config['model']) {
-                                $bioassayRecord = $config['model']
-                                    ::where('sample', $sampleEntry->internal_sample_code)
-                                    ->first();
-
-                                // Obtener estado del temporizador si existe
-                                if ($bioassayRecord && isset($bioassayRecord->timer_status)) {
-                                    $timerStatus = $bioassayRecord->timer_status;
-                                } elseif ($bioassayRecord) {
-                                    // Para Daphnia que tiene dos temporizadores
-                                    $timerStatus =
-                                        $bioassayRecord->preliminary_timer_status ??
-                                        ($bioassayRecord->definitive_timer_status ?? null);
-                                }
-                            }
+                            // El registro del bioensayo se busca por la clave foránea (sample_entry_id), no por el código
+                            $bioassayRecord = $isAssigned ? $sampleEntry->assignedBioassays()->get($bio) : null;
                         @endphp
 
                         <div class="col-md-6 mb-2">
@@ -252,48 +235,31 @@
                                         {{-- Badge de estado --}}
                                         <span class="badge bg-{{ $config['color'] ?? 'success' }}">Asignado</span>
 
-                                        {{-- Indicador de temporizador si existe --}}
-                                        @if ($timerStatus)
-                                            @switch($timerStatus)
-                                                @case('running')
-                                                    <span class="badge bg-success" title="Temporizador en progreso">
-                                                        <i class="fas fa-clock"></i>
-                                                    </span>
-                                                @break
-
-                                                @case('warning')
-                                                    <span class="badge bg-warning text-dark" title="¡Poco tiempo restante!">
-                                                        <i class="fas fa-exclamation-triangle"></i>
-                                                    </span>
-                                                @break
-
-                                                @case('grace')
-                                                    <span class="badge bg-orange text-white" title="Período de gracia">
-                                                        <i class="fas fa-hourglass-half"></i>
-                                                    </span>
-                                                @break
-
-                                                @case('expired')
-                                                    <span class="badge bg-danger" title="Tiempo expirado">
-                                                        <i class="fas fa-times-circle"></i>
-                                                    </span>
-                                                @break
-                                            @endswitch
+                                        {{-- Validación y duración del ensayo --}}
+                                        @if ($bioassayRecord && $bioassayRecord->validated_at)
+                                            <span class="badge bg-success" title="Validado el {{ $bioassayRecord->validated_at->format('d/m/Y H:i') }}">
+                                                <i class="bi bi-check-circle"></i> Validado
+                                            </span>
+                                        @endif
+                                        @if ($bioassayRecord && $bioassayRecord->hasDurationProblem())
+                                            <span class="badge bg-danger" title="La duración quedó fuera del margen exigido">
+                                                <i class="bi bi-clock"></i> Fuera de tiempo
+                                            </span>
                                         @endif
 
                                         {{-- Botón de acción --}}
                                         @if ($bioassayRecord && $config['route'])
                                             <a href="{{ route($config['route'], $bioassayRecord->id) }}"
                                                 class="btn btn-sm btn-{{ $config['color'] ?? 'primary' }}">
-                                                <i class="fas fa-edit"></i> Ir al ensayo
+                                                <i class="bi bi-pencil-square"></i> Ir al ensayo
                                             </a>
                                         @elseif ($config && $config['model'] === null)
                                             <button class="btn btn-sm btn-secondary" disabled>
-                                                <i class="fas fa-clock"></i> No implementado
+                                                <i class="bi bi-clock"></i> No implementado
                                             </button>
                                         @else
                                             <button class="btn btn-sm btn-warning" disabled>
-                                                <i class="fas fa-exclamation-triangle"></i> Sin registro
+                                                <i class="bi bi-exclamation-triangle"></i> Sin registro
                                             </button>
                                         @endif
                                     @endif
@@ -308,12 +274,12 @@
                     <div class="mt-3 pt-3 border-top">
                         <small class="text-muted">
                             <strong>Estados del temporizador:</strong>
-                            <span class="badge bg-success ms-2"><i class="fas fa-clock"></i></span> En progreso
+                            <span class="badge bg-success ms-2"><i class="bi bi-clock"></i></span> En progreso
                             <span class="badge bg-warning text-dark ms-2"><i
-                                    class="fas fa-exclamation-triangle"></i></span> Poco tiempo
-                            <span class="badge bg-orange text-white ms-2"><i class="fas fa-hourglass-half"></i></span>
+                                    class="bi bi-exclamation-triangle"></i></span> Poco tiempo
+                            <span class="badge bg-orange text-white ms-2"><i class="bi bi-hourglass-split"></i></span>
                             Período de gracia
-                            <span class="badge bg-danger ms-2"><i class="fas fa-times-circle"></i></span> Expirado
+                            <span class="badge bg-danger ms-2"><i class="bi bi-x-circle"></i></span> Expirado
                         </small>
                     </div>
                 @endif
@@ -360,7 +326,7 @@
 
         <div class="d-flex justify-content-end gap-2 mb-4">
             <a href="{{ route('sample_entries.edit', $sampleEntry->id) }}" class="btn btn-warning">
-                <i class="fas fa-edit"></i> Editar
+                <i class="bi bi-pencil-square"></i> Editar
             </a>
             <a href="{{ route('sample_entries.index') }}" class="btn btn-secondary">Volver</a>
         </div>
@@ -369,7 +335,6 @@
 
 @push('head')
     <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ============================================

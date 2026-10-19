@@ -87,9 +87,6 @@ class TisbeLongicornisRilesController extends Controller
             'end_time'   => 'nullable|date',
             'analyst'    => 'nullable|string|max:255',
 
-            // Temporizadores
-            'preliminary_timer_start' => 'nullable|string',
-            'definitive_timer_start'  => 'nullable|string',
 
             // Ensayo Preliminar (solo Temperatura y Fecha agua Control)
             'sample_temperature'  => 'nullable|numeric',
@@ -116,9 +113,6 @@ class TisbeLongicornisRilesController extends Controller
             'matrix'  => $validated['matrix'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
-            // Temporizadores
-            'preliminary_timer_start' => $request->input('preliminary_timer_start'),
-            'definitive_timer_start'  => $request->input('definitive_timer_start'),
 
             // Ensayo Preliminar
             'preliminary_start_at'           => $validated['start_time'] ?? null,

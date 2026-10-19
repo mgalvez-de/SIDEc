@@ -96,7 +96,7 @@ class DemoDataSeeder extends Seeder
                 ],
             ],
             [
-                'code' => 'M-2026-003', 'received' => $this->ago(64, '11:20'), 'identifier' => 'Efluente planta de tratamiento, salida clorada',
+                'code' => 'M-2026-003', 'received' => $this->ago(64, '11:20'), 'client' => 'Química Industrial Andes S.A.', 'identifier' => 'Efluente planta de tratamiento, salida clorada',
                 'rejection' => [
                     'reason' => 'Temperatura fuera de rango', 'by' => 'Andrea Muñoz',
                     'instructions' => 'Tomar una nueva muestra y enviarla refrigerada (≤ 6 °C) dentro de las 24 h siguientes al muestreo.',
@@ -110,7 +110,7 @@ class DemoDataSeeder extends Seeder
                 'entry' => ['at' => $this->ago(57, '12:40'), 'analyst' => 'Valentina Soto', 'observations' => 'Leve turbidez; se dejó decantar 30 min antes de preparar diluciones.'],
                 'bioassays' => [
                     'Isochrysis galbana'                => ['stage' => 'validated', 'ec50' => 65],
-                    'Arbacia spatuligera Estado Larval' => ['stage' => 'validated', 'ec50' => 48],
+                    'Arbacia spatuligera Estado Larval' => ['stage' => 'complete', 'ec50' => 48], // sin validar: plazo vencido (rojo)
                 ],
             ],
             [
@@ -123,7 +123,7 @@ class DemoDataSeeder extends Seeder
                 ],
             ],
             [
-                'code' => 'M-2026-006', 'received' => $this->ago(38, '16:10'), 'identifier' => 'Agua de mar, muelle de descarga',
+                'code' => 'M-2026-006', 'received' => $this->ago(38, '16:10'), 'client' => 'Consultora Ambiental Marea Ltda.', 'identifier' => 'Agua de mar, muelle de descarga',
                 'rejection' => [
                     'reason' => 'Volumen insuficiente', 'by' => 'Felipe Carrasco',
                     'instructions' => 'Enviar al menos 2 L de muestra para completar los bioensayos solicitados.',
@@ -136,7 +136,7 @@ class DemoDataSeeder extends Seeder
                 'identifier' => 'Sedimento marino, punto de descarga del emisario',
                 'entry' => ['at' => $this->ago(31, '13:00'), 'analyst' => 'Diego Fuentes', 'observations' => 'Ensayo sobre elutriado 1:4 (sedimento:agua de mar).'],
                 'bioassays' => [
-                    'Tisbe biconicornis Sedimento' => ['stage' => 'validated', 'ec50' => 18, 'ec50_24' => 34, 'control_dead' => 0],
+                    'Tisbe biconicornis Sedimento' => ['stage' => 'complete', 'ec50' => 18, 'ec50_24' => 34, 'control_dead' => 0], // sin validar: semana 5 (amarillo)
                 ],
             ],
             [
@@ -160,7 +160,7 @@ class DemoDataSeeder extends Seeder
                 ],
             ],
             [
-                'code' => 'M-2026-010', 'received' => $this->ago(6, '15:40'), 'identifier' => 'Agua de mar, centro de cultivo canal norte',
+                'code' => 'M-2026-010', 'received' => $this->ago(6, '15:40'), 'client' => 'Acuícola Mar Austral SpA', 'identifier' => 'Agua de mar, centro de cultivo canal norte',
                 'rejection' => [
                     'reason' => 'Contenedor inadecuado', 'by' => 'Andrea Muñoz',
                     'instructions' => 'Usar envases de vidrio ámbar o polietileno de alta densidad, llenos y sin cámara de aire.',
@@ -280,6 +280,7 @@ class DemoDataSeeder extends Seeder
             'template_id'            => $this->template('RECHAZO DE MUESTRAS', 'RO-02.02', 1, $at->format('d.m.Y'), 'rejection', $at),
             'internal_sample_code'   => $s['code'],
             'sample_identifier'      => $s['identifier'],
+            'client'                 => $s['client'],
             'reason_for_rejection'   => $r['reason'],
             'who_rejects'            => $r['by'],
             'who_informs_the_client' => 'Paula Reyes',
@@ -326,8 +327,6 @@ class DemoDataSeeder extends Seeder
             "definitive_$waterField"           => $defStart->copy()->subDay()->toDateString(),
             'definitive_24h'                   => $tables['24'],
             'definitive_48h'                   => $tables['48'],
-            'preliminary_timer_start'          => null,
-            'definitive_timer_start'           => $running ? $this->ms($defStart) : null,
         ];
 
         if ($running) {
@@ -435,7 +434,6 @@ class DemoDataSeeder extends Seeder
         $data = [
             'bioassay_start'             => $start,
             'bioassay_end'               => $running ? null : $start->copy()->addDays(21),
-            'timer_start'                => $running ? $this->ms($start) : null,
             'sample_temperature'         => $this->between(19.8, 20.4, 1),
             'ph'                         => $chem['ph'],
             'maintenance_data'           => $maintenance,
@@ -522,7 +520,6 @@ class DemoDataSeeder extends Seeder
         return [[
             'bioassay_start'        => $start,
             'bioassay_end'          => $end,
-            'timer_start'           => null,
             'initial_inoculum_vol'  => 1.00,
             'stock_culture_date'    => $start->copy()->subDays(5)->toDateString(),
             'rc24h'                 => round(exp($mu), 2),
@@ -590,7 +587,6 @@ class DemoDataSeeder extends Seeder
 
         $data = [
             'bioassay_start'     => $start,
-            'timer_start'        => $running ? $this->ms($start) : null,
             'initial_inoculum'   => 1.00,
             'stock_culture_date' => $start->copy()->subDays(4)->toDateString(),
             'rc24h'              => $at($muControl, 1),
@@ -683,7 +679,6 @@ class DemoDataSeeder extends Seeder
         return [[
             'bioassay_start'     => $start,
             'bioassay_end'       => $end,
-            'timer_start'        => null,
             'initial_inoculum'   => 1.00,
             'stock_culture_date' => $start->copy()->subDays(7)->toDateString(),
             'samples_data'       => $rows,
@@ -731,7 +726,6 @@ class DemoDataSeeder extends Seeder
         return [[
             'bioassay_start'                   => $start,
             'control_fertilization_percentage' => round($controlAvg, 2),
-            'timer_start'                      => null,
             'sperm_addition_time'              => $start->format('H:i'),
             'egg_addition_time'                => $start->copy()->addMinutes(20)->format('H:i'),
             'fixation_time_end'                => $start->copy()->addMinutes(40)->format('H:i'),
@@ -747,7 +741,6 @@ class DemoDataSeeder extends Seeder
         $running = $spec['stage'] === 'running';
         $data = [
             'bioassay_start'           => $start,
-            'timer_start'              => $running ? $this->ms($start) : null,
             'fertilization_time'       => $start->format('H:i'),
             'fertilized_eggs_added_at' => $start->copy()->addMinutes(30)->format('H:i'),
         ];
@@ -806,7 +799,7 @@ class DemoDataSeeder extends Seeder
         $countEnd = $start->copy()->addHours(50);
 
         return [$data + [
-            'fixation_time_end'  => $start->copy()->addHours(48)->format('H:i'),
+            'fixation_time_end'  => $start->copy()->addHours(48)->format('Y-m-d H:i'),
             'count_end_datetime' => $countEnd,
             'control_data'       => $control,
             'rows_data'          => $rows,
@@ -929,10 +922,5 @@ class DemoDataSeeder extends Seeder
         $variance = array_sum(array_map(fn ($v) => ($v - $mean) ** 2, $values)) / (count($values) - 1);
 
         return sqrt($variance) / $mean * 100;
-    }
-
-    private function ms(Carbon $at): string
-    {
-        return (string) ($at->getTimestamp() * 1000);
     }
 }

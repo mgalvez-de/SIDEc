@@ -18,7 +18,7 @@
             {{-- Mostrar errores de validación si existen --}}
             @if ($errors->any())
                 <div class="alert alert-danger mb-4">
-                    <strong><i class="fas fa-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
+                    <strong><i class="bi bi-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
                     <ul class="mb-0 mt-2">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -90,8 +90,8 @@
                                                 <input type="number" step="any" min="0" 
                                                     id="concentration_ppm" 
                                                     class="form-control concentration-input" 
-                                                    placeholder="PPM">
-                                                <span class="input-group-text">PPM</span>
+                                                    placeholder="ppm">
+                                                <span class="input-group-text">ppm</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -99,15 +99,15 @@
                                                 <input type="number" step="any" min="0" 
                                                     id="concentration_ppb" 
                                                     class="form-control concentration-input" 
-                                                    placeholder="PPB">
-                                                <span class="input-group-text">PPB</span>
+                                                    placeholder="ppb">
+                                                <span class="input-group-text">ppb</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> Ingrese en cualquier formato, los demás se calcularán automáticamente.
+                                <i class="bi bi-info-circle"></i> Ingrese en cualquier formato, los demás se calcularán automáticamente.
                             </small>
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                 </div>
                 <div class="card-body bg-light">
                     <div class="alert alert-info mb-3" role="alert">
-                        <i class="fas fa-info-circle"></i> Los bioensayos fueron asignados en la recepción de muestra y no pueden modificarse aquí.
+                        <i class="bi bi-info-circle"></i> Los bioensayos fueron asignados en la recepción de muestra y no pueden modificarse aquí.
                     </div>
                     
                     <div class="row" id="bioassaysContainer">
@@ -235,7 +235,7 @@
                                             @endphp
                                             @if ($daphnia)
                                                 <a href="{{ route('daphnia-magna.edit', $daphnia->id) }}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-external-link-alt"></i> Ir al ensayo
+                                                    <i class="bi bi-box-arrow-up-right"></i> Ir al ensayo
                                                 </a>
                                             @elseif ($route)
                                                 <button type="button" class="btn btn-sm btn-secondary" disabled>No disponible</button>
@@ -285,7 +285,7 @@
 
             <div class="d-flex justify-content-end gap-2 mb-4">
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Actualizar
+                    <i class="bi bi-floppy"></i> Actualizar
                 </button>
                 <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary">Cancelar</a>
             </div>
@@ -298,7 +298,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
     <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ============================================
@@ -515,7 +514,6 @@
     <!-- Flatpickr -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

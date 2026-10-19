@@ -3,11 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class TisbeLongicornisWater extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTestDuration;
+
+    // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
+    public const DURATION_PHASES = [
+        'bioassay' => ['Duración del ensayo', 'bioassay_start', 'bioassay_end', 48 * 60],
+    ];
 
     protected $table = 'tisbe_longicornis_water';
 
@@ -17,9 +23,6 @@ class TisbeLongicornisWater extends Model
         'created_by',
         'validated_by',
         'validated_at',
-
-        // Temporizador
-        'timer_start',
 
         // Datos generales
         'sample',
@@ -68,30 +71,6 @@ class TisbeLongicornisWater extends Model
     public function sampleEntry()
     {
         return $this->belongsTo(SampleEntry::class);
-    }
-
-    /**
-     * Obtener el estado del temporizador.
-     */
-    public function getTimerStatusAttribute()
-    {
-        if (!$this->timer_start) {
-            return 'not_started';
-        }
-
-        $elapsed = now()->timestamp * 1000 - (int) $this->timer_start;
-        $limitMs = 48 * 60 * 60 * 1000;  // 48 horas
-        $totalMs = 58 * 60 * 60 * 1000;  // 58 horas (48 + 10 gracia)
-
-        if ($elapsed >= $totalMs) {
-            return 'expired';
-        } elseif ($elapsed >= $limitMs) {
-            return 'grace';
-        } elseif ($elapsed >= $limitMs * 0.9) {
-            return 'warning';
-        }
-
-        return 'running';
     }
 
     /**

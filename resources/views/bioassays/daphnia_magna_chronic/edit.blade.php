@@ -10,7 +10,7 @@
     <!-- Título Principal -->
     <h1 class="mb-2 text-secondary text-center"
         style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 500;">
-        Editar Bioensayo
+        <span class="d-print-none">Editar</span><span class="d-none d-print-inline">Análisis</span> Bioensayo
     </h1>
     <h2 class="mb-3 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-style: italic; color: #198754;">
         Daphnia magna - Crónico (21 días)
@@ -20,7 +20,7 @@
     {{-- Mostrar errores de validación --}}
     @if ($errors->any())
         <div class="alert alert-danger mb-4">
-            <strong><i class="fas fa-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
+            <strong><i class="bi bi-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -39,21 +39,17 @@
         @csrf
         @method('PUT')
 
-        {{-- Campo oculto para temporizador --}}
-        <input type="hidden" name="timer_start" id="timer_start" 
-               value="{{ old('timer_start', $daphnia_magna_chronic->timer_start) }}">
-
         {{-- ================= DATOS GENERALES ================= --}}
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-clipboard-list me-2"></i>Datos Generales
+                <i class="bi bi-card-checklist me-2"></i>Datos Generales
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-vial text-success me-1"></i>Muestra
+                            <i class="bi bi-eyedropper text-success me-1"></i>Muestra
                         </label>
                         <input type="text" class="form-control navigable bg-light" 
                                name="sample" 
@@ -62,7 +58,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-water text-primary me-1"></i>Matriz
+                            <i class="bi bi-water text-primary me-1"></i>Matriz
                         </label>
                         <input type="text" class="form-control navigable" 
                                name="matrix" 
@@ -73,7 +69,7 @@
                 <div class="row g-3 align-items-end mt-1">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-calendar-alt text-success me-1"></i>Fecha y hora inicio Bioensayo
+                            <i class="bi bi-calendar3 text-success me-1"></i>Fecha y hora inicio Bioensayo
                         </label>
                         <input type="text" class="form-control navigable datetimepicker" 
                                name="bioassay_start" 
@@ -82,7 +78,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-calendar-check text-danger me-1"></i>Fecha y hora término Bioensayo
+                            <i class="bi bi-calendar-check text-danger me-1"></i>Fecha y hora término Bioensayo
                         </label>
                         <input type="text" class="form-control navigable datetimepicker" 
                                name="bioassay_end" 
@@ -91,7 +87,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-user text-secondary me-1"></i>Analista
+                            <i class="bi bi-person text-secondary me-1"></i>Analista
                         </label>
                         <input type="text" class="form-control navigable" 
                                name="analyst" 
@@ -105,13 +101,13 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-info-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-thermometer-half me-2"></i>Datos Preliminares
+                <i class="bi bi-thermometer-half me-2"></i>Datos Preliminares
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-temperature-low text-info me-1"></i>Temperatura de la muestra
+                            <i class="bi bi-thermometer-low text-info me-1"></i>Temperatura de la muestra
                         </label>
                         <div class="input-group">
                             <input type="number" step="0.1" class="form-control navigable" 
@@ -122,7 +118,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-flask text-warning me-1"></i>pH
+                            <i class="bi bi-eyedropper text-warning me-1"></i>pH
                         </label>
                         <input type="number" step="0.01" class="form-control navigable" 
                                name="ph" 
@@ -132,76 +128,13 @@
             </div>
         </div>
 
-        {{-- ================= TEMPORIZADOR ================= --}}
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-clock me-2"></i>Temporizador del Ensayo (21 días)
+                <i class="bi bi-clock me-2"></i>Temporizador del Ensayo (21 días)
             </div>
             <div class="card-body bg-light p-3">
-                <div class="timer-container p-3" id="timerContainer">
-                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <button type="button" class="btn btn-success btn-lg" id="btnStartTimer" onclick="startTimer()">
-                                <i class="fas fa-play me-2"></i>Iniciar Ensayo
-                            </button>
-                            <button type="button" class="btn btn-outline-danger" id="btnResetTimer" onclick="resetTimer()" style="display: none;">
-                                <i class="fas fa-redo me-1"></i>Reiniciar
-                            </button>
-                        </div>
-                        <div class="timer-display" id="timerDisplay">
-                            <div class="timer-icon">
-                                <i class="fas fa-stopwatch"></i>
-                            </div>
-                            <div class="timer-values">
-                                <span class="timer-elapsed" id="timerElapsed">00d 00:00:00</span>
-                                <span class="timer-separator">/</span>
-                                <span class="timer-limit">21d 00:00:00</span>
-                            </div>
-                            <div class="timer-status" id="timerStatus">
-                                <span class="badge bg-secondary">Sin iniciar</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {{-- Barra de progreso --}}
-                    <div class="progress-container mt-3">
-                        <div class="progress-labels d-flex justify-content-between mb-1">
-                            <small class="text-muted">Día 0</small>
-                            <small class="text-primary fw-bold">Día 21 (Límite)</small>
-                            <small class="text-warning fw-bold">Día 22 (Gracia)</small>
-                        </div>
-                        <div class="progress-wrapper">
-                            <div class="progress" style="height: 25px; border-radius: 12px; background: #e9ecef;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                                     id="progressBar" 
-                                     role="progressbar" 
-                                     style="width: 0%; border-radius: 12px;"
-                                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    <span class="progress-text" id="progressText">Día 0</span>
-                                </div>
-                            </div>
-                            {{-- Marcadores de tiempo --}}
-                            <div class="progress-markers">
-                                <div class="marker" style="left: 33.33%;" title="Día 7">
-                                    <div class="marker-line marker-line-light"></div>
-                                    <small class="marker-label">D7</small>
-                                </div>
-                                <div class="marker" style="left: 66.67%;" title="Día 14">
-                                    <div class="marker-line marker-line-light"></div>
-                                    <small class="marker-label">D14</small>
-                                </div>
-                                <div class="marker marker-limit" style="left: 95.45%;" title="Día 21 (límite)">
-                                    <div class="marker-line"></div>
-                                    <small class="marker-label">D21</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="time-remaining mt-2 text-center" id="timeRemaining">
-                            <small class="text-muted">Tiempo restante: <strong>21 días 00:00:00</strong></small>
-                        </div>
-                    </div>
-                </div>
+                @include('bioassays._duration', ['check' => $daphnia_magna_chronic->durationChecks()['bioassay'], 'start' => 'bioassay_start', 'end' => 'bioassay_end'])
             </div>
         </div>
 
@@ -209,7 +142,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-warning-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-calendar-week me-2"></i>Mantención de Especie durante los 21 días
+                <i class="bi bi-calendar-week me-2"></i>Mantención de Especie durante los 21 días
             </div>
             <div class="card-body bg-light p-3">
                 <div class="table-responsive">
@@ -219,7 +152,7 @@
                                 <th class="table-header-day" style="width: 80px;">Día de Cambio</th>
                                 <th class="table-header-water">Fecha Agua Reconstituida</th>
                                 <th class="table-header-food">Fecha Alimento</th>
-                                <th class="table-header-amount">Cantidad Microalga (ml)</th>
+                                <th class="table-header-amount">Cantidad Microalga (mL)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -255,7 +188,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-primary-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-check-double me-2"></i>Réplicas CONTROL (10 réplicas x 21 días)
+                <i class="bi bi-check2-all me-2"></i>Réplicas CONTROL (10 réplicas x 21 días)
             </div>
             <div class="card-body bg-light p-2">
                 <div class="table-responsive">
@@ -321,7 +254,7 @@
             <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
                 <div class="card-header bg-{{ $bgColors[$conc-1] }} text-dark d-flex justify-content-between align-items-center"
                     style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                    <span><i class="fas fa-flask me-2"></i>Concentración {{ $conc }}</span>
+                    <span><i class="bi bi-eyedropper me-2"></i>Concentración {{ $conc }}</span>
                     <input type="text" class="form-control form-control-sm" style="width: 200px;" 
                            name="concentrations[{{ $conc }}][value]" 
                            value="{{ old('concentrations.'.$conc.'.value', $concData['value'] ?? '') }}"
@@ -386,13 +319,13 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-chart-bar me-2"></i>Resultados
+                <i class="bi bi-bar-chart me-2"></i>Resultados
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-arrow-down text-success me-1"></i>NOEC (Máx. conc. sin efecto)
+                            <i class="bi bi-arrow-down text-success me-1"></i>NOEC (Máx. conc. sin efecto)
                         </label>
                         <input type="text" class="form-control navigable" 
                                name="noec" 
@@ -401,7 +334,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-arrow-up text-danger me-1"></i>LOEC (Mín. conc. con efecto)
+                            <i class="bi bi-arrow-up text-danger me-1"></i>LOEC (Mín. conc. con efecto)
                         </label>
                         <input type="text" class="form-control navigable" 
                                name="loec" 
@@ -423,20 +356,20 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-secondary-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-check-circle me-2"></i>Criterios de Aceptabilidad del Análisis
+                <i class="bi bi-check-circle me-2"></i>Criterios de Aceptabilidad del Análisis
             </div>
             <div class="card-body bg-light p-3">
                 <ul class="criteria-list mb-3">
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         Mortalidad accidental por concentración: <strong>&lt; 20%</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         Control: <strong>≥ 40 juveniles en 21 días</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         Sobrevivencia de adultos en 21 días: <strong>≥ 80%</strong>
                     </li>
                 </ul>
@@ -449,42 +382,42 @@
         {{-- ================= BOTONES ================= --}}
         <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg px-4">
-                <i class="fas fa-save me-2"></i>Actualizar Bioensayo
+                <i class="bi bi-floppy me-2"></i>Actualizar Bioensayo
             </button>
 
-            @if(auth()->user()->hasRole(['Manager', 'Area Manager']))
+            @if(auth()->user()->can('validateBioassay', $daphnia_magna_chronic))
                 @if($daphnia_magna_chronic->validated_at)
                     <span class="btn btn-outline-success btn-lg px-4 disabled">
-                        <i class="fas fa-check-circle me-2"></i>Validado el
+                        <i class="bi bi-check-circle me-2"></i>Validado el
                         {{ $daphnia_magna_chronic->validated_at->format('d/m/Y H:i') }}
                     </span>
                 @else
                     <button type="submit" form="validateBioassayForm" class="btn btn-warning btn-lg px-4">
-                        <i class="fas fa-clipboard-check me-2"></i>Marcar como Validado
+                        <i class="bi bi-clipboard-check me-2"></i>Marcar como Validado
                     </button>
                 @endif
             @endif
 
             <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="window.print()">
-                <i class="fas fa-print me-2"></i>Imprimir
+                <i class="bi bi-printer me-2"></i>Imprimir
             </button>
             @php
                 $sampleEntry = $daphnia_magna_chronic->sampleEntry;
             @endphp
             @if($sampleEntry)
                 <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary btn-lg px-4">
-                    <i class="fas fa-arrow-left me-2"></i>Volver a Muestra
+                    <i class="bi bi-arrow-left me-2"></i>Volver a Muestra
                 </a>
             @else
                 <a href="{{ route('sample_entries.index') }}" class="btn btn-secondary btn-lg px-4">
-                    <i class="fas fa-times me-2"></i>Cancelar
+                    <i class="bi bi-x-lg me-2"></i>Cancelar
                 </a>
             @endif
         </div>
     </form>
 
-    @if(auth()->user()->hasRole(['Manager', 'Area Manager']) && !$daphnia_magna_chronic->validated_at)
-        <form id="validateBioassayForm" action="{{ route('daphnia-magna-chronic.validate', $daphnia_magna_chronic->id) }}" method="POST" style="display:none">
+    @if(auth()->user()->can('validateBioassay', $daphnia_magna_chronic) && !$daphnia_magna_chronic->validated_at)
+        <form id="validateBioassayForm" data-confirm="¿Marcar como validado?" data-confirm-text="Quedará registrado quién lo validó y cuándo. Esta acción no se puede deshacer." data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, validar" action="{{ route('daphnia-magna-chronic.validate', $daphnia_magna_chronic->id) }}" method="POST" style="display:none">
             @csrf
             @method('PATCH')
         </form>
@@ -495,7 +428,6 @@
 @push('head')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 @endpush
 
 @push('styles')
@@ -556,24 +488,9 @@
     /* ============================================
        TEMPORIZADOR
        ============================================ */
-    .timer-container { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border: 2px solid #dee2e6; transition: all 0.3s ease; }
-    .timer-container.timer-running { border-color: #198754; box-shadow: 0 0 15px rgba(25, 135, 84, 0.2); }
-    .timer-container.timer-warning { border-color: #ffc107; background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%); }
-    .timer-container.timer-grace { border-color: #fd7e14; background: linear-gradient(135deg, #fff5e6 0%, #ffe5cc 100%); animation: pulse-grace 2s infinite; }
-    .timer-container.timer-expired { border-color: #dc3545; background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%); animation: pulse-expired 1s infinite; }
     @keyframes pulse-grace { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.005); } }
     @keyframes pulse-expired { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-    .timer-display { display: flex; align-items: center; gap: 15px; background: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .timer-icon { font-size: 1.8rem; color: #6c757d; }
-    .timer-icon.running { color: #198754; animation: spin 2s linear infinite; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .timer-values { font-family: 'Courier New', monospace; font-size: 1.3rem; font-weight: bold; }
-    .timer-elapsed { color: #198754; }
-    .timer-elapsed.warning { color: #ffc107; }
-    .timer-elapsed.grace { color: #fd7e14; }
-    .timer-elapsed.expired { color: #dc3545; }
-    .timer-separator { color: #6c757d; margin: 0 5px; }
-    .timer-limit { color: #6c757d; }
 
     /* ============================================
        BARRA DE PROGRESO
@@ -597,7 +514,7 @@
     @media print {
         @page { size: A4 landscape; margin: 3mm; }
         body { font-size: 6pt; line-height: 1; }
-        .btn, button, nav, .navbar, .no-print, .timer-container { display: none !important; }
+        .btn, button, nav, .navbar, .no-print { display: none !important; }
         .card { border: 1px solid #000 !important; box-shadow: none !important; margin-bottom: 3px !important; break-inside: avoid; }
         .card-header { background: #f0f0f0 !important; color: #000 !important; padding: 2px 4px !important; font-size: 8pt !important; }
         .card-body { padding: 2px !important; }
@@ -612,18 +529,9 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Temporizador: 21 días + 1 día de gracia = 22 días total
-    const LIMIT_DAYS = 21;
-    const GRACE_DAYS = 1;
-    const TOTAL_DAYS = LIMIT_DAYS + GRACE_DAYS;
-    const LIMIT_MS = LIMIT_DAYS * 24 * 60 * 60 * 1000;
-    const TOTAL_MS = TOTAL_DAYS * 24 * 60 * 60 * 1000;
-
-    let timerState = { startTime: null, interval: null };
 
     // Flatpickr
     flatpickr(".datetimepicker", { enableTime: true, time_24hr: true, dateFormat: "Y-m-d H:i", locale: "es", allowInput: true });
@@ -685,100 +593,7 @@ document.addEventListener("DOMContentLoaded", function() {
     for (let c = 1; c <= 5; c++) calculateConcSums(c);
 
     // Timer functions
-    window.startTimer = function() {
-        const now = Date.now();
-        timerState.startTime = now;
-        document.getElementById('timer_start').value = now;
-        document.getElementById('btnStartTimer').style.display = 'none';
-        document.getElementById('btnResetTimer').style.display = 'inline-block';
-        updateTimerDisplay();
-        timerState.interval = setInterval(updateTimerDisplay, 1000);
-        Swal.fire({ icon: 'success', title: 'Temporizador Iniciado', text: `Ensayo de ${LIMIT_DAYS} días iniciado (+${GRACE_DAYS} día de gracia).`, timer: 3000, showConfirmButton: false });
-    };
 
-    window.resetTimer = function() {
-        Swal.fire({
-            title: '¿Reiniciar temporizador?', text: "Esta acción reiniciará el contador.", icon: 'warning',
-            showCancelButton: true, confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, reiniciar', cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                if (timerState.interval) clearInterval(timerState.interval);
-                timerState.startTime = null;
-                document.getElementById('timer_start').value = '';
-                document.getElementById('btnStartTimer').style.display = 'inline-block';
-                document.getElementById('btnResetTimer').style.display = 'none';
-                resetTimerUI();
-            }
-        });
-    };
-
-    function updateTimerDisplay() {
-        if (!timerState.startTime) return;
-        const elapsed = Date.now() - timerState.startTime;
-        const percentage = Math.min((elapsed / TOTAL_MS) * 100, 100);
-        const elapsedDays = Math.floor(elapsed / (24 * 60 * 60 * 1000));
-        document.getElementById('timerElapsed').textContent = formatTimeDays(elapsed);
-        document.getElementById('progressBar').style.width = `${percentage}%`;
-        document.getElementById('progressText').textContent = `Día ${elapsedDays}`;
-        const remaining = Math.max(LIMIT_MS - elapsed, 0);
-        const container = document.getElementById('timerContainer');
-        const elapsedSpan = document.getElementById('timerElapsed');
-        const statusSpan = document.getElementById('timerStatus');
-        const remainingContainer = document.getElementById('timeRemaining');
-        const progressBar = document.getElementById('progressBar');
-        container.classList.remove('timer-running', 'timer-warning', 'timer-grace', 'timer-expired');
-        elapsedSpan.classList.remove('warning', 'grace', 'expired');
-        progressBar.classList.remove('bg-success-gradient', 'bg-warning', 'bg-orange', 'bg-danger');
-        container.querySelector('.timer-icon').classList.add('running');
-
-        if (elapsed >= TOTAL_MS) {
-            container.classList.add('timer-expired'); elapsedSpan.classList.add('expired'); progressBar.classList.add('bg-danger');
-            statusSpan.innerHTML = '<span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i>¡Tiempo Expirado!</span>';
-            remainingContainer.innerHTML = '<small class="text-danger fw-bold">Tiempo de gracia agotado</small>';
-        } else if (elapsed >= LIMIT_MS) {
-            container.classList.add('timer-grace'); elapsedSpan.classList.add('grace'); progressBar.classList.add('bg-orange');
-            statusSpan.innerHTML = '<span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Período de Gracia</span>';
-            remainingContainer.innerHTML = `<small class="text-warning fw-bold">Gracia: ${formatTimeDays(TOTAL_MS - elapsed)}</small>`;
-        } else if (elapsed >= LIMIT_MS * 0.9) {
-            container.classList.add('timer-warning'); elapsedSpan.classList.add('warning'); progressBar.classList.add('bg-warning');
-            statusSpan.innerHTML = '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation me-1"></i>¡Últimos días!</span>';
-            remainingContainer.innerHTML = `<small class="text-warning">Restante: ${formatTimeDays(remaining)}</small>`;
-        } else {
-            container.classList.add('timer-running'); progressBar.classList.add('bg-success-gradient');
-            statusSpan.innerHTML = '<span class="badge bg-success"><i class="fas fa-play me-1"></i>En Progreso</span>';
-            remainingContainer.innerHTML = `<small class="text-muted">Restante: ${formatTimeDays(remaining)}</small>`;
-        }
-    }
-
-    function resetTimerUI() {
-        document.getElementById('timerElapsed').textContent = '00d 00:00:00';
-        document.getElementById('progressBar').style.width = '0%';
-        document.getElementById('progressText').textContent = 'Día 0';
-        document.getElementById('timerStatus').innerHTML = '<span class="badge bg-secondary">Sin iniciar</span>';
-        document.getElementById('timeRemaining').innerHTML = '<small class="text-muted">Tiempo restante: <strong>21 días 00:00:00</strong></small>';
-        document.getElementById('timerContainer').classList.remove('timer-running', 'timer-warning', 'timer-grace', 'timer-expired');
-        document.getElementById('timerContainer').querySelector('.timer-icon').classList.remove('running');
-    }
-
-    function formatTimeDays(ms) {
-        const totalSeconds = Math.floor(ms / 1000);
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        return `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    // Restaurar timer
-    const savedStart = document.getElementById('timer_start').value;
-    if (savedStart && !isNaN(parseInt(savedStart))) {
-        timerState.startTime = parseInt(savedStart);
-        document.getElementById('btnStartTimer').style.display = 'none';
-        document.getElementById('btnResetTimer').style.display = 'inline-block';
-        updateTimerDisplay();
-        timerState.interval = setInterval(updateTimerDisplay, 1000);
-    }
 
     // Confirmación de envío
     document.getElementById('bioassayForm').addEventListener('submit', function(e) {
@@ -786,7 +601,7 @@ document.addEventListener("DOMContentLoaded", function() {
         Swal.fire({
             title: '¿Confirmar actualización?', text: "Se guardarán los cambios del bioensayo Daphnia magna Crónico.",
             icon: 'question', showCancelButton: true, confirmButtonColor: '#198754', cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-save me-1"></i> Sí, actualizar', cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar'
+            confirmButtonText: '<i class="bi bi-floppy me-1"></i> Sí, actualizar', cancelButtonText: '<i class="bi bi-x-lg me-1"></i> Cancelar'
         }).then((result) => { if (result.isConfirmed) this.submit(); });
     });
 });

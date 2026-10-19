@@ -3,13 +3,11 @@
 @section('content')
 <div class="container">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-        <h1 class="text-secondary">Gestión de Muestras Daphnia Magna</h1>
-        <a href="{{ route('daphnia-magna.create') }}"
-           class="btn btn-light text-dark border btn-action">
-           <i class="bi bi-plus-circle me-1"></i> Crear Entrada
+    <x-page-header title="Daphnia magna (agudo)" icon="bi-droplet" subtitle="Bioensayos">
+        <a href="{{ route('daphnia-magna.create') }}" class="btn btn-ucsc">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo bioensayo
         </a>
-    </div>
+    </x-page-header>
 
     <div class="row mb-4">
         <!-- Tabla Muestras Nuevas -->
@@ -224,7 +222,6 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     $(document).ready(function() {

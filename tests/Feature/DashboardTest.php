@@ -50,11 +50,11 @@ class DashboardTest extends TestCase
         $this->actingAs($this->userWithRole('Area Manager'))
             ->get('/dashboard')
             ->assertOk()
-            ->assertViewHas('totalRecepcionadas', 4)
-            ->assertViewHas('totalRechazadas', 1)
-            ->assertViewHas('totalSinIngresar', 1)
-            ->assertViewHas('totalEnProceso', 1)
-            ->assertViewHas('totalCompletadas', 1)
-            ->assertViewHas('bioassayTotals', fn ($totals) => $totals['Daphnia magna Agudo'] === 2);
+            ->assertViewHas('totals', fn ($totals) => $totals['received'] === 4
+                && $totals['rejected'] === 1
+                && $totals['not_entered'] === 1
+                && $totals['in_process'] === 1
+                && $totals['completed'] === 1)
+            ->assertViewHas('byType', fn ($byType) => $byType['Daphnia magna Agudo'] === ['validated' => 1, 'pending' => 1]);
     }
 }

@@ -13,6 +13,17 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    // Nombre del rol en el sistema => nombre del cargo en el laboratorio (se muestra en la barra superior)
+    public const ROLE_LABELS = [
+        'Analist'      => 'Analista',
+        'Manager'      => 'Encargado de área',
+        'Supervisor'   => 'Supervisor',
+        'Area Manager' => 'Jefe de Área',
+    ];
+
+    // Roles que ven datos de clientes (Supervisor y Jefe de Área)
+    public const ADMIN_ROLES = ['Supervisor', 'Area Manager'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -42,4 +53,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function roleLabel(): string
+    {
+        return self::ROLE_LABELS[$this->getRoleNames()->first()] ?? 'Sin rol';
+    }
 }

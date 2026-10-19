@@ -46,7 +46,7 @@
                 <table class="table table-bordered text-center mb-0" style="table-layout: fixed;">
                     <thead class="table-light">
                         <tr>
-                            <th>Volumen inóculo inicial (10⁴ cel/ml)</th>
+                            <th>Volumen inóculo inicial (10⁴ cel/mL)</th>
                             <th>Fecha de Cultivo (Stock)</th>
                         </tr>
                     </thead>
@@ -80,13 +80,13 @@
                             <th rowspan="2">Tasa de crecimiento control</th>
                         </tr>
                         <tr>
-                            <th>24h</th>
-                            <th>48h</th>
-                            <th>72h</th>
-                            <th>96h</th>
-                            <th>96h</th>
-                            <th>96h</th>
-                            <th>96h</th>
+                            <th>24 h</th>
+                            <th>48 h</th>
+                            <th>72 h</th>
+                            <th>96 h</th>
+                            <th>96 h</th>
+                            <th>96 h</th>
+                            <th>96 h</th>
                             <th>Inicial</th>
                             <th>Final</th>
                         </tr>
@@ -130,11 +130,11 @@
                         <tr>
                             <th>Inicial</th>
                             <th>Final</th>
-                            <th>24h</th><th>48h</th><th>72h</th>
-                            <th>24h</th><th>48h</th><th>72h</th>
-                            <th>24h</th><th>48h</th><th>72h</th>
-                            <th>24h</th><th>48h</th><th>72h</th>
-                            <th>96h</th><th>96h</th><th>96h</th><th>96h</th>
+                            <th>24 h</th><th>48 h</th><th>72 h</th>
+                            <th>24 h</th><th>48 h</th><th>72 h</th>
+                            <th>24 h</th><th>48 h</th><th>72 h</th>
+                            <th>24 h</th><th>48 h</th><th>72 h</th>
+                            <th>96 h</th><th>96 h</th><th>96 h</th><th>96 h</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -215,7 +215,6 @@ table input {
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

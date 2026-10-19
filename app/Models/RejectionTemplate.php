@@ -12,6 +12,7 @@ class RejectionTemplate extends Model
         'template_id',
         'internal_sample_code',
         'sample_identifier',
+        'client',
         'reason_for_rejection',
         'who_rejects',
         'who_informs_the_client',

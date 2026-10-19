@@ -89,7 +89,6 @@ class TisbeLongicornisWaterController extends Controller
             'analyst'        => 'nullable|string|max:255',
 
             // === TEMPORIZADOR ===
-            'timer_start' => 'nullable|string',
 
             // === DATOS PRELIMINARES ===
             'initial_inoculum'   => 'nullable|numeric',
@@ -116,8 +115,6 @@ class TisbeLongicornisWaterController extends Controller
             'bioassay_end'   => $validated['bioassay_end'] ?? null,
             'analyst'        => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Datos preliminares
             'initial_inoculum'   => $validated['initial_inoculum'] ?? null,

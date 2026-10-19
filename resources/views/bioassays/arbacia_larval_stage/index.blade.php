@@ -2,19 +2,11 @@
 
 @section('content')
 <div class="container">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-        <h2 class="mb-0 text-secondary">Bioensayos de Arbacia spatuligera (Estado Larval)</h2>
-        <a href="{{ route('arbacia-larval-stage.create') }}" class="btn btn-light text-dark border btn-action">
-            <i class="bi bi-plus-circle me-2"></i> Nuevo Bioensayo
+    <x-page-header title="Arbacia spatuligera estado larval" icon="bi-egg" subtitle="Bioensayos">
+        <a href="{{ route('arbacia-larval-stage.create') }}" class="btn btn-ucsc">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo bioensayo
         </a>
-    </div>
-
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    </x-page-header>
 
     <div class="row">
         <div class="col-12">
@@ -74,7 +66,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.form-delete').forEach(form => {

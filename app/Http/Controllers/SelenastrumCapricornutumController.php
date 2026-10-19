@@ -87,8 +87,6 @@ class SelenastrumCapricornutumController extends Controller
             'bioassay_end'   => 'nullable|date',
             'analyst'        => 'nullable|string|max:255',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Datos preliminares
             'initial_inoculum'   => 'nullable|numeric',
@@ -126,8 +124,6 @@ class SelenastrumCapricornutumController extends Controller
             'bioassay_end'   => $validated['bioassay_end'] ?? null,
             'analyst'        => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Datos preliminares
             'initial_inoculum'   => $validated['initial_inoculum'] ?? null,
