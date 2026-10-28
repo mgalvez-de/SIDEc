@@ -235,7 +235,8 @@
 
             {{-- ===================== BASE TEMPLATE (AL FONDO) ===================== --}}
             <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-                <div class="card-header bg-primary text-white"
+                {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+                <div class="card-header bg-primary text-white d-none d-print-block"
                     style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                     Información de la Plantilla
                 </div>
@@ -275,8 +276,7 @@
 
 @push('head')
     <!-- Flatpickr - Tema Dark -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
     <!-- Font Awesome para iconos -->
 
     <style>
@@ -488,8 +488,8 @@
 
 @push('scripts')
     <!-- Flatpickr -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    <script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

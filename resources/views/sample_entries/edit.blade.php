@@ -199,15 +199,16 @@
                                 'Arbacia spatuligera Fecundación',
                             ];
 
+                            // Formulario de cada bioensayo (antes había nombres de ruta mal escritos y solo funcionaba Daphnia)
                             $bioRoutes = [
-                                'Daphnia magna Agudo' => 'daphnia-magna.index',
-                                'Daphnia magna Crónico' => 'daphnia_magna_chronic.index',
-                                'Isochrysis galbana' => 'isochrysis-galbana.index',
-                                'Selenastrum capricornutum' => 'selenastum-capricornutum.index',
-                                'Tisbe biconicornis Agua' => 'tisbe-longicornis-water.index',
-                                'Tisbe biconicornis Sedimento' => 'tisbe-longicornis-riles.index',
-                                'Arbacia spatuligera Fecundación' => 'arbacia_fertilization.index',
-                                'Arbacia spatuligera Estado Larval' => 'arbacia_larval_stage.index',
+                                'Daphnia magna Agudo' => 'daphnia-magna.edit',
+                                'Daphnia magna Crónico' => 'daphnia-magna-chronic.edit',
+                                'Isochrysis galbana' => 'isochrysis-galbana.edit',
+                                'Selenastrum capricornutum' => 'selenastrum-capricornutum.edit',
+                                'Tisbe biconicornis Agua' => 'tisbe-longicornis-water.edit',
+                                'Tisbe biconicornis Sedimento' => 'tisbe-longicornis-riles.edit',
+                                'Arbacia spatuligera Fecundación' => 'arbacia-fertilization.edit',
+                                'Arbacia spatuligera Estado Larval' => 'arbacia-larval-stage.edit',
                             ];
                         @endphp
                         @foreach ($allBioassays as $index => $bio)
@@ -227,20 +228,16 @@
                                         @if (in_array($bio, $assignedBioassays ?? []))
                                             <span class="badge bg-success">Asignado</span>
                                             @php
+                                                // El bioensayo de esta muestra, buscado por la clave foránea (igual que en el detalle)
+                                                $bioassayRecord = $sampleEntry->assignedBioassays()->get($bio);
                                                 $route = $bioRoutes[$bio] ?? null;
-                                                $daphnia = null;
-                                                if ($route && str_contains($bio, 'Daphnia')) {
-                                                    $daphnia = \App\Models\DaphniaMagnaTemplate::where('sample', $sampleEntry->internal_sample_code)->first();
-                                                }
                                             @endphp
-                                            @if ($daphnia)
-                                                <a href="{{ route('daphnia-magna.edit', $daphnia->id) }}" class="btn btn-sm btn-primary">
+                                            @if ($bioassayRecord && $route)
+                                                <a href="{{ route($route, $bioassayRecord->id) }}" class="btn btn-sm btn-primary">
                                                     <i class="bi bi-box-arrow-up-right"></i> Ir al ensayo
                                                 </a>
-                                            @elseif ($route)
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled>No disponible</button>
                                             @else
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled>No implementado</button>
+                                                <button type="button" class="btn btn-sm btn-secondary" disabled>Sin registro</button>
                                             @endif
                                         @endif
                                     </div>
@@ -253,7 +250,8 @@
 
             {{-- ===================== BASE TEMPLATE ===================== --}}
             <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-                <div class="card-header bg-primary text-white"
+                {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+                <div class="card-header bg-primary text-white d-none d-print-block"
                     style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                     Información de la Plantilla
                 </div>
@@ -295,8 +293,7 @@
 
 @push('head')
     <!-- Flatpickr - Tema Dark -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
     <!-- Font Awesome para iconos -->
 
     <style>
@@ -512,8 +509,8 @@
 
 @push('scripts')
     <!-- Flatpickr -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    <script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

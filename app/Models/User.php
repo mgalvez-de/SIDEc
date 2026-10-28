@@ -21,8 +21,13 @@ class User extends Authenticatable
         'Area Manager' => 'Jefe de Área',
     ];
 
-    // Roles que ven datos de clientes (Supervisor y Jefe de Área)
+    // Roles que ven datos de clientes y administran usuarios (Supervisor y Jefe de Área)
     public const ADMIN_ROLES = ['Supervisor', 'Area Manager'];
+
+    // Igual que el valor por defecto de la columna: un usuario nuevo nace activo
+    protected $attributes = [
+        'active' => true,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +38,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'active',
     ];
 
     /**
@@ -52,6 +58,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'active' => 'boolean',
     ];
 
     public function roleLabel(): string

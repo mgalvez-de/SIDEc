@@ -23,14 +23,14 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
     {{-- SweetAlert va aquí arriba para que esté listo antes que los scripts de cualquier página --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -166,10 +166,20 @@
                 margin-left: var(--sidebar-width);
             }
 
-            body.has-sidebar #sidebarToggle,
             body.has-sidebar #sidebarClose,
             body.has-sidebar #sidebarOverlay {
                 display: none !important;
+            }
+
+            /* Con el botón ☰ se puede ocultar el menú para tener más espacio (tablas anchas) */
+            body.has-sidebar.sidebar-hidden #sidebar {
+                left: calc(-1 * var(--sidebar-width));
+            }
+
+            body.has-sidebar.sidebar-hidden .app-navbar,
+            body.has-sidebar.sidebar-hidden #content,
+            body.has-sidebar.sidebar-hidden > footer {
+                margin-left: 0;
             }
         }
 
@@ -216,6 +226,17 @@
             background-color: var(--ucsc-red-dark);
             border-color: var(--ucsc-red-dark);
             color: #fff;
+        }
+
+        /* Campos con calendario (flatpickr): ícono de calendario y ancho suficiente para leer la fecha completa */
+        input.flatpickr-input {
+            min-width: 165px;
+            padding-right: 2rem !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z'/%3E%3Cpath d='M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.6rem center;
+            background-size: 14px;
+            cursor: pointer;
         }
 
         /* En tablet el texto de los botones se partía en dos líneas; mejor que la fila completa baje. */
@@ -386,6 +407,12 @@
                                 <i class="bi bi-x-circle me-2"></i> Rechazos
                             </a>
                         </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('users.index') }}"
+                                class="nav-link {{ request()->is('users', 'users/*') ? 'active' : '' }}">
+                                <i class="bi bi-people me-2"></i> Usuarios
+                            </a>
+                        </li>
                     @endrole
 
                     {{-- Bioensayos: se despliega hacia abajo y queda abierto si estás en uno de ellos --}}
@@ -462,7 +489,13 @@
 
     @if ($showMenu)
         <script>
-            // Abrir y cerrar el menú lateral (en pantallas chicas; en las grandes siempre está visible)
+            // Menú lateral. En pantallas chicas el botón ☰ lo abre encima de la página; en las grandes
+            // (desde 1200 px) el menú está fijo y el botón lo oculta o lo muestra (se recuerda la preferencia).
+            const pantallaGrande = () => window.matchMedia('(min-width: 1200px)').matches;
+            try {
+                if (localStorage.getItem('sidec-menu-oculto') === '1') document.body.classList.add('sidebar-hidden');
+            } catch (e) {}
+
             document.addEventListener('DOMContentLoaded', function () {
                 const sidebar = document.getElementById('sidebar');
                 const overlay = document.getElementById('sidebarOverlay');
@@ -477,7 +510,11 @@
                     overlay.classList.remove('active');
                 }
 
-                document.getElementById('sidebarToggle').addEventListener('click', openSidebar);
+                document.getElementById('sidebarToggle').addEventListener('click', function () {
+                    if (!pantallaGrande()) return openSidebar();
+                    const oculto = document.body.classList.toggle('sidebar-hidden');
+                    try { localStorage.setItem('sidec-menu-oculto', oculto ? '1' : '0'); } catch (e) {}
+                });
                 document.getElementById('sidebarClose').addEventListener('click', closeSidebar);
                 overlay.addEventListener('click', closeSidebar);
             });
@@ -490,13 +527,20 @@
             const form = event.target;
             if (!form.matches('form[data-confirm]')) return;
 
+            // Si SweetAlert no cargó (sin internet o bloqueado), se usa la confirmación del navegador.
+            // Antes el botón quedaba sin hacer nada (por ejemplo, "Cerrar sesión").
+            if (!window.Swal) {
+                if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+                return;
+            }
+
             event.preventDefault();
             Swal.fire({
                 title: form.dataset.confirm,
                 text: form.dataset.confirmText || '',
                 icon: form.dataset.confirmIcon || 'warning',
                 showCancelButton: true,
-                confirmButtonColor: form.dataset.confirmColor || '#dc3545',
+                confirmButtonColor: '#D12421',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: form.dataset.confirmButton || 'Sí, continuar',
                 cancelButtonText: 'Cancelar'
@@ -513,6 +557,9 @@
     @stack('scripts')
 
     @stack('styles')
+
+    {{-- Tema institucional (rojo UCSC y blanco): va al final para mandar por sobre los colores de cada vista --}}
+    <link href="{{ asset('css/sidec-theme.css') }}" rel="stylesheet">
 
     @if ($showMenu)
         <footer class="mt-auto py-3 bg-white border-top text-muted small">

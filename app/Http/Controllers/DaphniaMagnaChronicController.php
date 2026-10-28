@@ -59,7 +59,8 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function show(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
-        return view('bioassays.daphnia_magna_chronic.show', compact('daphnia_magna_chronic'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('daphnia-magna-chronic.edit', $daphnia_magna_chronic);
     }
 
     /**

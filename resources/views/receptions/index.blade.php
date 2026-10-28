@@ -152,9 +152,9 @@
 
 @push('styles')
     <!-- DataTables Bootstrap 5 CSS -->
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.css') }}" rel="stylesheet">
     <!-- Toastr CSS -->
 
     <style>
@@ -482,16 +482,16 @@
 
 @push('scripts')
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
     <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap5.min.js') }}"></script>
     <!-- DataTables Buttons -->
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="{{ asset('vendor/datatables/buttons/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('vendor/jszip/jszip.min.js') }}"></script>
 
     <script>
         $(document).ready(function() {
@@ -506,6 +506,12 @@
                 columnDefs: [{
                     orderable: false,
                     targets: [0, 13] // Checkbox y Acciones no ordenables
+                }, {
+                    // Para que la tabla quepa en la pantalla se ocultan las columnas menos usadas
+                    // (ID, fecha de muestreo, entregado por, recibido por y temperatura corregida).
+                    // Siguen en "Ver" y se exportan igual a Excel.
+                    visible: false,
+                    targets: [2, 6, 7, 9, 12]
                 }],
                 language: {
                     search: "_INPUT_",
@@ -528,7 +534,8 @@
                         title: 'Recepciones_' + new Date().toISOString().slice(0, 10),
                         className: 'd-none',
                         exportOptions: {
-                            columns: ':visible:not(:first-child):not(:last-child)'
+                            // Todas las columnas (también las ocultas), menos la casilla y Acciones
+                            columns: (index) => index !== 0 && index !== 13
                         }
                     },
                     {
@@ -558,9 +565,10 @@
             });
 
             // Aplicar búsqueda individual por columna
+            // (":visIdx" = posición entre las columnas visibles, porque las ocultas no tienen filtro en pantalla)
             $('.column-search').on('keyup change', function() {
                 const columnIndex = $(this).parent().index();
-                table.column(columnIndex).search(this.value).draw();
+                table.column(columnIndex + ':visIdx').search(this.value).draw();
             });
 
             // Botones externos del dropdown Exportar

@@ -159,4 +159,15 @@ class DashboardFiltersTest extends TestCase
 
         $this->assertDatabaseHas('rejection_templates', ['internal_sample_code' => 'M-9', 'client' => 'Salmonera Fiordo Sur SpA']);
     }
+
+    public function test_editing_a_rejection_validates_its_fields()
+    {
+        $rejection = RejectionTemplate::create(['template_id' => $this->template->id, 'internal_sample_code' => 'M-1']);
+
+        $this->actingAs($this->userWithRole('Supervisor'))
+            ->put(route('rejections.update', $rejection), [
+                'title' => 'RECHAZO DE MUESTRAS', 'version' => '1', 'client' => str_repeat('x', 300),
+            ])
+            ->assertSessionHasErrors('client');
+    }
 }

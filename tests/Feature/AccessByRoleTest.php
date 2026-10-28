@@ -61,14 +61,16 @@ class AccessByRoleTest extends TestCase
             ->assertOk()
             ->assertSee(url('/receptions'))
             ->assertSee(url('/rejections'))
-            ->assertSee(url('/sample_entries'));
+            ->assertSee(url('/sample_entries'))
+            ->assertSee(route('users.index'));
 
         $this->actingAs($this->userWithRole('Manager'))
             ->get(route('sample_entries.index'))
             ->assertOk()
             ->assertSee(url('/dashboard'))   // el Encargado de área ve el Dashboard (sin clientes)
             ->assertDontSee(url('/receptions'))
-            ->assertDontSee(url('/rejections'));
+            ->assertDontSee(url('/rejections'))
+            ->assertDontSee(route('users.index'));
     }
 
     // El menú marca la sección actual; "daphnia-magna-chronic" no debe marcar también "daphnia-magna"

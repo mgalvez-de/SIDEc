@@ -215,14 +215,14 @@
 
                 @php
                     $availableBioassays = [
-                        ['name' => 'Daphnia magna Agudo', 'icon' => 'fa-bug', 'color' => 'success'],
-                        ['name' => 'Daphnia magna Crónico', 'icon' => 'fa-bug', 'color' => 'success'],
-                        ['name' => 'Isochrysis galbana', 'icon' => 'fa-seedling', 'color' => 'info'],
-                        ['name' => 'Selenastrum capricornutum', 'icon' => 'fa-leaf', 'color' => 'lime'],
-                        ['name' => 'Tisbe biconicornis Agua', 'icon' => 'fa-fish', 'color' => 'purple'],
-                        ['name' => 'Tisbe biconicornis Sedimento', 'icon' => 'fa-fish', 'color' => 'orange'],
-                        ['name' => 'Arbacia spatuligera Estado Larval', 'icon' => 'fa-star', 'color' => 'pink'],
-                        ['name' => 'Arbacia spatuligera Fecundación', 'icon' => 'fa-star', 'color' => 'pink'],
+                        ['name' => 'Daphnia magna Agudo', 'icon' => 'bi-droplet', 'color' => 'success'],
+                        ['name' => 'Daphnia magna Crónico', 'icon' => 'bi-droplet-half', 'color' => 'success'],
+                        ['name' => 'Isochrysis galbana', 'icon' => 'bi-water', 'color' => 'info'],
+                        ['name' => 'Selenastrum capricornutum', 'icon' => 'bi-flower3', 'color' => 'lime'],
+                        ['name' => 'Tisbe biconicornis Agua', 'icon' => 'bi-bug', 'color' => 'purple'],
+                        ['name' => 'Tisbe biconicornis Sedimento', 'icon' => 'bi-bezier2', 'color' => 'orange'],
+                        ['name' => 'Arbacia spatuligera Estado Larval', 'icon' => 'bi-egg', 'color' => 'pink'],
+                        ['name' => 'Arbacia spatuligera Fecundación', 'icon' => 'bi-egg-fried', 'color' => 'pink'],
                     ];
                     $selected = old('assigned_bioassays', $reception->assigned_bioassays ?? []);
                 @endphp
@@ -235,7 +235,7 @@
                                    {{ in_array($assay['name'], $selected) ? 'checked' : '' }}>
                             <label class="bioassay-label" for="assay_{{ $index }}">
                                 <div class="bioassay-icon">
-                                    <i class="fas {{ $assay['icon'] }}"></i>
+                                    <i class="bi {{ $assay['icon'] }}"></i>
                                 </div>
                                 <div class="bioassay-info">
                                     <span class="bioassay-name">{{ $assay['name'] }}</span>
@@ -259,7 +259,8 @@
 
         {{-- ===================== INFORMACIÓN DE LA PLANTILLA ===================== --}}
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-            <div class="card-header bg-secondary-subtle text-dark"
+            {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+            <div class="card-header bg-secondary-subtle text-dark d-none d-print-block"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                 <i class="bi bi-file-earmark-text me-2"></i>Información de la Plantilla
             </div>
@@ -314,8 +315,7 @@
 @endsection
 
 @push('head')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
 @endpush
 
 @push('styles')
@@ -602,8 +602,8 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

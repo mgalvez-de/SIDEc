@@ -171,8 +171,7 @@
 @endsection
 
 @push('head')
-    <!-- Flatpickr con tema corporativo -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
 @endpush
 
 @push('styles')
@@ -207,8 +206,8 @@ table input {
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

@@ -59,7 +59,8 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function show(ArbaciaLarvalStage $arbacia_larval_stage)
     {
-        return view('bioassays.arbacia_larval_stage.show', compact('arbacia_larval_stage'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('arbacia-larval-stage.edit', $arbacia_larval_stage);
     }
 
     /**

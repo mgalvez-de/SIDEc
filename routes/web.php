@@ -12,6 +12,7 @@ use App\Http\Controllers\SampleEntryController;
 use App\Http\Controllers\SelenastrumCapricornutumController;
 use App\Http\Controllers\TisbeLongicornisRilesController;
 use App\Http\Controllers\TisbeLongicornisWaterController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,13 +29,17 @@ Auth::routes(['register' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Rutas protegidas por autenticación y roles
-Route::middleware(['auth'])->group(function () {
+// Rutas protegidas por autenticación, cuenta activa y roles
+Route::middleware(['auth', 'active'])->group(function () {
 
-    // Receptions, Rejections -> Supervisor y Area Manager
+    // Receptions, Rejections y Usuarios -> Supervisor y Area Manager
     Route::middleware(['role:Supervisor|Area Manager'])->group(function () {
         Route::resource('receptions', ReceptionTemplateController::class);
         Route::resource('rejections', RejectionTemplateController::class);
+
+        Route::resource('users', UserController::class)->except(['show', 'destroy']);
+        Route::patch('users/{user}/toggle-active', [UserController::class, 'toggleActive'])
+            ->name('users.toggle-active');
     });
 
     // Dashboard -> Manager, Supervisor y Area Manager (el Manager lo ve sin datos de clientes)

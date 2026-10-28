@@ -220,7 +220,8 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function show(DaphniaMagnaTemplate $daphnia_magna)
     {
-        return view('bioassays.daphnia_magna.show', compact('daphnia_magna'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('daphnia-magna.edit', $daphnia_magna);
     }
 
     /**

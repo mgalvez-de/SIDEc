@@ -59,7 +59,8 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function show(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
-        return view('bioassays.selenastrum_capricornutum.show', compact('selenastrum_capricornutum'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('selenastrum-capricornutum.edit', $selenastrum_capricornutum);
     }
 
     /**

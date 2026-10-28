@@ -59,7 +59,8 @@ class ArbaciaFertilizationController extends Controller
      */
     public function show(ArbaciaFertilization $arbacia_fertilization)
     {
-        return view('bioassays.arbacia_fertilization.show', compact('arbacia_fertilization'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('arbacia-fertilization.edit', $arbacia_fertilization);
     }
 
     /**

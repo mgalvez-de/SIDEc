@@ -13,13 +13,13 @@
         'Rechazada'    => 'bg-danger',
     ];
 
-    // Tarjetas: [texto, valor, ícono, color]. Rechazadas solo para Supervisor y Jefe de Área.
+    // Tarjetas: [texto, valor, ícono, color institucional]. Rechazadas solo para Supervisor y Jefe de Área.
     $cards = array_filter([
-        ['Recibidas', $totals['received'], 'bi-inbox-fill', '#3498db'],
-        ['Sin ingresar', $totals['not_entered'], 'bi-hourglass', '#7f8c8d'],
-        ['En proceso', $totals['in_process'], 'bi-gear-wide-connected', '#f39c12'],
-        ['Completadas', $totals['completed'], 'bi-check-circle-fill', '#27ae60'],
-        $canSeeClients ? ['Rechazadas', $totals['rejected'], 'bi-x-circle-fill', '#c0392b'] : null,
+        ['Recibidas', $totals['received'], 'bi-inbox-fill', '#D12421'],
+        ['Sin ingresar', $totals['not_entered'], 'bi-hourglass', '#8a8f94'],
+        ['En proceso', $totals['in_process'], 'bi-gear-wide-connected', '#E0605D'],
+        ['Completadas', $totals['completed'], 'bi-check-circle-fill', '#9E1B19'],
+        $canSeeClients ? ['Rechazadas', $totals['rejected'], 'bi-x-circle-fill', '#343a40'] : null,
     ]);
 
     // Datos de los gráficos
@@ -191,7 +191,15 @@
                         <tr class="filters">
                             <th><input type="text" class="form-control form-control-sm column-search" placeholder="Código"></th>
                             @if ($canSeeClients)
-                                <th><input type="text" class="form-control form-control-sm column-search" placeholder="Cliente"></th>
+                                {{-- Empresa: lista para elegir (escribiendo había que acertar con las tildes, ej. "Acuícola") --}}
+                                <th>
+                                    <select class="form-select form-select-sm column-select" aria-label="Filtrar por cliente">
+                                        <option value="">Todos los clientes</option>
+                                        @foreach ($rows->pluck('client')->filter()->unique()->sort() as $clientName)
+                                            <option value="{{ $clientName }}">{{ $clientName }}</option>
+                                        @endforeach
+                                    </select>
+                                </th>
                             @endif
                             <th><input type="text" class="form-control form-control-sm column-search" placeholder="dd-mm-aaaa"></th>
                             <th><input type="text" class="form-control form-control-sm column-search" placeholder="Estado"></th>
@@ -264,7 +272,7 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="{{ asset('vendor/datatables/dataTables.bootstrap5.min.css') }}">
     <style>
         .indicator-card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -281,6 +289,11 @@
             padding: 6px 4px !important;
         }
 
+        .filters .column-select {
+            font-size: 0.8rem;
+            min-width: 150px;
+        }
+
         .filters .column-search {
             font-size: 0.8rem;
             min-width: 80px;
@@ -295,16 +308,16 @@
 @endpush
 
 @push('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/chartjs/chart.umd.min.js') }}"></script>
     <script>
         $(function () {
             // ========== Gráfico de estados (dona) ==========
             const stateData = @json($stateChart);
             const stateColors = {
-                'Completadas': '#27ae60', 'En proceso': '#f39c12', 'Sin ingresar': '#95a5a6', 'Rechazadas': '#c0392b'
+                'Completadas': '#9E1B19', 'En proceso': '#E0605D', 'Sin ingresar': '#b8bcc0', 'Rechazadas': '#343a40'
             };
             const stateCanvas = document.getElementById('stateChart');
             if (stateCanvas) {
@@ -330,8 +343,8 @@
                     data: {
                         labels: Object.keys(byType),
                         datasets: [
-                            { label: 'Validados', data: Object.values(byType).map((t) => t.validated), backgroundColor: '#27ae60' },
-                            { label: 'Pendientes', data: Object.values(byType).map((t) => t.pending), backgroundColor: '#f39c12' },
+                            { label: 'Validados', data: Object.values(byType).map((t) => t.validated), backgroundColor: '#9E1B19' },
+                            { label: 'Pendientes', data: Object.values(byType).map((t) => t.pending), backgroundColor: '#F2B8B7' },
                         ]
                     },
                     options: {
@@ -347,7 +360,7 @@
             const table = $('#samplesTable');
             const columns = table.find('thead tr:first th').length;
             const samplesTable = table.DataTable({
-                language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+                language: { url: '{{ asset('vendor/datatables/es-ES.json') }}' },
                 pageLength: 10,
                 lengthMenu: [10, 25, 50, 100],
                 order: [[columns - 4, 'desc']],                   // "Recepción" (se corre si está la columna Cliente)
@@ -364,6 +377,12 @@
 
             table.find('.column-search').on('keyup change', function () {
                 searchColumn($(this).parent().index(), this.value);
+            });
+
+            // Lista de clientes: muestra solo las filas de esa empresa (nombre exacto)
+            table.find('.column-select').on('change', function () {
+                const exact = this.value ? '^' + $.fn.dataTable.util.escapeRegex(this.value) + '$' : '';
+                samplesTable.column($(this).parent().index()).search(exact, true, false).draw();
             });
 
             // Botón del aviso de plazo: deja en la tabla solo las muestras vencidas o por vencer

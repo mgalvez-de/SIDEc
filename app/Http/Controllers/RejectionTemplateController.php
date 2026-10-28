@@ -69,6 +69,16 @@ class RejectionTemplateController extends Controller
             'code'     => 'nullable|string|max:50',
             'version'  => 'required|string|min:1',
             'validity' => 'nullable|string|max:255',
+
+            // Mismas reglas que al crear (antes al editar no se validaban)
+            'internal_sample_code'  => 'nullable|string|max:255',
+            'sample_identifier'     => 'nullable|string|max:255',
+            'client'                => 'nullable|string|max:255',
+            'reason_for_rejection'  => 'nullable|string|max:255',
+            'who_rejects'           => 'nullable|string|max:255',
+            'who_informs_the_client'=> 'nullable|string|max:255',
+            'customer_instructions' => 'nullable|string|max:255',
+            'observations'          => 'nullable|string|max:300',
         ]);
 
         // Actualizar Template

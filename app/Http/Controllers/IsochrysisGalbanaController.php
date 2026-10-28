@@ -62,7 +62,8 @@ class IsochrysisGalbanaController extends Controller
      */
     public function show(IsochrysisGalbana $isochrysis_galbana)
     {
-        return view('bioassays.isochrysis_galbana.show', compact('isochrysis_galbana'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('isochrysis-galbana.edit', $isochrysis_galbana);
     }
 
     /**

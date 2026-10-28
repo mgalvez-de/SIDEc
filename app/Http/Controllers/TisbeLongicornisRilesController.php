@@ -59,7 +59,8 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function show(TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
-        return view('bioassays.tisbe_longicornis_riles.show', compact('tisbe_longicornis_riles'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('tisbe-longicornis-riles.edit', $tisbe_longicornis_riles);
     }
 
     /**

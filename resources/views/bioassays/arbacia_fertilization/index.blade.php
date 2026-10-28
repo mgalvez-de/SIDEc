@@ -32,9 +32,6 @@
                                 <td>{{ $bioassay->main_sample }}</td>
                                 <td>{{ \App\Support\NumberFormat::format($bioassay->fertilization_percentage) ?? 'N/A' }}%</td>
                                 <td>
-                                    <a href="{{ route('arbacia-fertilization.show', $bioassay->id) }}" class="btn btn-sm btn-light text-dark border btn-action" title="Ver">
-                                        <i class="bi bi-eye"></i> Ver
-                                    </a>
                                     <a href="{{ route('arbacia-fertilization.edit', $bioassay->id) }}" class="btn btn-sm btn-light text-dark border btn-edit me-1" title="Editar">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>

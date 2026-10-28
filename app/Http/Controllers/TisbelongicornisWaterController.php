@@ -60,7 +60,8 @@ class TisbeLongicornisWaterController extends Controller
      */
     public function show(TisbeLongicornisWater $tisbe_longicornis_water)
     {
-        return view('bioassays.tisbe_longicornis_water.show', compact('tisbe_longicornis_water'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('tisbe-longicornis-water.edit', $tisbe_longicornis_water);
     }
 
     /**

@@ -295,7 +295,8 @@
 
         {{-- ===================== BASE TEMPLATE ===================== --}}
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-            <div class="card-header bg-primary text-white"
+            {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+            <div class="card-header bg-primary text-white d-none d-print-block"
                 style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                 Información de la Plantilla
             </div>
