@@ -52,6 +52,58 @@ class ButtonsAndLinksTest extends TestCase
             ->assertSee('<option value="Acuícola Mar Austral SpA">', false);
     }
 
+    // Antes las tres tablas (Nuevas, En proceso, Historial) mostraban los mismos bioensayos
+    public function test_bioassay_list_separates_new_in_process_and_validated()
+    {
+        $entryId = \App\Models\SampleEntry::first()->id;
+        $nueva = \App\Models\DaphniaMagnaTemplate::create(['sample' => 'N-1', 'sample_entry_id' => $entryId]);
+        $enProceso = \App\Models\DaphniaMagnaTemplate::create(['sample' => 'P-1', 'sample_entry_id' => $entryId, 'preliminary_start_at' => now()]);
+        $validada = \App\Models\DaphniaMagnaTemplate::create(['sample' => 'V-1', 'sample_entry_id' => $entryId, 'preliminary_start_at' => now()->subDays(5), 'validated_at' => now()]);
+
+        $this->actingAs(User::where('email', 'analist@a')->first())
+            ->get(route('daphnia-magna.index'))
+            ->assertOk()
+            ->assertViewHas('newBioassays', fn ($c) => $c->contains($nueva) && !$c->contains($enProceso) && !$c->contains($validada))
+            ->assertViewHas('inProcessBioassays', fn ($c) => $c->contains($enProceso) && !$c->contains($nueva) && !$c->contains($validada))
+            ->assertViewHas('validatedBioassays', fn ($c) => $c->contains($validada) && !$c->contains($nueva))
+            // "Comenzar análisis" abre ESE bioensayo (antes abría uno nuevo en blanco)
+            ->assertSee(route('daphnia-magna.edit', $nueva));
+    }
+
+    // Rechazar desde Recepciones: el formulario llega con los datos de la muestra
+    public function test_reception_can_be_rejected_from_the_list()
+    {
+        $admin = User::where('email', 'areamanager@a')->first();
+        $reception = \App\Models\ReceptionTemplate::where('internal_sample_code', 'M-2026-013')->first(); // recibida, sin ingresar
+
+        $this->actingAs($admin)->get(route('receptions.index'))
+            ->assertSee(route('rejections.create', ['code' => 'M-2026-013']), false);
+
+        $this->actingAs($admin)->get(route('rejections.create', ['code' => 'M-2026-013']))
+            ->assertOk()
+            ->assertSee('value="M-2026-013"', false)
+            ->assertSee('value="' . e($reception->client) . '"', false);
+
+        // Ya rechazada: en vez del botón aparece "Rechazada"
+        $rejection = \App\Models\RejectionTemplate::create(['template_id' => $reception->template_id, 'internal_sample_code' => 'M-2026-013']);
+        $this->actingAs($admin)->get(route('receptions.index'))
+            ->assertDontSee(route('rejections.create', ['code' => 'M-2026-013']), false)
+            ->assertSee(route('rejections.show', $rejection), false);
+    }
+
+    // El listado de rechazos mostraba solo los últimos 10
+    public function test_rejection_list_shows_all_rejections()
+    {
+        $template = \App\Models\Template::create(['title' => 'RECHAZO', 'type' => 'rejection']);
+        foreach (range(1, 12) as $i) {
+            \App\Models\RejectionTemplate::create(['template_id' => $template->id, 'internal_sample_code' => "R-$i"]);
+        }
+
+        $this->actingAs(User::where('email', 'areamanager@a')->first())
+            ->get(route('rejections.index'))
+            ->assertViewHas('rejections', fn ($rejections) => $rejections->count() === 15); // 12 + 3 de demostración
+    }
+
     // El calendario, las confirmaciones y la traducción de las tablas ya no dependen de internet
     public function test_libraries_are_served_from_the_project()
     {

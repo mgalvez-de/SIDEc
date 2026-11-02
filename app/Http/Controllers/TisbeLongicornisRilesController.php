@@ -15,8 +15,12 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function index()
     {
-        $bioassays = TisbeLongicornisRiles::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.tisbe_longicornis_riles.index', compact('bioassays'));
+        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
+        [$validatedBioassays, $pending] = TisbeLongicornisRiles::latest()->get()
+            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
+        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
+
+        return view('bioassays.tisbe_longicornis_riles.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
     }
 
     /**

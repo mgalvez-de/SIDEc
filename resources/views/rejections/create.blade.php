@@ -26,17 +26,17 @@
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Código Interno de Muestra</label>
                             <input type="text" name="internal_sample_code" class="form-control navigable"
-                                value="{{ old('internal_sample_code') }}" placeholder="Ej: COD-2024-001">
+                                value="{{ old('internal_sample_code', $reception->internal_sample_code ?? '') }}" placeholder="Ej: COD-2024-001">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Identificación de la Muestra</label>
                             <input type="text" name="sample_identifier" class="form-control navigable"
-                                value="{{ old('sample_identifier') }}" placeholder="Ej: Muestra-001">
+                                value="{{ old('sample_identifier', $reception->sample_identifier ?? '') }}" placeholder="Ej: Muestra-001">
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Cliente</label>
                             <input type="text" name="client" class="form-control navigable"
-                                value="{{ old('client') }}" placeholder="Ej: Acuícola Mar Austral SpA">
+                                value="{{ old('client', $reception->client ?? '') }}" placeholder="Ej: Acuícola Mar Austral SpA">
                         </div>
                     </div>
 

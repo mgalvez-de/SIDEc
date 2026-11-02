@@ -236,19 +236,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="remember" id="remember"
-                                    {{ old('remember') ? 'checked' : '' }}>
-                                <label class="form-check-label" for="remember">Recordarme</label>
-                            </div>
-                            @if (Route::has('password.request'))
-                                <a class="small text-decoration-none" href="{{ route('password.request') }}"
-                                    style="color: var(--ucsc-red);">¿Olvidaste tu contraseña?</a>
-                            @endif
-                        </div>
-
-                        <button type="submit" class="btn btn-login w-100">
+                        <button type="submit" class="btn btn-login w-100 mt-2">
                             <i class="bi bi-box-arrow-in-right me-1"></i> Entrar
                         </button>
                     </form>

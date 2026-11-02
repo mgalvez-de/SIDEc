@@ -25,17 +25,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $sample)
+                        @forelse($newBioassays as $sample)
                             <tr>
                                 <td>{{ $sample->id }}</td>
                                 <td>{{ $sample->sample ?? 'N/A' }}</td>
                                 <td>{{ $sample->analyst ?? 'N/A' }}</td>
                                 <td>{{ $sample->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('selenastrum-capricornutum.create') }}"
+                                    <a href="{{ route('selenastrum-capricornutum.edit', $sample) }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Comenzar Análisis
                                     </a>
+                                    <form action="{{ route('selenastrum-capricornutum.destroy', $sample) }}" method="POST" class="d-inline form-delete" data-confirm="¿Eliminar este bioensayo?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-button="Sí, eliminar">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -68,7 +74,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $sample)
+                        @forelse($inProcessBioassays as $sample)
                             <tr>
                                 <td>{{ $sample->id }}</td>
                                 <td>{{ $sample->sample ?? 'N/A' }}</td>
@@ -79,6 +85,12 @@
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Continuar Análisis
                                     </a>
+                                    <form action="{{ route('selenastrum-capricornutum.destroy', $sample) }}" method="POST" class="d-inline form-delete" data-confirm="¿Eliminar este bioensayo?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-button="Sí, eliminar">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -116,7 +128,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $sample)
+                        @forelse($validatedBioassays as $sample)
                             <tr>
                                 <td>
                                     <input type="checkbox" class="row-select" value="{{ $sample->id }}">

@@ -9,13 +9,19 @@ class RejectionTemplateController extends Controller
 {
     public function index()
     {
-        $rejections = RejectionTemplate::with('template')->latest()->paginate(10);
+        // Todos: la tabla (DataTables) pagina en el navegador. Antes con paginate(10) solo se veían los últimos 10
+        $rejections = RejectionTemplate::with('template')->latest()->get();
         return view('rejections.index', compact('rejections'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('rejections.create');
+        // Desde Recepciones ("Rechazar"): el formulario llega con los datos de esa muestra
+        $reception = $request->filled('code')
+            ? \App\Models\ReceptionTemplate::where('internal_sample_code', $request->query('code'))->first()
+            : null;
+
+        return view('rejections.create', compact('reception'));
     }
 
     public function store(Request $request)

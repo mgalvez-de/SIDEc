@@ -16,8 +16,12 @@ class IsochrysisGalbanaController extends Controller
      */
     public function index()
     {
-        $bioassays = IsochrysisGalbana::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.isochrysis_galbana.index', compact('bioassays'));
+        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
+        [$validatedBioassays, $pending] = IsochrysisGalbana::latest()->get()
+            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
+        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
+
+        return view('bioassays.isochrysis_galbana.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
     }
 
     /**

@@ -25,29 +25,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $bioassay)
+                        @foreach($newBioassays as $bioassay)
                             <tr>
                                 <td>{{ $bioassay->id }}</td>
                                 <td>{{ $bioassay->sample ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->analyst ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('daphnia-magna.create') }}"
+                                    <a href="{{ route('daphnia-magna.edit', $bioassay) }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Comenzar Análisis
                                     </a>
+                                    <form action="{{ route('daphnia-magna.destroy', $bioassay) }}" method="POST" class="d-inline form-delete">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <div class="text-muted d-flex flex-column align-items-center">
-                                        <i class="bi bi-inbox fs-2 mb-2"></i>
-                                        <span>No hay nuevas muestras</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -68,7 +65,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $bioassay)
+                        @foreach($inProcessBioassays as $bioassay)
                             <tr>
                                 <td>{{ $bioassay->id }}</td>
                                 <td>{{ $bioassay->sample ?? 'N/A' }}</td>
@@ -79,18 +76,15 @@
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Continuar Análisis
                                     </a>
+                                    <form action="{{ route('daphnia-magna.destroy', $bioassay) }}" method="POST" class="d-inline form-delete">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4">
-                                    <div class="text-muted d-flex flex-column align-items-center">
-                                        <i class="bi bi-inbox fs-2 mb-2"></i>
-                                        <span>No hay muestras en proceso.</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -116,7 +110,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $bioassay)
+                        @foreach($validatedBioassays as $bioassay)
                             <tr>
                                 <td>
                                     <input type="checkbox" class="row-select" value="{{ $bioassay->id }}">
@@ -138,16 +132,7 @@
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-4">
-                                    <div class="text-muted d-flex flex-column align-items-center">
-                                        <i class="bi bi-inbox fs-2 mb-2"></i>
-                                        <span>No hay historial de muestras.</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -237,7 +222,8 @@
                 info: "Mostrando _START_ a _END_ de _TOTAL_ entradas",
                 infoEmpty: "No hay entradas",
                 paginate: { first: "Primero", last: "Último", next: "Siguiente", previous: "Anterior" },
-                zeroRecords: "No se encontraron coincidencias"
+                zeroRecords: "No se encontraron coincidencias",
+                emptyTable: "No hay bioensayos en esta lista"
             },
             columnDefs: [{ orderable: false, targets: [-1] }]
         });

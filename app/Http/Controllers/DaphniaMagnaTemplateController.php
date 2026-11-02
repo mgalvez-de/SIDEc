@@ -16,8 +16,12 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function index()
     {
-        $bioassays = DaphniaMagnaTemplate::latest()->paginate(10);
-        return view('bioassays.daphnia_magna.index', compact('bioassays'));
+        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
+        [$validatedBioassays, $pending] = DaphniaMagnaTemplate::latest()->get()
+            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
+        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
+
+        return view('bioassays.daphnia_magna.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
     }
 
     /**

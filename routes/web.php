@@ -25,7 +25,9 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Auth::routes(['register' => false]);
+// Sin registro público ni "¿Olvidaste tu contraseña?": las cuentas y contraseñas las maneja
+// el Supervisor o el Jefe de Área en la pantalla Usuarios
+Auth::routes(['register' => false, 'reset' => false]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 

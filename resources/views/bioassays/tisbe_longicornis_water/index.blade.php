@@ -26,7 +26,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $bioassay)
+                        @forelse($newBioassays as $bioassay)
                             <tr>
                                 <td>{{ $bioassay->id }}</td>
                                 <td>{{ $bioassay->sample ?? 'N/A' }}</td>
@@ -34,10 +34,17 @@
                                 <td>{{ $bioassay->analyst ?? 'N/A' }}</td>
                                 <td>{{ $bioassay->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('tisbe-longicornis-water.create') }}"
+                                    <a href="{{ route('tisbe-longicornis-water.edit', $bioassay) }}"
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Comenzar Análisis
                                     </a>
+                                    <form action="{{ route('tisbe-longicornis-water.destroy', $bioassay) }}" method="POST" class="d-inline form-delete" data-confirm="¿Eliminar este bioensayo?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-button="Sí, eliminar">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -71,7 +78,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $bioassay)
+                        @forelse($inProcessBioassays as $bioassay)
                             <tr>
                                 <td>{{ $bioassay->id }}</td>
                                 <td>{{ $bioassay->sample ?? 'N/A' }}</td>
@@ -83,6 +90,13 @@
                                        class="btn btn-sm btn-light text-dark border btn-action">
                                        Continuar Análisis
                                     </a>
+                                    <form action="{{ route('tisbe-longicornis-water.destroy', $bioassay) }}" method="POST" class="d-inline form-delete" data-confirm="¿Eliminar este bioensayo?" data-confirm-text="Esta acción no se puede deshacer." data-confirm-button="Sí, eliminar">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-light text-dark border btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -121,7 +135,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($bioassays as $bioassay)
+                        @forelse($validatedBioassays as $bioassay)
                             <tr>
                                 <td>
                                     <input type="checkbox" class="row-select" value="{{ $bioassay->id }}">

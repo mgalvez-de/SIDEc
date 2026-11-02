@@ -22,6 +22,14 @@ trait HasTestDuration
         return $checks;
     }
 
+    // Iniciado: ya tiene la fecha de inicio de su primera etapa (separa "Nuevas" de "En proceso" en los listados)
+    public function isStarted(): bool
+    {
+        [, $startField] = array_values(static::DURATION_PHASES)[0];
+
+        return !empty($this->getAttribute($startField));
+    }
+
     // Alguna etapa ya tiene inicio y término, pero quedó fuera del margen permitido
     public function hasDurationProblem(): bool
     {

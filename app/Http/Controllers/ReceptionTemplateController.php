@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReceptionTemplate;
+use App\Models\RejectionTemplate;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -11,11 +12,14 @@ class ReceptionTemplateController extends Controller
     public function index()
     {
         // Sin paginación - DataTables se encarga del paginado en el frontend
-        $receptions = ReceptionTemplate::with('template')
+        $receptions = ReceptionTemplate::with('template', 'sampleEntry')
             ->orderBy('created_at', 'desc')
             ->get(); // Cambiado de paginate() a get()
 
-        return view('receptions.index', compact('receptions'));
+        // Código interno => id del rechazo, para mostrar "Rechazada" en vez del botón "Rechazar"
+        $rejectedCodes = RejectionTemplate::whereNotNull('internal_sample_code')->pluck('id', 'internal_sample_code');
+
+        return view('receptions.index', compact('receptions', 'rejectedCodes'));
     }
 
     public function create()

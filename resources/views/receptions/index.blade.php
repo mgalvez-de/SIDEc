@@ -125,6 +125,18 @@
                                         class="btn btn-sm btn-light text-dark border d-inline-flex align-items-center gap-1 btn-edit">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
+                                    {{-- Rechazar: solo si todavía no se rechazó ni se ingresó al laboratorio --}}
+                                    @if (isset($rejectedCodes[$reception->internal_sample_code]))
+                                        <a href="{{ route('rejections.show', $rejectedCodes[$reception->internal_sample_code]) }}"
+                                            class="badge bg-danger text-decoration-none align-self-center" title="Ver el rechazo">
+                                            Rechazada
+                                        </a>
+                                    @elseif (!$reception->sampleEntry && $reception->internal_sample_code)
+                                        <a href="{{ route('rejections.create', ['code' => $reception->internal_sample_code]) }}"
+                                            class="btn btn-sm btn-light text-dark border d-inline-flex align-items-center gap-1 btn-reject">
+                                            <i class="bi bi-x-octagon"></i> Rechazar
+                                        </a>
+                                    @endif
                                     <form action="{{ route('receptions.destroy', $reception) }}" method="POST"
                                         class="d-inline form-delete">
                                         @csrf

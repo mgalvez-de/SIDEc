@@ -209,7 +209,8 @@
     border-color: var(--ucsc-red-line) !important;
 }
 
-#content .btn-delete:hover {
+#content .btn-delete:hover,
+#content .btn-reject:hover {
     background-color: var(--ucsc-red) !important;
     color: #fff !important;
     border-color: var(--ucsc-red) !important;

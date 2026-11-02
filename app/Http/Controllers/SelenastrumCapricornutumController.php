@@ -15,8 +15,12 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function index()
     {
-        $bioassays = SelenastrumCapricornutum::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.selenastrum_capricornutum.index', compact('bioassays'));
+        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
+        [$validatedBioassays, $pending] = SelenastrumCapricornutum::latest()->get()
+            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
+        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
+
+        return view('bioassays.selenastrum_capricornutum.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
     }
 
     /**
