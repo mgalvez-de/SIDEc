@@ -102,37 +102,6 @@
             @endforeach
         </div>
 
-        {{-- Plazo de entrega (6 semanas): aviso solo si hay muestras atrasadas o por atrasarse --}}
-        @if ($totals['warning'] + $totals['overdue'] > 0)
-            <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 mb-4" role="alert">
-                <i class="bi bi-alarm-fill fs-5"></i>
-                <span>
-                    Plazo de entrega:
-                    @if ($totals['overdue'])
-                        <strong class="text-danger">
-                            {{ $totals['overdue'] }} {{ $totals['overdue'] === 1 ? 'muestra con plazo vencido' : 'muestras con plazo vencido' }}
-                        </strong>
-                    @endif
-                    @if ($totals['overdue'] && $totals['warning'])
-                        ·
-                    @endif
-                    @if ($totals['warning'])
-                        <strong>
-                            {{ $totals['warning'] }} {{ $totals['warning'] === 1 ? 'muestra por vencer' : 'muestras por vencer' }}
-                        </strong>
-                        (semana 5 o 6)
-                    @endif
-                </span>
-                <button type="button" class="btn btn-sm btn-outline-dark ms-auto" id="showLateSamples">
-                    <i class="bi bi-funnel me-1"></i> Ver en la tabla
-                </button>
-            </div>
-        @else
-            <p class="small text-success mb-4">
-                <i class="bi bi-check-circle me-1"></i>Todas las muestras pendientes están dentro del plazo de entrega.
-            </p>
-        @endif
-
         {{-- Gráficos (responden a los filtros) --}}
         <div class="row g-4 mb-4">
             <div class="col-lg-5">
@@ -383,14 +352,6 @@
             table.find('.column-select').on('change', function () {
                 const exact = this.value ? '^' + $.fn.dataTable.util.escapeRegex(this.value) + '$' : '';
                 samplesTable.column($(this).parent().index()).search(exact, true, false).draw();
-            });
-
-            // Botón del aviso de plazo: deja en la tabla solo las muestras vencidas o por vencer
-            $('#showLateSamples').on('click', function () {
-                const deadlineColumn = columns - 1;
-                table.find('.filters th').eq(deadlineColumn).find('input').val('Vencido|Por vencer');
-                searchColumn(deadlineColumn, 'Vencido|Por vencer');
-                table[0].scrollIntoView({ behavior: 'smooth' });
             });
         });
     </script>

@@ -42,9 +42,7 @@ class DemoDataSeederTest extends TestCase
                 && $totals['in_process'] === 6
                 && $totals['completed'] === 3
                 && $totals['warning'] === 1
-                && $totals['overdue'] === 1)
-            ->assertSee('1 muestra con plazo vencido')
-            ->assertSee('1 muestra por vencer');
+                && $totals['overdue'] === 1);
     }
 
     public function test_sample_entries_list_separates_in_process_from_completed()
