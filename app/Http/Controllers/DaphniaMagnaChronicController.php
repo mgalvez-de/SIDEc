@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DaphniaMagnaChronic;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class DaphniaMagnaChronicController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = DaphniaMagnaChronic::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.daphnia_magna_chronic.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -76,6 +66,7 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function update(Request $request, DaphniaMagnaChronic $daphnia_magna_chronic)
     {
+        $this->authorize('update', $daphnia_magna_chronic);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -165,6 +156,7 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function destroy(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
+        $this->authorize('delete', $daphnia_magna_chronic);
 
         $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 

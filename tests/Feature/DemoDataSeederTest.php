@@ -77,7 +77,7 @@ class DemoDataSeederTest extends TestCase
 
         foreach (self::MODULES as $slug => $model) {
             $this->assertGreaterThan(0, $model::count(), "$slug sin registros de demostración");
-            $this->actingAs($analist)->get(route("$slug.index"))->assertOk();
+            $this->actingAs($analist)->get(route('bioassays.index', ['tipo' => $slug]))->assertOk();
             foreach ($model::all() as $bioassay) {
                 $this->actingAs($analist)->get(route("$slug.edit", $bioassay))->assertOk()->assertSee($bioassay->sample);
             }

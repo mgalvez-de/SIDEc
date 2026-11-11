@@ -30,7 +30,10 @@ class BioassayModulesTest extends TestCase
     {
         $analist = $this->userWithRole('Analist');
 
-        $this->actingAs($analist)->get(route("$slug.index"))
+        // El listado de cada organismo es la página Bioensayos filtrada
+        $list = route('bioassays.index', ['tipo' => $slug]);
+        $this->actingAs($analist)->get(route("$slug.index"))->assertRedirect($list);
+        $this->actingAs($analist)->get($list)
             ->assertOk()
             ->assertSee(route("$slug.create"), false);
         $this->actingAs($analist)->get(route("$slug.create"))
@@ -43,9 +46,14 @@ class BioassayModulesTest extends TestCase
         $bioassay = $model::where('sample', 'QA-1')->firstOrFail();
         $this->assertSame($analist->id, $bioassay->created_by);
 
-        $this->actingAs($analist)->get(route("$slug.index"))
+        $supervisor = $this->userWithRole('Supervisor');
+        $deleteForm = 'action="' . route("$slug.destroy", $bioassay) . '"';
+
+        // "Eliminar" solo lo ve quien puede eliminar (Supervisor / Jefe de Área)
+        $this->actingAs($analist)->get($list)
             ->assertSee(route("$slug.edit", $bioassay), false)
-            ->assertSee('action="' . route("$slug.destroy", $bioassay) . '"', false);
+            ->assertDontSee($deleteForm, false);
+        $this->actingAs($supervisor)->get($list)->assertSee($deleteForm, false);
 
         $this->actingAs($analist)->get(route("$slug.edit", $bioassay))
             ->assertOk()
@@ -55,13 +63,42 @@ class BioassayModulesTest extends TestCase
             ->put(route("$slug.update", $bioassay), ['sample' => 'QA-1', 'observations' => 'Revisado en QA'])
             ->assertSessionHasNoErrors();
         $this->assertSame('Revisado en QA', $bioassay->refresh()->observations);
+        $this->assertSame($analist->id, $bioassay->updated_by); // queda registrado quién lo modificó
 
         $this->actingAs($this->userWithRole('Manager'))
             ->patch(route("$slug.validate", $bioassay))
             ->assertRedirect();
         $this->assertNotNull($bioassay->refresh()->validated_at);
+        $this->assertSame($analist->id, $bioassay->updated_by); // validar no cuenta como modificar
 
-        $this->actingAs($analist)->delete(route("$slug.destroy", $bioassay))->assertRedirect();
+        // Validado = bloqueado: no se modifica ni se elimina, y la planilla lo avisa
+        $this->actingAs($analist)
+            ->put(route("$slug.update", $bioassay), ['sample' => 'QA-1', 'observations' => 'Cambio tras validar'])
+            ->assertForbidden();
+        $this->actingAs($supervisor)->delete(route("$slug.destroy", $bioassay))->assertForbidden();
+        $this->assertSame('Revisado en QA', $bioassay->refresh()->observations);
+        $this->actingAs($analist)->get(route("$slug.edit", $bioassay))
+            ->assertOk()
+            ->assertSee('Bioensayo validado: solo lectura.')
+            ->assertDontSee(route('bioassays.reopen', ['tipo' => $slug, 'id' => $bioassay->id]), false);
+
+        // Solo Supervisor o Jefe de Área lo reabren
+        $reopen = route('bioassays.reopen', ['tipo' => $slug, 'id' => $bioassay->id]);
+        $this->actingAs($analist)->patch($reopen)->assertForbidden();
+        $this->actingAs($supervisor)->get(route("$slug.edit", $bioassay))->assertSee($reopen, false);
+        $this->actingAs($supervisor)->patch($reopen)->assertRedirect();
+        $this->assertNull($bioassay->refresh()->validated_at);
+
+        // Eliminar: solo Supervisor / Jefe de Área, y va a la papelera (se puede restaurar)
+        $this->actingAs($analist)->delete(route("$slug.destroy", $bioassay))->assertForbidden();
+        $this->actingAs($supervisor)->delete(route("$slug.destroy", $bioassay))->assertRedirect();
         $this->assertNull($model::find($bioassay->id));
+        $this->assertNotNull($model::onlyTrashed()->find($bioassay->id));
+
+        $this->actingAs($supervisor)->get(route('trash.index'))->assertOk()->assertSee('QA-1');
+        $this->actingAs($supervisor)
+            ->patch(route('trash.restore', ['tipo' => $slug, 'id' => $bioassay->id]))
+            ->assertRedirect();
+        $this->assertNotNull($model::find($bioassay->id));
     }
 }

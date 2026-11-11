@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BioassayRecord;
 use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class DaphniaMagnaChronic extends Model
 {
-    use HasFactory, HasTestDuration;
+    use HasFactory, HasTestDuration, BioassayRecord;
 
     // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
     public const DURATION_PHASES = [
@@ -110,13 +111,5 @@ class DaphniaMagnaChronic extends Model
     public function sampleEntry()
     {
         return $this->belongsTo(SampleEntry::class);
-    }
-
-    /**
-     * Verificar si el control cumple el criterio (≥ 40 juveniles).
-     */
-    public function getControlMeetsCriteriaAttribute()
-    {
-        return ($this->control_total_reproduction ?? 0) >= 40;
     }
 }

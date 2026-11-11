@@ -123,6 +123,18 @@
                                                     class="btn btn-sm btn-light text-dark border btn-edit">
                                                     <i class="bi bi-pencil-square"></i> Corregir
                                                 </a>
+                                                @role('Supervisor|Area Manager')
+                                                    @unless ($sampleEntry->hasValidatedBioassays())
+                                                <form action="{{ route('sample_entries.destroy', $sampleEntry) }}" method="POST"
+                                                    class="d-inline form-delete">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-light text-dark border btn-delete">
+                                                        <i class="bi bi-trash3"></i> Eliminar
+                                                    </button>
+                                                </form>
+                                                    @endunless
+                                                @endrole
                                             </div>
                                         </td>
                                     </tr>
@@ -209,14 +221,6 @@
                                                     class="btn btn-sm btn-light text-dark border btn-view">
                                                     <i class="bi bi-eye"></i> Ver
                                                 </a>
-                                                <form action="{{ route('sample_entries.destroy', $sampleEntry) }}" method="POST"
-                                                    class="d-inline form-delete">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-light text-dark border btn-delete">
-                                                        <i class="bi bi-trash3"></i> Eliminar
-                                                    </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -525,60 +529,6 @@
             animation: slideDown 0.4s ease-out;
         }
 
-        /* Estilos para Toastr */
-        .toast-success {
-            background-color: #15803d !important;
-        }
-
-        .toast-error {
-            background-color: #b91c1c !important;
-        }
-
-        .toast-info {
-            background-color: #1d4ed8 !important;
-        }
-
-        .toast-warning {
-            background-color: #f59e0b !important;
-        }
-
-        #toast-container>div {
-            opacity: 1;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
-        }
-
-        #toast-container>.toast {
-            background-image: none !important;
-            padding: 15px 20px 15px 50px;
-        }
-
-        #toast-container>.toast:before {
-            position: absolute;
-            font-family: 'Bootstrap Icons';
-            font-size: 24px;
-            line-height: 24px;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        #toast-container>.toast-success:before {
-            content: "\f26b";
-        }
-
-        #toast-container>.toast-error:before {
-            content: "\f659";
-        }
-
-        #toast-container>.toast-info:before {
-            content: "\f431";
-        }
-
-        #toast-container>.toast-warning:before {
-            content: "\f33a";
-        }
-
         /* Badge personalizado */
         .badge {
             padding: 0.35em 0.65em;
@@ -733,7 +683,7 @@
 
                 Swal.fire({
                     title: '¿Eliminar muestra?',
-                    text: "Esta acción no se puede deshacer.",
+                    text: "Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarlo.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#b91c1c',

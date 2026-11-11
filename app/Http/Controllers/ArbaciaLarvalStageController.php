@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArbaciaLarvalStage;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class ArbaciaLarvalStageController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = ArbaciaLarvalStage::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.arbacia_larval_stage.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -76,6 +66,7 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function update(Request $request, ArbaciaLarvalStage $arbacia_larval_stage)
     {
+        $this->authorize('update', $arbacia_larval_stage);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -157,6 +148,7 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function destroy(ArbaciaLarvalStage $arbacia_larval_stage)
     {
+        $this->authorize('delete', $arbacia_larval_stage);
 
         $sampleEntry = $arbacia_larval_stage->sampleEntry;
 

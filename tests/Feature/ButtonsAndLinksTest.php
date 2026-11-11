@@ -60,12 +60,14 @@ class ButtonsAndLinksTest extends TestCase
         $enProceso = \App\Models\DaphniaMagnaTemplate::create(['sample' => 'P-1', 'sample_entry_id' => $entryId, 'preliminary_start_at' => now()]);
         $validada = \App\Models\DaphniaMagnaTemplate::create(['sample' => 'V-1', 'sample_entry_id' => $entryId, 'preliminary_start_at' => now()->subDays(5), 'validated_at' => now()]);
 
+        $statusOf = fn ($rows) => $rows->mapWithKeys(fn ($row) => [$row->bioassay->sample => $row->status]);
+
         $this->actingAs(User::where('email', 'analist@a')->first())
-            ->get(route('daphnia-magna.index'))
+            ->get(route('bioassays.index', ['tipo' => 'daphnia-magna']))
             ->assertOk()
-            ->assertViewHas('newBioassays', fn ($c) => $c->contains($nueva) && !$c->contains($enProceso) && !$c->contains($validada))
-            ->assertViewHas('inProcessBioassays', fn ($c) => $c->contains($enProceso) && !$c->contains($nueva) && !$c->contains($validada))
-            ->assertViewHas('validatedBioassays', fn ($c) => $c->contains($validada) && !$c->contains($nueva))
+            ->assertViewHas('rows', fn ($rows) => $statusOf($rows)['N-1'] === 'nuevas'
+                && $statusOf($rows)['P-1'] === 'en-proceso'
+                && $statusOf($rows)['V-1'] === 'validadas')
             // "Comenzar análisis" abre ESE bioensayo (antes abría uno nuevo en blanco)
             ->assertSee(route('daphnia-magna.edit', $nueva));
     }

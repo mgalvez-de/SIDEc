@@ -2,6 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('bioassays._status', ['bioassay' => $daphnia_magna_chronic, 'section' => 'daphnia-magna-chronic'])
 <div class="container-fluid px-4">
     <!-- Logo -->
     <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
@@ -417,7 +418,7 @@
     </form>
 
     @if(auth()->user()->can('validateBioassay', $daphnia_magna_chronic) && !$daphnia_magna_chronic->validated_at)
-        <form id="validateBioassayForm" data-confirm="¿Marcar como validado?" data-confirm-text="Quedará registrado quién lo validó y cuándo. Esta acción no se puede deshacer." data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, validar" action="{{ route('daphnia-magna-chronic.validate', $daphnia_magna_chronic->id) }}" method="POST" style="display:none">
+        <form id="validateBioassayForm" data-confirm="¿Marcar como validado?" data-confirm-text="Quedará registrado quién lo validó y cuándo, y la planilla pasará a solo lectura." data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, validar" action="{{ route('daphnia-magna-chronic.validate', $daphnia_magna_chronic->id) }}" method="POST" style="display:none">
             @csrf
             @method('PATCH')
         </form>
@@ -483,29 +484,6 @@
     .criteria-list { list-style: none; padding-left: 0; }
     .criteria-list li { padding: 8px 0; font-size: 1rem; border-bottom: 1px solid #e9ecef; }
     .criteria-list li:last-child { border-bottom: none; }
-
-    /* ============================================
-       TEMPORIZADOR
-       ============================================ */
-    @keyframes pulse-grace { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.005); } }
-    @keyframes pulse-expired { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-    /* ============================================
-       BARRA DE PROGRESO
-       ============================================ */
-    .progress-wrapper { position: relative; }
-    .progress-bar { transition: width 1s linear, background-color 0.5s ease; }
-    .progress-bar.bg-success-gradient { background: linear-gradient(90deg, #198754 0%, #20c997 100%) !important; }
-    .progress-bar.bg-warning { background: linear-gradient(90deg, #ffc107 0%, #ffda6a 100%) !important; }
-    .progress-bar.bg-orange { background: linear-gradient(90deg, #fd7e14 0%, #ffb380 100%) !important; }
-    .progress-bar.bg-danger { background: linear-gradient(90deg, #dc3545 0%, #f17983 100%) !important; }
-    .progress-text { font-size: 0.8rem; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-    .progress-markers { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
-    .marker { position: absolute; top: -8px; bottom: -8px; width: 2px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-    .marker-line { width: 2px; height: 100%; border-radius: 2px; background: #0d6efd; box-shadow: 0 0 5px rgba(13, 110, 253, 0.5); }
-    .marker-line-light { background: #adb5bd; box-shadow: none; }
-    .marker-label { position: absolute; bottom: -20px; font-size: 0.65rem; color: #6c757d; }
 
     /* ============================================
        IMPRESIÓN

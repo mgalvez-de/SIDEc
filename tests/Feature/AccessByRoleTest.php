@@ -43,7 +43,7 @@ class AccessByRoleTest extends TestCase
         $supervisor = $this->userWithRole('Supervisor');
 
         $this->actingAs($supervisor)->get(route('sample_entries.index'))->assertOk();
-        $this->actingAs($supervisor)->get('/daphnia-magna')->assertOk();
+        $this->actingAs($supervisor)->get('/bioensayos')->assertOk();
     }
 
     public function test_manager_cannot_open_receptions()
@@ -73,17 +73,18 @@ class AccessByRoleTest extends TestCase
             ->assertDontSee(route('users.index'));
     }
 
-    // El menú marca la sección actual; "daphnia-magna-chronic" no debe marcar también "daphnia-magna"
+    // El menú marca la sección actual: dentro de cualquier bioensayo queda marcado "Bioensayos"
     public function test_menu_marks_the_current_section()
     {
-        $html = $this->actingAs($this->userWithRole('Analist'))
-            ->get(url('/daphnia-magna-chronic'))
-            ->assertOk()
-            ->getContent();
+        $analist = $this->userWithRole('Analist');
 
-        $this->assertTrue($this->linkIsActive($html, url('/daphnia-magna-chronic')));
-        $this->assertFalse($this->linkIsActive($html, url('/daphnia-magna')));
-        $this->assertStringContainsString('submenu-toggle active"', $html); // el grupo Bioensayos también
+        $html = $this->actingAs($analist)->get(route('daphnia-magna-chronic.create'))->assertOk()->getContent();
+        $this->assertTrue($this->linkIsActive($html, route('bioassays.index')));
+        $this->assertFalse($this->linkIsActive($html, route('sample_entries.index')));
+
+        $html = $this->actingAs($analist)->get(route('sample_entries.index'))->assertOk()->getContent();
+        $this->assertTrue($this->linkIsActive($html, route('sample_entries.index')));
+        $this->assertFalse($this->linkIsActive($html, route('bioassays.index')));
     }
 
     // Clases del enlace del menú que apunta a $url

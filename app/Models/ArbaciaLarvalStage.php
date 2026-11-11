@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BioassayRecord;
 use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class ArbaciaLarvalStage extends Model
 {
-    use HasFactory, HasTestDuration;
+    use HasFactory, HasTestDuration, BioassayRecord;
 
     // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
     public const DURATION_PHASES = [
@@ -95,14 +96,5 @@ class ArbaciaLarvalStage extends Model
     public function sampleEntry()
     {
         return $this->belongsTo(SampleEntry::class);
-    }
-
-    /**
-     * Obtener el porcentaje promedio larval del control.
-     */
-    public function getControlLarvalAvgAttribute()
-    {
-        $control = $this->control_data ?? [];
-        return $control['larval_pluteus_avg'] ?? null;
     }
 }

@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Models\SampleEntry;
 use App\Models\Template;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 
 class SampleEntryController extends Controller
 {
@@ -44,33 +47,23 @@ class SampleEntryController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50',
-            'version' => 'required|string|min:1',
-            'validity' => 'nullable|string|max:255',
-            'received_at' => 'nullable|date',
+        $validated = $request->validate($this->rules() + [
             'internal_sample_code' => [
                 'required',
                 'string',
                 'max:255',
-                'exists:reception_templates,internal_sample_code',
+                Rule::exists('reception_templates', 'internal_sample_code')->whereNull('deleted_at'),
             ],
-            'sample_type' => 'nullable|string|max:255',
-            'sample_concentration' => 'nullable|numeric',
-            'parameter_reading_date' => 'nullable|date',
-            'analyst' => 'nullable|string|max:255',
-            'ph' => 'nullable|numeric',
-            'salinity' => 'nullable|numeric',
-            'conductivity' => 'nullable|numeric',
-            'dissolved_oxygen' => 'nullable|numeric',
-            'temperature' => 'nullable|numeric',
-            'observations' => 'nullable|string|max:255',
         ]);
 
-        // Evitar duplicados
-        if (SampleEntry::where('internal_sample_code', $validated['internal_sample_code'])->exists()) {
-            return back()->withErrors(['internal_sample_code' => 'Esta muestra ya fue ingresada.'])->withInput();
+        // Evitar duplicados (también si el ingreso anterior está en la papelera)
+        $existing = SampleEntry::withTrashed()->where('internal_sample_code', $validated['internal_sample_code'])->first();
+        if ($existing) {
+            $message = $existing->trashed()
+                ? 'Esta muestra ya fue ingresada y está en la papelera. Pídele al Supervisor o Jefe de Área que la restaure.'
+                : 'Esta muestra ya fue ingresada.';
+
+            return back()->withErrors(['internal_sample_code' => $message])->withInput();
         }
 
         // Crear plantilla base
@@ -168,18 +161,16 @@ class SampleEntryController extends Controller
         ];
 
         foreach ($bioassays as $bioassay) {
-            // Verificar si el bioensayo está configurado
+            // Un nombre que no está en la lista de arriba no tiene formulario: se avisa en el log
             if (!isset($bioassayConfig[$bioassay])) {
-                \Log::info("Bioensayo no implementado: {$bioassay}");
+                \Log::warning("Bioensayo no implementado: {$bioassay}");
                 continue;
             }
 
             $config = $bioassayConfig[$bioassay];
 
-            // Verificar que no exista ya un registro para esta muestra
-            $existingRecord = $config['model']::where('sample', $sampleEntry->internal_sample_code)->first();
-            if ($existingRecord) {
-                \Log::info("Bioensayo ya existe para muestra {$sampleEntry->internal_sample_code}: {$bioassay}");
+            // No duplicar si esta muestra ya tiene ese bioensayo
+            if ($config['model']::where('sample', $sampleEntry->internal_sample_code)->exists()) {
                 continue;
             }
 
@@ -199,25 +190,9 @@ class SampleEntryController extends Controller
                 'sample_entry_id' => $sampleEntry->id,
                 'created_by' => auth()->id(),
             ]);
-
-            \Log::info("Bioensayo creado: {$bioassay} para muestra {$sampleEntry->internal_sample_code}");
         }
     }
 
-    /* public function show(SampleEntry $sampleEntry)
-    {
-        // Buscar la recepción asociada a esta muestra por su código interno
-        $reception = \App\Models\ReceptionTemplate::where('internal_sample_code', $sampleEntry->internal_sample_code)->first();
-
-        // Cargar bioensayos asociados (si existen)
-        $assignedBioassays = $reception ? ($reception->assigned_bioassays ?? []) : [];
-
-        return view('sample_entries.show', compact('sampleEntry', 'assignedBioassays'));
-    } */
-
-    /**
-     * Display the specified sample entry.
-     */
     public function show(SampleEntry $sampleEntry)
     {
         // Obtener los bioensayos asignados desde la recepción
@@ -244,31 +219,52 @@ class SampleEntryController extends Controller
 
     public function update(Request $request, SampleEntry $sampleEntry)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'code' => 'nullable|string|max:50',
-            'version' => 'required|integer|min:1',
-            'validity' => 'nullable|string|max:255',
-        ]);
+        // Mismas reglas que al crear. El código interno no se puede cambiar: es lo que une
+        // el ingreso con su recepción y con sus bioensayos.
+        $validated = $request->validate($this->rules());
 
-        // Actualizar Template
-        $sampleEntry->template->update([
-            'title' => $validated['title'],
-            'code' => $validated['code'] ?? null,
-            'version' => $validated['version'],
-            'validity' => $validated['validity'] ?? null,
-        ]);
+        $templateFields = ['title', 'code', 'version', 'validity'];
+        $sampleEntry->template->update(Arr::only($validated, $templateFields));
+        $sampleEntry->update(Arr::except($validated, $templateFields));
 
-        // Actualizar
-        $sampleEntry->update($request->except(['title', 'code', 'version', 'validity']));
-
-        return redirect()->route('sample_entries.index')->with('success', 'Plantilla actualizada correctamente.');
-
+        return redirect()->route('sample_entries.index')->with('success', 'Ingreso de muestra actualizado correctamente.');
     }
 
+    // Eliminar manda a la papelera el ingreso y sus bioensayos (se pueden restaurar)
     public function destroy(SampleEntry $sampleEntry)
     {
-        $sampleEntry->template->delete(); // cascada elimina ingreso de muestra
-        return redirect()->route('sample_entries.index')->with('success', 'Ingreso de muestra eliminado correctamente.');
+        abort_unless(auth()->user()->hasAnyRole(User::ADMIN_ROLES), 403,
+            'Solo el Supervisor o el Jefe de Área pueden eliminar un ingreso de muestra.');
+
+        if ($sampleEntry->hasValidatedBioassays()) {
+            return back()->with('error', 'No se puede eliminar: la muestra tiene bioensayos validados. Primero hay que reabrirlos.');
+        }
+
+        $sampleEntry->delete();
+
+        return redirect()->route('sample_entries.index')
+            ->with('success', 'Ingreso de muestra enviado a la papelera.');
+    }
+
+    // Campos del formulario de ingreso (crear y corregir)
+    private function rules(): array
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
+            'version' => 'required|string|max:50',
+            'validity' => 'nullable|string|max:255',
+            'received_at' => 'nullable|date',
+            'sample_type' => 'nullable|string|max:255',
+            'sample_concentration' => 'nullable|numeric',
+            'parameter_reading_date' => 'nullable|date',
+            'analyst' => 'nullable|string|max:255',
+            'ph' => 'nullable|numeric',
+            'salinity' => 'nullable|numeric',
+            'conductivity' => 'nullable|numeric',
+            'dissolved_oxygen' => 'nullable|numeric',
+            'temperature' => 'nullable|numeric',
+            'observations' => 'nullable|string|max:255',
+        ];
     }
 }

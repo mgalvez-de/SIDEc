@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BioassayRecord;
 use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class DaphniaMagnaTemplate extends Model
 {
-    use HasFactory, HasTestDuration;
+    use HasFactory, HasTestDuration, BioassayRecord;
 
     // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
     public const DURATION_PHASES = [

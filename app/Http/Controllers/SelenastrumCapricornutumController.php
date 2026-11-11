@@ -4,25 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\SelenastrumCapricornutum;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class SelenastrumCapricornutumController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
-        [$validatedBioassays, $pending] = SelenastrumCapricornutum::latest()->get()
-            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
-        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
-
-        return view('bioassays.selenastrum_capricornutum.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -80,6 +66,7 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function update(Request $request, SelenastrumCapricornutum $selenastrum_capricornutum)
     {
+        $this->authorize('update', $selenastrum_capricornutum);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -179,6 +166,7 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function destroy(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
+        $this->authorize('delete', $selenastrum_capricornutum);
 
         $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 

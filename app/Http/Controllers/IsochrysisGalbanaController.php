@@ -4,26 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\IsochrysisGalbana;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class IsochrysisGalbanaController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     * Nota: No se usa normalmente, se accede desde sample_entries.show
-     */
-    public function index()
-    {
-        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
-        [$validatedBioassays, $pending] = IsochrysisGalbana::latest()->get()
-            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
-        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
-
-        return view('bioassays.isochrysis_galbana.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      * Nota: Los bioensayos se crean automáticamente desde SampleEntryController@store
@@ -83,6 +68,7 @@ class IsochrysisGalbanaController extends Controller
      */
     public function update(Request $request, IsochrysisGalbana $isochrysis_galbana)
     {
+        $this->authorize('update', $isochrysis_galbana);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN DE TODOS LOS CAMPOS
@@ -188,6 +174,7 @@ class IsochrysisGalbanaController extends Controller
      */
     public function destroy(IsochrysisGalbana $isochrysis_galbana)
     {
+        $this->authorize('delete', $isochrysis_galbana);
 
         // Obtener sample_entry antes de eliminar
         $sampleEntry = $isochrysis_galbana->sampleEntry;

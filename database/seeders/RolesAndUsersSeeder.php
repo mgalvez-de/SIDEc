@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,7 +26,13 @@ class RolesAndUsersSeeder extends Seeder
             Role::firstOrCreate(['name' => $role]);
         }
 
-        // Crear usuarios y asignar roles
+        // En producción solo se crean los roles: las cuentas de prueba tienen una contraseña conocida.
+        // La primera cuenta real se crea con:  php artisan sidec:crear-admin
+        if (app()->environment('production')) {
+            return;
+        }
+
+        // Cuentas de prueba (solo desarrollo y demostraciones)
         $users = [
             [
                 'name' => 'Usuario Analista',

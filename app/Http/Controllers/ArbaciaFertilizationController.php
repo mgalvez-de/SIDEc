@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArbaciaFertilization;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class ArbaciaFertilizationController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = ArbaciaFertilization::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.arbacia_fertilization.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -76,6 +66,7 @@ class ArbaciaFertilizationController extends Controller
      */
     public function update(Request $request, ArbaciaFertilization $arbacia_fertilization)
     {
+        $this->authorize('update', $arbacia_fertilization);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -153,6 +144,7 @@ class ArbaciaFertilizationController extends Controller
      */
     public function destroy(ArbaciaFertilization $arbacia_fertilization)
     {
+        $this->authorize('delete', $arbacia_fertilization);
 
         $sampleEntry = $arbacia_fertilization->sampleEntry;
 

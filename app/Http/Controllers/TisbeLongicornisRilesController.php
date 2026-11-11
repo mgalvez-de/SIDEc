@@ -4,25 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\TisbeLongicornisRiles;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class TisbeLongicornisRilesController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
-        [$validatedBioassays, $pending] = TisbeLongicornisRiles::latest()->get()
-            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
-        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
-
-        return view('bioassays.tisbe_longicornis_riles.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -80,6 +66,7 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function update(Request $request, TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
+        $this->authorize('update', $tisbe_longicornis_riles);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN
@@ -224,6 +211,7 @@ class TisbeLongicornisRilesController extends Controller
      */
     public function destroy(TisbeLongicornisRiles $tisbe_longicornis_riles)
     {
+        $this->authorize('delete', $tisbe_longicornis_riles);
 
         $sampleEntry = $tisbe_longicornis_riles->sampleEntry;
 

@@ -4,26 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DaphniaMagnaTemplate;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class DaphniaMagnaTemplateController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     * Nota: No se usa realmente, se accede desde sample_entries.show
-     */
-    public function index()
-    {
-        // Nuevas: sin iniciar · En proceso: iniciadas y sin validar · Historial: validadas
-        [$validatedBioassays, $pending] = DaphniaMagnaTemplate::latest()->get()
-            ->partition(fn ($bioassay) => $bioassay->validated_at !== null);
-        [$inProcessBioassays, $newBioassays] = $pending->partition(fn ($bioassay) => $bioassay->isStarted());
-
-        return view('bioassays.daphnia_magna.index', compact('newBioassays', 'inProcessBioassays', 'validatedBioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      * Nota: Normalmente los bioensayos se crean automáticamente desde SampleEntryController@store
@@ -74,7 +59,7 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function update(Request $request, DaphniaMagnaTemplate $daphnia_magna)
     {
-
+        $this->authorize('update', $daphnia_magna);
 
         // ==========================================
         // 1️⃣ VALIDACIÓN DE TODOS LOS CAMPOS
@@ -233,7 +218,7 @@ class DaphniaMagnaTemplateController extends Controller
      */
     public function destroy(DaphniaMagnaTemplate $daphnia_magna)
     {
-
+        $this->authorize('delete', $daphnia_magna);
 
         // Obtener sample_entry antes de eliminar
         $sampleEntry = $daphnia_magna->sampleEntry;

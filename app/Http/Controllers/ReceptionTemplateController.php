@@ -57,8 +57,6 @@ class ReceptionTemplateController extends Controller
             'samples.*.internal_sample_code.distinct' => 'Hay códigos internos repetidos entre las muestras que estás ingresando.',
         ]);
 
-        /* dd($validated); */
-
         // === Guardar la plantilla base ===
         $template = Template::create([
             'title'    => $validated['title'],
@@ -173,9 +171,16 @@ class ReceptionTemplateController extends Controller
             ->with('success', 'Recepción actualizada correctamente.');
     }
 
+    // Elimina SOLO esta muestra (va a la papelera). Antes se borraba la plantilla compartida
+    // y con ella todas las muestras registradas en el mismo lote.
     public function destroy(ReceptionTemplate $reception)
     {
-        $reception->template->delete(); // cascada elimina reception también
-        return redirect()->route('receptions.index')->with('success', 'Plantilla eliminada correctamente.');
+        if ($reception->sampleEntry) {
+            return back()->with('error', 'No se puede eliminar: la muestra ya fue ingresada. Primero hay que eliminar su ingreso.');
+        }
+
+        $reception->delete();
+
+        return redirect()->route('receptions.index')->with('success', 'Recepción enviada a la papelera.');
     }
 }

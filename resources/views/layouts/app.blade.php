@@ -128,20 +128,6 @@
             box-shadow: inset 4px 0 0 var(--ucsc-red);
         }
 
-        /* Lista de bioensayos (se despliega hacia abajo) */
-        #sidebar .submenu .nav-link {
-            font-size: 0.875rem;
-            padding: 7px 12px;
-        }
-
-        #sidebar .submenu-toggle .chevron {
-            transition: transform 0.2s ease;
-        }
-
-        #sidebar .submenu-toggle[aria-expanded="true"] .chevron {
-            transform: rotate(180deg);
-        }
-
         #sidebarOverlay {
             position: fixed;
             inset: 0;
@@ -352,6 +338,9 @@
                             <div class="dropdown-header d-sm-none">
                                 {{ Auth::user()->name }}<br>{{ Auth::user()->roleLabel() }}
                             </div>
+                            <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('account.password') }}">
+                                <i class="bi bi-key"></i> Cambiar mi contraseña
+                            </a>
                             <a class="dropdown-item logout-link d-flex align-items-center gap-2" href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').requestSubmit();">
                                 <i class="bi bi-box-arrow-right"></i> Cerrar sesión
@@ -398,6 +387,12 @@
                                 <i class="bi bi-journal-plus me-2"></i> Ingreso de muestras
                             </a>
                         </li>
+                        {{-- Un solo listado para los 8 bioensayos, con filtro por organismo y estado --}}
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('bioassays.index') }}" class="nav-link {{ $inBioassays ? 'active' : '' }}">
+                                <i class="bi bi-eyedropper me-2"></i> Bioensayos
+                            </a>
+                        </li>
                     @endrole
 
                     @role('Supervisor|Area Manager')
@@ -413,27 +408,11 @@
                                 <i class="bi bi-people me-2"></i> Usuarios
                             </a>
                         </li>
-                    @endrole
-
-                    {{-- Bioensayos: se despliega hacia abajo y queda abierto si estás en uno de ellos --}}
-                    @role('Analist|Manager|Supervisor|Area Manager')
                         <li class="nav-item mb-1">
-                            <a class="nav-link submenu-toggle {{ $inBioassays ? 'active' : '' }}" data-bs-toggle="collapse"
-                                href="#bioassaysMenu" role="button" aria-controls="bioassaysMenu"
-                                aria-expanded="{{ $inBioassays ? 'true' : 'false' }}">
-                                <i class="bi bi-eyedropper me-2"></i> Bioensayos
-                                <i class="bi bi-chevron-down chevron ms-auto small"></i>
+                            <a href="{{ route('trash.index') }}"
+                                class="nav-link {{ request()->is('papelera') ? 'active' : '' }}">
+                                <i class="bi bi-trash3 me-2"></i> Papelera
                             </a>
-                            <ul class="collapse submenu list-unstyled ps-2 mt-1 {{ $inBioassays ? 'show' : '' }}" id="bioassaysMenu">
-                                @foreach (Navigation::BIOASSAYS as $section => [$label, $icon])
-                                    <li class="mb-1">
-                                        <a href="{{ route("$section.index") }}"
-                                            class="nav-link {{ request()->is($section, "$section/*") ? 'active' : '' }}">
-                                            <i class="bi {{ $icon }} me-2"></i> {{ $label }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
                         </li>
                     @endrole
                 </ul>

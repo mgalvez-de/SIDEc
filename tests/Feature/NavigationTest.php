@@ -19,12 +19,13 @@ class NavigationTest extends TestCase
     public function test_breadcrumb_and_tab_title_follow_the_current_page()
     {
         $this->assertSame([
-            ['label' => 'Bioensayos', 'url' => null],
+            ['label' => 'Bioensayos', 'url' => route('bioassays.index')],
             ['label' => 'Daphnia magna (crónico)', 'url' => route('daphnia-magna-chronic.index')],
             ['label' => 'Nuevo', 'url' => null],
         ], Navigation::breadcrumb('daphnia-magna-chronic.create'));
 
         $this->assertSame('Recepciones · SIDEc', Navigation::pageTitle('receptions.index'));
+        $this->assertSame('Bioensayos · SIDEc', Navigation::pageTitle('bioassays.index'));
         $this->assertSame('SIDEc', Navigation::pageTitle('login'));
 
         $this->actingAs($this->userWithRole('Analist'))
@@ -47,7 +48,7 @@ class NavigationTest extends TestCase
     {
         $this->actingAs($this->userWithRole('Analist'))
             ->withSession(['success' => 'Bioensayo guardado.', 'warning' => 'No se encontró la muestra asociada.'])
-            ->get(route('daphnia-magna.index'))
+            ->get(route('bioassays.index'))
             ->assertSee('Bioensayo guardado.')
             ->assertSee('No se encontró la muestra asociada.');
     }

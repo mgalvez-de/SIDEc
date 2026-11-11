@@ -22,12 +22,22 @@ trait HasTestDuration
         return $checks;
     }
 
+    // Nombre del campo con la fecha de inicio de la primera etapa
+    public static function startField(): string
+    {
+        return array_values(static::DURATION_PHASES)[0][1];
+    }
+
+    // Fecha en que se inició el ensayo (null si todavía no empieza)
+    public function startedAt()
+    {
+        return $this->getAttribute(static::startField());
+    }
+
     // Iniciado: ya tiene la fecha de inicio de su primera etapa (separa "Nuevas" de "En proceso" en los listados)
     public function isStarted(): bool
     {
-        [, $startField] = array_values(static::DURATION_PHASES)[0];
-
-        return !empty($this->getAttribute($startField));
+        return !empty($this->startedAt());
     }
 
     // Alguna etapa ya tiene inicio y término, pero quedó fuera del margen permitido

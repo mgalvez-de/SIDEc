@@ -2,6 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('bioassays._status', ['bioassay' => $tisbe_longicornis_riles, 'section' => 'tisbe-longicornis-riles'])
 <div class="container">
     <!-- Logo -->
     <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
@@ -513,7 +514,7 @@
     </form>
 
     @if(auth()->user()->can('validateBioassay', $tisbe_longicornis_riles) && !$tisbe_longicornis_riles->validated_at)
-        <form id="validateBioassayForm" data-confirm="¿Marcar como validado?" data-confirm-text="Quedará registrado quién lo validó y cuándo. Esta acción no se puede deshacer." data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, validar" action="{{ route('tisbe-longicornis-riles.validate', $tisbe_longicornis_riles->id) }}" method="POST" style="display:none">
+        <form id="validateBioassayForm" data-confirm="¿Marcar como validado?" data-confirm-text="Quedará registrado quién lo validó y cuándo, y la planilla pasará a solo lectura." data-confirm-icon="question" data-confirm-color="#198754" data-confirm-button="Sí, validar" action="{{ route('tisbe-longicornis-riles.validate', $tisbe_longicornis_riles->id) }}" method="POST" style="display:none">
             @csrf
             @method('PATCH')
         </form>
@@ -686,87 +687,6 @@
        ============================================ */
     .bg-secondary-subtle {
         background-color: #e2e3e5 !important;
-    }
-
-    /* ============================================
-       TEMPORIZADORES
-       ============================================ */
-
-    @keyframes pulse-grace {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.005); }
-    }
-
-    @keyframes pulse-expired {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.8; }
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    /* ============================================
-       BARRA DE PROGRESO
-       ============================================ */
-    .progress-wrapper {
-        position: relative;
-    }
-
-    .progress-bar {
-        transition: width 1s linear, background-color 0.5s ease;
-    }
-
-    .progress-bar.bg-orange {
-        background: linear-gradient(90deg, #fd7e14 0%, #ffb380 100%) !important;
-    }
-
-    .progress-bar.bg-warning {
-        background: linear-gradient(90deg, #ffc107 0%, #ffda6a 100%) !important;
-    }
-
-    .progress-bar.bg-danger {
-        background: linear-gradient(90deg, #dc3545 0%, #f17983 100%) !important;
-    }
-
-    .progress-text {
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .progress-markers {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        pointer-events: none;
-    }
-
-    .marker {
-        position: absolute;
-        top: -5px;
-        bottom: -5px;
-        width: 3px;
-        transform: translateX(-50%);
-    }
-
-    .marker-line {
-        width: 100%;
-        height: 100%;
-        border-radius: 2px;
-    }
-
-    .marker-limit .marker-line {
-        background: #0d6efd;
-        box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
-    }
-
-    .marker-grace .marker-line {
-        background: #fd7e14;
-        box-shadow: 0 0 5px rgba(253, 126, 20, 0.5);
     }
 
     /* ============================================

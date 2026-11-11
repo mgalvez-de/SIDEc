@@ -522,7 +522,7 @@
        IMPRESIÓN
        ============================================ */
     @media print {
-        .breadcrumb-custom, .btn, button, form, #deleteForm { display: none !important; }
+        .btn, button, form, #deleteForm { display: none !important; }
         .card { box-shadow: none !important; border: 1px solid #dee2e6 !important; }
         .bioassay-item.not-assigned { display: none; }
     }
@@ -540,7 +540,7 @@ document.addEventListener("DOMContentLoaded", function() {
         Swal.fire({
             title: '¿Eliminar esta recepción?',
             html: `<p>Se eliminará permanentemente la recepción <strong>{{ $reception->internal_sample_code }}</strong></p>
-                   <p class="text-danger"><small>Esta acción no se puede deshacer.</small></p>`,
+                   <p class="text-muted"><small>Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarla.</small></p>`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',

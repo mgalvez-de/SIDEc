@@ -596,7 +596,7 @@
        IMPRESIÓN
        ============================================ */
     @media print {
-        .breadcrumb-custom, .btn, button { display: none !important; }
+        .btn, button { display: none !important; }
     }
 </style>
 @endpush

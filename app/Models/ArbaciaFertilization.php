@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BioassayRecord;
 use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class ArbaciaFertilization extends Model
 {
-    use HasFactory, HasTestDuration;
+    use HasFactory, HasTestDuration, BioassayRecord;
 
     // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
     public const DURATION_PHASES = [
@@ -84,14 +85,5 @@ class ArbaciaFertilization extends Model
     public function sampleEntry()
     {
         return $this->belongsTo(SampleEntry::class);
-    }
-
-    /**
-     * Obtener el porcentaje promedio de fecundación del control (fila 1).
-     */
-    public function getControlFertilizationAttribute()
-    {
-        $rows = $this->rows_data ?? [];
-        return $rows[1]['avg_fertilization'] ?? $this->control_fertilization_percentage ?? null;
     }
 }

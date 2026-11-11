@@ -17,6 +17,9 @@ class Navigation
         'receptions'     => 'Recepciones',
         'sample_entries' => 'Ingreso de muestras',
         'rejections'     => 'Rechazos',
+        'bioassays'      => 'Bioensayos',
+        'trash'          => 'Papelera',
+        'account'        => 'Cambiar mi contraseña',
     ];
 
     // Prefijo de la ruta (y de la URL) => [nombre, ícono de Bootstrap Icons]
@@ -47,7 +50,7 @@ class Navigation
         $action = Str::contains($routeName, '.') ? Str::afterLast($routeName, '.') : 'index';
 
         if (isset(self::BIOASSAYS[$section])) {
-            $steps = [['label' => 'Bioensayos', 'url' => null]];
+            $steps = [['label' => 'Bioensayos', 'url' => route('bioassays.index')]];
             $label = self::BIOASSAYS[$section][0];
         } elseif (isset(self::SECTIONS[$section])) {
             $steps = [];
@@ -70,14 +73,20 @@ class Navigation
     // Título de la pestaña: "Daphnia magna (crónico) › Editar · SIDEc"
     public static function pageTitle(?string $routeName): string
     {
-        $labels = collect(self::breadcrumb($routeName))->pluck('label')->reject(fn ($label) => $label === 'Bioensayos');
+        $labels = collect(self::breadcrumb($routeName))->pluck('label');
+
+        // En las páginas de un bioensayo no hace falta repetir "Bioensayos" (sí en el listado)
+        if ($labels->count() > 1 && $labels->first() === 'Bioensayos') {
+            $labels->shift();
+        }
 
         return $labels->isEmpty() ? 'SIDEc' : $labels->implode(' › ') . ' · SIDEc';
     }
 
-    // ¿La página actual es de algún bioensayo? (para dejar abierto y marcado el grupo en el menú)
+    // ¿La página actual es de algún bioensayo? (para marcar "Bioensayos" en el menú)
     public static function inBioassays(): bool
     {
-        return collect(array_keys(self::BIOASSAYS))->contains(fn ($section) => request()->is($section, "$section/*"));
+        return request()->is('bioensayos')
+            || collect(array_keys(self::BIOASSAYS))->contains(fn ($section) => request()->is($section, "$section/*"));
     }
 }
