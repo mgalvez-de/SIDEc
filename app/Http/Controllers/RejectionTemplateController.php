@@ -9,13 +9,19 @@ class RejectionTemplateController extends Controller
 {
     public function index()
     {
-        $rejections = RejectionTemplate::with('template')->latest()->paginate(10);
+        // Todos: la tabla (DataTables) pagina en el navegador. Antes con paginate(10) solo se veían los últimos 10
+        $rejections = RejectionTemplate::with('template')->latest()->get();
         return view('rejections.index', compact('rejections'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('rejections.create');
+        // Desde Recepciones ("Rechazar"): el formulario llega con los datos de esa muestra
+        $reception = $request->filled('code')
+            ? \App\Models\ReceptionTemplate::where('internal_sample_code', $request->query('code'))->first()
+            : null;
+
+        return view('rejections.create', compact('reception'));
     }
 
     public function store(Request $request)
@@ -28,6 +34,7 @@ class RejectionTemplateController extends Controller
 
             'internal_sample_code'  => 'nullable|string|max:255',
             'sample_identifier'     => 'nullable|string|max:255',
+            'client'                => 'nullable|string|max:255',
             'reason_for_rejection'  => 'nullable|string|max:255',
             'who_rejects'           => 'nullable|string|max:255',
             'who_informs_the_client'=> 'nullable|string|max:255',
@@ -68,6 +75,16 @@ class RejectionTemplateController extends Controller
             'code'     => 'nullable|string|max:50',
             'version'  => 'required|string|min:1',
             'validity' => 'nullable|string|max:255',
+
+            // Mismas reglas que al crear (antes al editar no se validaban)
+            'internal_sample_code'  => 'nullable|string|max:255',
+            'sample_identifier'     => 'nullable|string|max:255',
+            'client'                => 'nullable|string|max:255',
+            'reason_for_rejection'  => 'nullable|string|max:255',
+            'who_rejects'           => 'nullable|string|max:255',
+            'who_informs_the_client'=> 'nullable|string|max:255',
+            'customer_instructions' => 'nullable|string|max:255',
+            'observations'          => 'nullable|string|max:300',
         ]);
 
         // Actualizar Template
@@ -86,7 +103,7 @@ class RejectionTemplateController extends Controller
 
     public function destroy(RejectionTemplate $rejection)
     {
-        $rejection->template->delete(); // cascada elimina rejection
-        return redirect()->route('rejections.index')->with('success', 'Plantilla eliminada correctamente.');
+        $rejection->delete(); // va a la papelera
+        return redirect()->route('rejections.index')->with('success', 'Rechazo enviado a la papelera.');
     }
 }

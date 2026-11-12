@@ -3,35 +3,7 @@
 @section('content')
     <div class="container-fluid px-5">
 
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mt-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Inicio</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Recepción de Muestras</li>
-            </ol>
-        </nav>
-
-        <!-- Encabezado con título -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="text-secondary"
-                style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 700;">
-                Recepción de Muestras
-            </h1>
-        </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show d-none" role="alert" id="successAlert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show d-none" role="alert" id="errorAlert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
+<x-page-header title="Recepción de muestras" icon="bi-box-arrow-in-down" />
 
         <!-- Barra de controles sobre la tabla -->
         <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
@@ -141,8 +113,8 @@
                                     {{ $reception->matrix ?? 'Sin matriz' }}
                                 </span>
                             </td>
-                            <td>{{ $reception->temperature_received ?? 'Nulo' }}</td>
-                            <td>{{ $reception->temperature_corrected ?? 'Nulo' }}</td>
+                            <td>{{ \App\Support\NumberFormat::format($reception->temperature_received) ?? 'Nulo' }}</td>
+                            <td>{{ \App\Support\NumberFormat::format($reception->temperature_corrected) ?? 'Nulo' }}</td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
                                     <a href="{{ route('receptions.show', $reception) }}"
@@ -153,6 +125,18 @@
                                         class="btn btn-sm btn-light text-dark border d-inline-flex align-items-center gap-1 btn-edit">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
+                                    {{-- Rechazar: solo si todavía no se rechazó ni se ingresó al laboratorio --}}
+                                    @if (isset($rejectedCodes[$reception->internal_sample_code]))
+                                        <a href="{{ route('rejections.show', $rejectedCodes[$reception->internal_sample_code]) }}"
+                                            class="badge bg-danger text-decoration-none align-self-center" title="Ver el rechazo">
+                                            Rechazada
+                                        </a>
+                                    @elseif (!$reception->sampleEntry && $reception->internal_sample_code)
+                                        <a href="{{ route('rejections.create', ['code' => $reception->internal_sample_code]) }}"
+                                            class="btn btn-sm btn-light text-dark border d-inline-flex align-items-center gap-1 btn-reject">
+                                            <i class="bi bi-x-octagon"></i> Rechazar
+                                        </a>
+                                    @endif
                                     <form action="{{ route('receptions.destroy', $reception) }}" method="POST"
                                         class="d-inline form-delete">
                                         @csrf
@@ -180,11 +164,10 @@
 
 @push('styles')
     <!-- DataTables Bootstrap 5 CSS -->
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.css') }}" rel="stylesheet">
     <!-- Toastr CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
     <style>
         /* Centrar contenido de celdas y encabezados */
@@ -261,32 +244,6 @@
         /* Ajustar columna de acciones para botones en línea */
         #receptionsTable td:last-child {
             white-space: nowrap;
-        }
-
-        /* Estilos para breadcrumb */
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            content: ">";
-            color: #6b7280;
-        }
-
-        .breadcrumb-item a {
-            color: #1d4ed8;
-            transition: color 0.2s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: #1e40af;
-        }
-
-        .breadcrumb-item.active {
-            color: #6b7280;
         }
 
         /* Estilos para la barra de controles */
@@ -467,60 +424,6 @@
             animation: slideDown 0.4s ease-out;
         }
 
-        /* Estilos personalizados para Toastr */
-        .toast-success {
-            background-color: #15803d !important;
-        }
-
-        .toast-error {
-            background-color: #b91c1c !important;
-        }
-
-        .toast-info {
-            background-color: #1d4ed8 !important;
-        }
-
-        .toast-warning {
-            background-color: #f59e0b !important;
-        }
-
-        #toast-container>div {
-            opacity: 1;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
-        }
-
-        #toast-container>.toast {
-            background-image: none !important;
-            padding: 15px 20px 15px 50px;
-        }
-
-        #toast-container>.toast:before {
-            position: absolute;
-            font-family: 'Bootstrap Icons';
-            font-size: 24px;
-            line-height: 24px;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        #toast-container>.toast-success:before {
-            content: "\f26b";
-        }
-
-        #toast-container>.toast-error:before {
-            content: "\f659";
-        }
-
-        #toast-container>.toast-info:before {
-            content: "\f431";
-        }
-
-        #toast-container>.toast-warning:before {
-            content: "\f33a";
-        }
-
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .table-controls-wrapper {
@@ -537,59 +440,19 @@
 
 @push('scripts')
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
     <!-- DataTables -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap5.min.js') }}"></script>
     <!-- DataTables Buttons -->
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Toastr -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="{{ asset('vendor/datatables/buttons/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('vendor/jszip/jszip.min.js') }}"></script>
 
     <script>
         $(document).ready(function() {
-            // Configuración de Toastr
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-
-            // Mostrar notificación de sesión si existe
-            @if (session('success'))
-                toastr.success("{{ session('success') }}");
-            @endif
-
-            @if (session('error'))
-                toastr.error("{{ session('error') }}");
-            @endif
-
-            @if (session('info'))
-                toastr.info("{{ session('info') }}");
-            @endif
-
-            @if (session('warning'))
-                toastr.warning("{{ session('warning') }}");
-            @endif
-
             // Inicializar DataTable
             const table = $('#receptionsTable').DataTable({
                 paging: true,
@@ -601,6 +464,12 @@
                 columnDefs: [{
                     orderable: false,
                     targets: [0, 13] // Checkbox y Acciones no ordenables
+                }, {
+                    // Para que la tabla quepa en la pantalla se ocultan las columnas menos usadas
+                    // (ID, fecha de muestreo, entregado por, recibido por y temperatura corregida).
+                    // Siguen en "Ver" y se exportan igual a Excel.
+                    visible: false,
+                    targets: [2, 6, 7, 9, 12]
                 }],
                 language: {
                     search: "_INPUT_",
@@ -623,7 +492,8 @@
                         title: 'Recepciones_' + new Date().toISOString().slice(0, 10),
                         className: 'd-none',
                         exportOptions: {
-                            columns: ':visible:not(:first-child):not(:last-child)'
+                            // Todas las columnas (también las ocultas), menos la casilla y Acciones
+                            columns: (index) => index !== 0 && index !== 13
                         }
                     },
                     {
@@ -653,22 +523,21 @@
             });
 
             // Aplicar búsqueda individual por columna
+            // (":visIdx" = posición entre las columnas visibles, porque las ocultas no tienen filtro en pantalla)
             $('.column-search').on('keyup change', function() {
                 const columnIndex = $(this).parent().index();
-                table.column(columnIndex).search(this.value).draw();
+                table.column(columnIndex + ':visIdx').search(this.value).draw();
             });
 
             // Botones externos del dropdown Exportar
             $('#exportExcel').on('click', function(e) {
                 e.preventDefault();
                 table.button(0).trigger();
-                toastr.success('Exportando a Excel...', 'Éxito');
             });
 
             $('#exportPrint').on('click', function(e) {
                 e.preventDefault();
                 table.button(1).trigger();
-                toastr.info('Preparando impresión...', 'Información');
             });
 
             // Seleccionar/Deseleccionar todos los checkboxes
@@ -688,7 +557,7 @@
 
                 Swal.fire({
                     title: '¿Eliminar muestra?',
-                    text: "Esta acción no se puede deshacer.",
+                    text: "Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarlo.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#23C552',
@@ -704,25 +573,10 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
-                        toastr.success('Muestra eliminada correctamente', 'Éxito');
-                    } else if (result.isDismissed) {
-                        toastr.info('Eliminación cancelada', 'Información');
                     }
                 });
             });
 
-            // Notificaciones para botones de acción
-            $('.btn-view').on('click', function() {
-                toastr.info('Cargando detalles de la muestra...', 'Información');
-            });
-
-            $('.btn-edit').on('click', function() {
-                toastr.info('Abriendo formulario de edición...', 'Información');
-            });
-
-            $('.btn-add').on('click', function() {
-                toastr.info('Abriendo formulario para nueva muestra...', 'Información');
-            });
         });
     </script>
 @endpush

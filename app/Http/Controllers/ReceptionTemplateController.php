@@ -2,19 +2,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReceptionTemplate;
+use App\Models\RejectionTemplate;
 use App\Models\Template;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ReceptionTemplateController extends Controller
 {
     public function index()
     {
         // Sin paginación - DataTables se encarga del paginado en el frontend
-        $receptions = ReceptionTemplate::with('template')
+        $receptions = ReceptionTemplate::with('template', 'sampleEntry')
             ->orderBy('created_at', 'desc')
             ->get(); // Cambiado de paginate() a get()
 
-        return view('receptions.index', compact('receptions'));
+        // Código interno => id del rechazo, para mostrar "Rechazada" en vez del botón "Rechazar"
+        $rejectedCodes = RejectionTemplate::whereNotNull('internal_sample_code')->pluck('id', 'internal_sample_code');
+
+        return view('receptions.index', compact('receptions', 'rejectedCodes'));
     }
 
     public function create()
@@ -46,10 +51,11 @@ class ReceptionTemplateController extends Controller
             // Validación para múltiples muestras
             'samples'                        => 'required|array|min:1',
             'samples.*.sample_identifier'    => 'required|string|max:255',
-            'samples.*.internal_sample_code' => 'nullable|string|max:255',
+            'samples.*.internal_sample_code' => 'nullable|string|max:255|distinct|unique:reception_templates,internal_sample_code',
+        ], [
+            'samples.*.internal_sample_code.unique'   => 'El código interno :input ya está registrado en otra recepción.',
+            'samples.*.internal_sample_code.distinct' => 'Hay códigos internos repetidos entre las muestras que estás ingresando.',
         ]);
-
-        /* dd($validated); */
 
         // === Guardar la plantilla base ===
         $template = Template::create([
@@ -123,11 +129,16 @@ class ReceptionTemplateController extends Controller
             'received_by'           => 'nullable|string|max:255',
             'sample_identifier'     => 'required|string|max:255',
             'matrix'                => 'nullable|string|max:255',
-            'internal_sample_code'  => 'nullable|string|max:255',
+            'internal_sample_code'  => [
+                'nullable', 'string', 'max:255',
+                Rule::unique('reception_templates', 'internal_sample_code')->ignore($reception->id),
+            ],
             'temperature_received'  => 'nullable|numeric',
             'temperature_corrected' => 'nullable|numeric',
             'report_number'         => 'nullable|integer',
             'assigned_bioassays'    => 'nullable|array',
+        ], [
+            'internal_sample_code.unique' => 'El código interno :input ya está registrado en otra recepción.',
         ]);
 
         // Actualizar Template
@@ -160,9 +171,16 @@ class ReceptionTemplateController extends Controller
             ->with('success', 'Recepción actualizada correctamente.');
     }
 
+    // Elimina SOLO esta muestra (va a la papelera). Antes se borraba la plantilla compartida
+    // y con ella todas las muestras registradas en el mismo lote.
     public function destroy(ReceptionTemplate $reception)
     {
-        $reception->template->delete(); // cascada elimina reception también
-        return redirect()->route('receptions.index')->with('success', 'Plantilla eliminada correctamente.');
+        if ($reception->sampleEntry) {
+            return back()->with('error', 'No se puede eliminar: la muestra ya fue ingresada. Primero hay que eliminar su ingreso.');
+        }
+
+        $reception->delete();
+
+        return redirect()->route('receptions.index')->with('success', 'Recepción enviada a la papelera.');
     }
 }

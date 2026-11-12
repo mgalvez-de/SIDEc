@@ -4,7 +4,7 @@
 @section('content')
 <div class="container">
     <!-- Logo -->
-    <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc"
+    <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
          style="height: 80px; display: block; margin: 0 auto 20px auto;">
     
     <!-- Título Principal -->
@@ -24,7 +24,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-clipboard-list me-2"></i>Datos Generales
+                <i class="bi bi-card-checklist me-2"></i>Datos Generales
             </div>
             <div class="card-body bg-light p-3">
                 <div class="table-responsive">
@@ -56,7 +56,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-flask me-2"></i>Ensayo Preliminar
+                <i class="bi bi-eyedropper me-2"></i>Ensayo Preliminar
             </div>
             <div class="card-body bg-light p-3">
                 <div class="table-responsive">
@@ -125,7 +125,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-vial me-2"></i>Ensayo Definitivo
+                <i class="bi bi-eyedropper me-2"></i>Ensayo Definitivo
             </div>
             <div class="card-body bg-light p-3">
                 <div class="table-responsive">
@@ -210,7 +210,7 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-chart-bar me-2"></i>Resultados de Análisis
+                <i class="bi bi-bar-chart me-2"></i>Resultados de Análisis
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
@@ -222,11 +222,11 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">CL<sub>50</sub> 24h</label>
+                        <label class="form-label fw-bold">CL<sub>50</sub> 24 h</label>
                         <input type="text" class="form-control navigable" name="cl50_24h">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">CL<sub>50</sub> 48h</label>
+                        <label class="form-label fw-bold">CL<sub>50</sub> 48 h</label>
                         <input type="text" class="form-control navigable" name="cl50_48h">
                     </div>
                 </div>
@@ -242,20 +242,20 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-secondary-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-check-circle me-2"></i>Criterios de Aceptabilidad
+                <i class="bi bi-check-circle me-2"></i>Criterios de Aceptabilidad
             </div>
             <div class="card-body bg-light p-3">
                 <ul class="criteria-list mb-3">
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
-                        Rango de Aceptabilidad tóxico de referencia CrL<sub>50</sub> (24-48h): <strong>0,60 mg/l a 1,70 mg/l</strong>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
+                        Rango de Aceptabilidad tóxico de referencia CrL<sub>50</sub> (24-48 h): <strong>0,60 mg/L a 1,70 mg/L</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         Rango de Aceptabilidad Control Inmovilidad: <strong>≤ 10%</strong>
                     </li>
                     <li>
-                        <i class="fas fa-arrow-right text-success me-2"></i>
+                        <i class="bi bi-arrow-right text-success me-2"></i>
                         pH de las muestras: <strong>6 a 9 unidades</strong>
                     </li>
                 </ul>
@@ -266,15 +266,15 @@
         </div>
 
         {{-- ================= BOTONES ================= --}}
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg px-4">
-                <i class="fas fa-save me-2"></i>Guardar Bioensayo
+                <i class="bi bi-floppy me-2"></i>Guardar Bioensayo
             </button>
             <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="window.print()">
-                <i class="fas fa-print me-2"></i>Imprimir
+                <i class="bi bi-printer me-2"></i>Imprimir
             </button>
             <a href="{{ route('daphnia-magna.index') }}" class="btn btn-secondary btn-lg px-4">
-                <i class="fas fa-times me-2"></i>Cancelar
+                <i class="bi bi-x-lg me-2"></i>Cancelar
             </a>
         </div>
     </form>
@@ -283,10 +283,7 @@
 
 @push('head')
     <!-- Flatpickr - Tema Dark -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
 @endpush
 
 @push('styles')
@@ -534,9 +531,8 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -675,8 +671,8 @@ document.addEventListener("DOMContentLoaded", function() {
             showCancelButton: true,
             confirmButtonColor: '#198754',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-save me-1"></i> Sí, guardar',
-            cancelButtonText: '<i class="fas fa-times me-1"></i> Cancelar'
+            confirmButtonText: '<i class="bi bi-floppy me-1"></i> Sí, guardar',
+            cancelButtonText: '<i class="bi bi-x-lg me-1"></i> Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
                 form.submit();

@@ -3,23 +3,8 @@
 
 @section('content')
 <div class="container">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb breadcrumb-custom">
-            <li class="breadcrumb-item">
-                <a href="{{ route('home') }}"><i class="fas fa-home me-1"></i>Inicio</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{{ route('receptions.index') }}"><i class="fas fa-inbox me-1"></i>Recepciones</a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">
-                <i class="fas fa-plus-circle me-1"></i>Nueva Recepción
-            </li>
-        </ol>
-    </nav>
-
     <!-- Logo -->
-    <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc" 
+    <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc" 
          style="height: 80px; display: block; margin: 0 auto 20px auto;">
 
     <!-- Título Principal -->
@@ -32,7 +17,7 @@
     {{-- Mostrar errores de validación --}}
     @if ($errors->any())
         <div class="alert alert-danger mb-4 border-0 shadow-sm" style="border-radius: 10px;">
-            <strong><i class="fas fa-exclamation-triangle me-2"></i>Por favor corrige los siguientes errores:</strong>
+            <strong><i class="bi bi-exclamation-triangle me-2"></i>Por favor corrige los siguientes errores:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -49,14 +34,14 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-warning-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-file-alt me-2"></i>N° de Informe
+                <i class="bi bi-file-earmark-text me-2"></i>N° de Informe
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-warning-subtle border-0">
-                                <i class="fas fa-hashtag text-warning"></i>
+                                <i class="bi bi-hash text-warning"></i>
                             </span>
                             <input type="number" name="report_number" class="form-control form-control-lg navigable text-center fw-bold"
                                    value="{{ old('report_number') }}" placeholder="Ingrese N° de Informe" required
@@ -71,9 +56,9 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-info-subtle text-dark d-flex justify-content-between align-items-center"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <span><i class="fas fa-vials me-2"></i>Identificación de Muestras</span>
+                <span><i class="bi bi-eyedropper me-2"></i>Identificación de Muestras</span>
                 <button type="button" class="btn btn-info btn-sm" id="addSampleBtn">
-                    <i class="fas fa-plus me-1"></i>Agregar Muestra
+                    <i class="bi bi-plus-lg me-1"></i>Agregar Muestra
                 </button>
             </div>
             <div class="card-body bg-light p-3">
@@ -86,21 +71,21 @@
                                 <div class="row g-3">
                                     <div class="col-md-5">
                                         <label class="form-label fw-bold">
-                                            <i class="fas fa-tag text-info me-1"></i>Identificación de la muestra
+                                            <i class="bi bi-tag text-info me-1"></i>Identificación de la muestra
                                         </label>
                                         <input type="text" name="samples[0][sample_identifier]" class="form-control navigable"
                                                value="{{ old('samples.0.sample_identifier') }}" placeholder="Ej: Muestra-001" required>
                                     </div>
                                     <div class="col-md-5">
                                         <label class="form-label fw-bold">
-                                            <i class="fas fa-barcode text-info me-1"></i>Código Interno de Muestra
+                                            <i class="bi bi-upc text-info me-1"></i>Código Interno de Muestra
                                         </label>
                                         <input type="text" name="samples[0][internal_sample_code]" class="form-control navigable"
                                                value="{{ old('samples.0.internal_sample_code') }}" placeholder="Código interno">
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
                                         <button type="button" class="btn btn-outline-secondary btn-sm w-100" disabled>
-                                            <i class="fas fa-lock"></i>
+                                            <i class="bi bi-lock"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -110,7 +95,7 @@
                 </div>
 
                 <div class="alert alert-info border-0 mt-3 d-flex align-items-center" role="alert" style="border-radius: 8px;">
-                    <i class="fas fa-info-circle fa-lg me-3"></i>
+                    <i class="bi bi-info-circle fs-5 me-3"></i>
                     <div>
                         <strong>Nota:</strong> Todos los datos de recepción se aplicarán a todas las muestras ingresadas.
                     </div>
@@ -122,20 +107,20 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-success-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-clipboard-check me-2"></i>Información de Recepción
+                <i class="bi bi-clipboard-check me-2"></i>Información de Recepción
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-thermometer-half text-danger me-1"></i>Código del Termómetro
+                            <i class="bi bi-thermometer-half text-danger me-1"></i>Código del Termómetro
                         </label>
                         <input type="text" name="thermometer_code" class="form-control navigable"
                                value="{{ old('thermometer_code') }}" placeholder="Ej: T-001">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-sliders-h text-primary me-1"></i>Factor de Corrección
+                            <i class="bi bi-sliders text-primary me-1"></i>Factor de Corrección
                         </label>
                         <input type="text" name="correction_factor" class="form-control navigable"
                                value="{{ old('correction_factor') }}" placeholder="Ej: 1.02">
@@ -145,14 +130,14 @@
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-calendar-check text-success me-1"></i>Fecha y Hora de Recepción
+                            <i class="bi bi-calendar-check text-success me-1"></i>Fecha y Hora de Recepción
                         </label>
                         <input type="text" name="received_at" class="form-control datetimepicker navigable"
                                value="{{ old('received_at') }}" placeholder="Seleccionar fecha y hora">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-user text-secondary me-1"></i>Nombre de quien entrega
+                            <i class="bi bi-person text-secondary me-1"></i>Nombre de quien entrega
                         </label>
                         <input type="text" name="delivered_by" class="form-control navigable"
                                value="{{ old('delivered_by') }}" placeholder="Ej: Juan Pérez">
@@ -162,14 +147,14 @@
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-building text-info me-1"></i>Cliente
+                            <i class="bi bi-building text-info me-1"></i>Cliente
                         </label>
                         <input type="text" name="client" class="form-control navigable" value="{{ old('client') }}"
                                placeholder="Nombre del cliente">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-clock text-warning me-1"></i>Fecha y Hora de Muestreo
+                            <i class="bi bi-clock text-warning me-1"></i>Fecha y Hora de Muestreo
                         </label>
                         <input type="text" name="sampled_at" class="form-control datetimepicker navigable"
                                value="{{ old('sampled_at') }}" placeholder="Seleccionar fecha y hora">
@@ -179,14 +164,14 @@
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-user-check text-success me-1"></i>Nombre de quien recibe
+                            <i class="bi bi-person-check text-success me-1"></i>Nombre de quien recibe
                         </label>
                         <input type="text" name="received_by" class="form-control navigable"
                                value="{{ old('received_by') }}" placeholder="Nombre del receptor">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-water text-primary me-1"></i>Matriz
+                            <i class="bi bi-water text-primary me-1"></i>Matriz
                         </label>
                         <select name="matrix" class="form-select navigable" required>
                             <option value="" disabled selected>Seleccione una matriz</option>
@@ -205,7 +190,7 @@
                 <div class="row g-3 mt-1">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-temperature-low text-info me-1"></i>Temperatura de Recepción
+                            <i class="bi bi-thermometer-low text-info me-1"></i>Temperatura de Recepción
                         </label>
                         <div class="input-group">
                             <input type="number" step="0.01" name="temperature_received" class="form-control navigable"
@@ -215,7 +200,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label fw-bold">
-                            <i class="fas fa-temperature-high text-danger me-1"></i>Temperatura Corregida
+                            <i class="bi bi-thermometer-high text-danger me-1"></i>Temperatura Corregida
                         </label>
                         <div class="input-group">
                             <input type="number" step="0.01" name="temperature_corrected" class="form-control navigable"
@@ -231,23 +216,23 @@
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
             <div class="card-header bg-purple-subtle text-dark"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-flask me-2"></i>Bioensayos a Realizar
+                <i class="bi bi-eyedropper me-2"></i>Bioensayos a Realizar
             </div>
             <div class="card-body bg-light p-3">
                 <p class="text-muted mb-3">
-                    <i class="fas fa-hand-pointer me-1"></i>Seleccione los bioensayos que se realizarán a las muestras:
+                    <i class="bi bi-hand-index me-1"></i>Seleccione los bioensayos que se realizarán a las muestras:
                 </p>
 
                 @php
                     $availableBioassays = [
-                        ['name' => 'Daphnia magna Agudo', 'icon' => 'fa-bug', 'color' => 'success'],
-                        ['name' => 'Daphnia magna Crónico', 'icon' => 'fa-bug', 'color' => 'success'],
-                        ['name' => 'Isochrysis galbana', 'icon' => 'fa-seedling', 'color' => 'info'],
-                        ['name' => 'Selenastrum capricornutum', 'icon' => 'fa-leaf', 'color' => 'lime'],
-                        ['name' => 'Tisbe biconicornis Agua', 'icon' => 'fa-fish', 'color' => 'purple'],
-                        ['name' => 'Tisbe biconicornis Sedimento', 'icon' => 'fa-fish', 'color' => 'orange'],
-                        ['name' => 'Arbacia spatuligera Estado Larval', 'icon' => 'fa-star', 'color' => 'pink'],
-                        ['name' => 'Arbacia spatuligera Fecundación', 'icon' => 'fa-star', 'color' => 'pink'],
+                        ['name' => 'Daphnia magna Agudo', 'icon' => 'bi-droplet', 'color' => 'success'],
+                        ['name' => 'Daphnia magna Crónico', 'icon' => 'bi-droplet-half', 'color' => 'success'],
+                        ['name' => 'Isochrysis galbana', 'icon' => 'bi-water', 'color' => 'info'],
+                        ['name' => 'Selenastrum capricornutum', 'icon' => 'bi-flower3', 'color' => 'lime'],
+                        ['name' => 'Tisbe biconicornis Agua', 'icon' => 'bi-bug', 'color' => 'purple'],
+                        ['name' => 'Tisbe biconicornis Sedimento', 'icon' => 'bi-bezier2', 'color' => 'orange'],
+                        ['name' => 'Arbacia spatuligera Estado Larval', 'icon' => 'bi-egg', 'color' => 'pink'],
+                        ['name' => 'Arbacia spatuligera Fecundación', 'icon' => 'bi-egg-fried', 'color' => 'pink'],
                     ];
                 @endphp
 
@@ -259,13 +244,13 @@
                                    {{ in_array($assay['name'], old('assigned_bioassays', [])) ? 'checked' : '' }}>
                             <label class="bioassay-label" for="assay_{{ $index }}">
                                 <div class="bioassay-icon">
-                                    <i class="fas {{ $assay['icon'] }}"></i>
+                                    <i class="bi {{ $assay['icon'] }}"></i>
                                 </div>
                                 <div class="bioassay-info">
                                     <span class="bioassay-name">{{ $assay['name'] }}</span>
                                 </div>
                                 <div class="bioassay-check">
-                                    <i class="fas fa-check"></i>
+                                    <i class="bi bi-check-lg"></i>
                                 </div>
                             </label>
                         </div>
@@ -274,7 +259,7 @@
 
                 <div class="selected-count mt-3 text-center">
                     <span class="badge bg-secondary px-3 py-2" id="selectedCount">
-                        <i class="fas fa-clipboard-list me-1"></i>
+                        <i class="bi bi-card-checklist me-1"></i>
                         <span id="countNumber">0</span> bioensayo(s) seleccionado(s)
                     </span>
                 </div>
@@ -283,9 +268,10 @@
 
         {{-- ===================== INFORMACIÓN DE LA PLANTILLA ===================== --}}
         <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-            <div class="card-header bg-secondary-subtle text-dark"
+            {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+            <div class="card-header bg-secondary-subtle text-dark d-none d-print-block"
                 style="font-size: 1.3rem; font-weight: 500; border-top-left-radius: 10px; border-top-right-radius: 10px;">
-                <i class="fas fa-file-contract me-2"></i>Información de la Plantilla
+                <i class="bi bi-file-earmark-text me-2"></i>Información de la Plantilla
             </div>
             <div class="card-body bg-light p-3">
                 <div class="row g-3 align-items-center">
@@ -322,12 +308,12 @@
         </div>
 
         {{-- ===================== BOTONES ===================== --}}
-        <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg px-5">
-                <i class="fas fa-save me-2"></i>Guardar Recepción
+                <i class="bi bi-floppy me-2"></i>Guardar Recepción
             </button>
             <a href="{{ route('receptions.index') }}" class="btn btn-secondary btn-lg px-4">
-                <i class="fas fa-times me-2"></i>Cancelar
+                <i class="bi bi-x-lg me-2"></i>Cancelar
             </a>
         </div>
     </form>
@@ -335,9 +321,7 @@
 @endsection
 
 @push('head')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
 @endpush
 
 @push('styles')
@@ -345,34 +329,6 @@
     /* ============================================
        BREADCRUMB PERSONALIZADO
        ============================================ */
-    .breadcrumb-custom {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 12px 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .breadcrumb-custom .breadcrumb-item a {
-        color: #6c757d;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .breadcrumb-custom .breadcrumb-item a:hover {
-        color: #0d6efd;
-    }
-
-    .breadcrumb-custom .breadcrumb-item.active {
-        color: #495057;
-        font-weight: 500;
-    }
-
-    .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
-        content: "›";
-        font-size: 1.2rem;
-        color: #adb5bd;
-    }
-
     /* ============================================
        COLORES PERSONALIZADOS
        ============================================ */
@@ -684,15 +640,14 @@
        IMPRESIÓN
        ============================================ */
     @media print {
-        .breadcrumb-custom, .btn, button { display: none !important; }
+        .btn, button { display: none !important; }
     }
 </style>
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -763,21 +718,21 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div class="row g-3">
                         <div class="col-md-5">
                             <label class="form-label fw-bold">
-                                <i class="fas fa-tag text-info me-1"></i>Identificación de la muestra
+                                <i class="bi bi-tag text-info me-1"></i>Identificación de la muestra
                             </label>
                             <input type="text" name="samples[${sampleIndex}][sample_identifier]" 
                                    class="form-control navigable" placeholder="Ej: Muestra-00${currentCount + 1}" required>
                         </div>
                         <div class="col-md-5">
                             <label class="form-label fw-bold">
-                                <i class="fas fa-barcode text-info me-1"></i>Código Interno de Muestra
+                                <i class="bi bi-upc text-info me-1"></i>Código Interno de Muestra
                             </label>
                             <input type="text" name="samples[${sampleIndex}][internal_sample_code]" 
                                    class="form-control navigable" placeholder="Código interno">
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="button" class="btn btn-outline-danger btn-sm w-100 remove-sample">
-                                <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                <i class="bi bi-trash me-1"></i>Eliminar
                             </button>
                         </div>
                     </div>
@@ -805,8 +760,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="fas fa-trash-alt me-1"></i>Sí, eliminar',
-                cancelButtonText: '<i class="fas fa-times me-1"></i>Cancelar'
+                confirmButtonText: '<i class="bi bi-trash me-1"></i>Sí, eliminar',
+                cancelButtonText: '<i class="bi bi-x-lg me-1"></i>Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
                     sampleRow.style.animation = 'slideOutSample 0.3s ease-out forwards';
@@ -851,8 +806,8 @@ document.addEventListener("DOMContentLoaded", function() {
             showCancelButton: true,
             confirmButtonColor: '#198754',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: '<i class="fas fa-save me-1"></i>Sí, guardar',
-            cancelButtonText: '<i class="fas fa-times me-1"></i>Cancelar'
+            confirmButtonText: '<i class="bi bi-floppy me-1"></i>Sí, guardar',
+            cancelButtonText: '<i class="bi bi-x-lg me-1"></i>Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
                 form.submit();

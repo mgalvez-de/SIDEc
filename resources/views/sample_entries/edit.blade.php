@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <!-- Logo -->
-        <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
+        <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
 
         <!-- Título -->
         <h1 class="mb-4 text-secondary text-center"
@@ -18,7 +18,7 @@
             {{-- Mostrar errores de validación si existen --}}
             @if ($errors->any())
                 <div class="alert alert-danger mb-4">
-                    <strong><i class="fas fa-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
+                    <strong><i class="bi bi-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
                     <ul class="mb-0 mt-2">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -90,8 +90,8 @@
                                                 <input type="number" step="any" min="0" 
                                                     id="concentration_ppm" 
                                                     class="form-control concentration-input" 
-                                                    placeholder="PPM">
-                                                <span class="input-group-text">PPM</span>
+                                                    placeholder="ppm">
+                                                <span class="input-group-text">ppm</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -99,15 +99,15 @@
                                                 <input type="number" step="any" min="0" 
                                                     id="concentration_ppb" 
                                                     class="form-control concentration-input" 
-                                                    placeholder="PPB">
-                                                <span class="input-group-text">PPB</span>
+                                                    placeholder="ppb">
+                                                <span class="input-group-text">ppb</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> Ingrese en cualquier formato, los demás se calcularán automáticamente.
+                                <i class="bi bi-info-circle"></i> Ingrese en cualquier formato, los demás se calcularán automáticamente.
                             </small>
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                 </div>
                 <div class="card-body bg-light">
                     <div class="alert alert-info mb-3" role="alert">
-                        <i class="fas fa-info-circle"></i> Los bioensayos fueron asignados en la recepción de muestra y no pueden modificarse aquí.
+                        <i class="bi bi-info-circle"></i> Los bioensayos fueron asignados en la recepción de muestra y no pueden modificarse aquí.
                     </div>
                     
                     <div class="row" id="bioassaysContainer">
@@ -199,15 +199,16 @@
                                 'Arbacia spatuligera Fecundación',
                             ];
 
+                            // Formulario de cada bioensayo (antes había nombres de ruta mal escritos y solo funcionaba Daphnia)
                             $bioRoutes = [
-                                'Daphnia magna Agudo' => 'daphnia-magna.index',
-                                'Daphnia magna Crónico' => 'daphnia_magna_chronic.index',
-                                'Isochrysis galbana' => 'isochrysis-galbana.index',
-                                'Selenastrum capricornutum' => 'selenastum-capricornutum.index',
-                                'Tisbe biconicornis Agua' => 'tisbe-longicornis-water.index',
-                                'Tisbe biconicornis Sedimento' => 'tisbe-longicornis-riles.index',
-                                'Arbacia spatuligera Fecundación' => 'arbacia_fertilization.index',
-                                'Arbacia spatuligera Estado Larval' => 'arbacia_larval_stage.index',
+                                'Daphnia magna Agudo' => 'daphnia-magna.edit',
+                                'Daphnia magna Crónico' => 'daphnia-magna-chronic.edit',
+                                'Isochrysis galbana' => 'isochrysis-galbana.edit',
+                                'Selenastrum capricornutum' => 'selenastrum-capricornutum.edit',
+                                'Tisbe biconicornis Agua' => 'tisbe-longicornis-water.edit',
+                                'Tisbe biconicornis Sedimento' => 'tisbe-longicornis-riles.edit',
+                                'Arbacia spatuligera Fecundación' => 'arbacia-fertilization.edit',
+                                'Arbacia spatuligera Estado Larval' => 'arbacia-larval-stage.edit',
                             ];
                         @endphp
                         @foreach ($allBioassays as $index => $bio)
@@ -227,20 +228,16 @@
                                         @if (in_array($bio, $assignedBioassays ?? []))
                                             <span class="badge bg-success">Asignado</span>
                                             @php
+                                                // El bioensayo de esta muestra, buscado por la clave foránea (igual que en el detalle)
+                                                $bioassayRecord = $sampleEntry->assignedBioassays()->get($bio);
                                                 $route = $bioRoutes[$bio] ?? null;
-                                                $daphnia = null;
-                                                if ($route && str_contains($bio, 'Daphnia')) {
-                                                    $daphnia = \App\Models\DaphniaMagnaTemplate::where('sample', $sampleEntry->internal_sample_code)->first();
-                                                }
                                             @endphp
-                                            @if ($daphnia)
-                                                <a href="{{ route('daphnia-magna.edit', $daphnia->id) }}" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-external-link-alt"></i> Ir al ensayo
+                                            @if ($bioassayRecord && $route)
+                                                <a href="{{ route($route, $bioassayRecord->id) }}" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-box-arrow-up-right"></i> Ir al ensayo
                                                 </a>
-                                            @elseif ($route)
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled>No disponible</button>
                                             @else
-                                                <button type="button" class="btn btn-sm btn-secondary" disabled>No implementado</button>
+                                                <button type="button" class="btn btn-sm btn-secondary" disabled>Sin registro</button>
                                             @endif
                                         @endif
                                     </div>
@@ -253,7 +250,8 @@
 
             {{-- ===================== BASE TEMPLATE ===================== --}}
             <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-                <div class="card-header bg-primary text-white"
+                {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+                <div class="card-header bg-primary text-white d-none d-print-block"
                     style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                     Información de la Plantilla
                 </div>
@@ -285,7 +283,7 @@
 
             <div class="d-flex justify-content-end gap-2 mb-4">
                 <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Actualizar
+                    <i class="bi bi-floppy"></i> Actualizar
                 </button>
                 <a href="{{ route('sample_entries.show', $sampleEntry->id) }}" class="btn btn-secondary">Cancelar</a>
             </div>
@@ -295,10 +293,8 @@
 
 @push('head')
     <!-- Flatpickr - Tema Dark -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
     <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ============================================
@@ -513,9 +509,8 @@
 
 @push('scripts')
     <!-- Flatpickr -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -612,7 +607,7 @@
             }
 
             // ============= SWEETALERT PARA CONFIRMACIÓN DEL ENVÍO =============
-            $('#entryForm').on('submit', function(e) {
+            document.getElementById('entryForm').addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 Swal.fire({

@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\SelenastrumCapricornutum;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class SelenastrumCapricornutumController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = SelenastrumCapricornutum::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.selenastrum_capricornutum.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -46,6 +36,7 @@ class SelenastrumCapricornutumController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = SelenastrumCapricornutum::create($validated);
 
@@ -58,7 +49,8 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function show(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
-        return view('bioassays.selenastrum_capricornutum.show', compact('selenastrum_capricornutum'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('selenastrum-capricornutum.edit', $selenastrum_capricornutum);
     }
 
     /**
@@ -74,6 +66,8 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function update(Request $request, SelenastrumCapricornutum $selenastrum_capricornutum)
     {
+        $this->authorize('update', $selenastrum_capricornutum);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -85,8 +79,6 @@ class SelenastrumCapricornutumController extends Controller
             'bioassay_end'   => 'nullable|date',
             'analyst'        => 'nullable|string|max:255',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Datos preliminares
             'initial_inoculum'   => 'nullable|numeric',
@@ -124,8 +116,6 @@ class SelenastrumCapricornutumController extends Controller
             'bioassay_end'   => $validated['bioassay_end'] ?? null,
             'analyst'        => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Datos preliminares
             'initial_inoculum'   => $validated['initial_inoculum'] ?? null,
@@ -160,7 +150,7 @@ class SelenastrumCapricornutumController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $selenastrum_capricornutum->sample)->first();
+        $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -176,7 +166,9 @@ class SelenastrumCapricornutumController extends Controller
      */
     public function destroy(SelenastrumCapricornutum $selenastrum_capricornutum)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $selenastrum_capricornutum->sample)->first();
+        $this->authorize('delete', $selenastrum_capricornutum);
+
+        $sampleEntry = $selenastrum_capricornutum->sampleEntry;
 
         $selenastrum_capricornutum->delete();
 
@@ -187,5 +179,17 @@ class SelenastrumCapricornutumController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(SelenastrumCapricornutum $selenastrum_capricornutum)
+    {
+        $this->authorize('validateBioassay', $selenastrum_capricornutum);
+
+        $selenastrum_capricornutum->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

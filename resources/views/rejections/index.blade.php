@@ -3,21 +3,7 @@
 @section('content')
     <div class="container-fluid px-5">
 
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mt-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Inicio</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Rechazos de Muestras</li>
-            </ol>
-        </nav>
-
-        <!-- Encabezado con título -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="text-secondary"
-                style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 700;">
-                Rechazos de Muestras
-            </h1>
-        </div>
+<x-page-header title="Rechazos de muestras" icon="bi-x-circle" />
 
         <!-- Barra de controles sobre la tabla -->
         <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
@@ -67,6 +53,7 @@
                         <th>ID</th>
                         <th>Código Muestra</th>
                         <th>Identificador</th>
+                        <th>Cliente</th>
                         <th>Motivo Rechazo</th>
                         <th>Quién Rechaza</th>
                         <th>Código Doc.</th>
@@ -77,6 +64,7 @@
                         <th><input type="text" class="form-control form-control-sm column-search" placeholder="ID"></th>
                         <th><input type="text" class="form-control form-control-sm column-search" placeholder="Código"></th>
                         <th><input type="text" class="form-control form-control-sm column-search" placeholder="Identificador"></th>
+                        <th><input type="text" class="form-control form-control-sm column-search" placeholder="Cliente"></th>
                         <th><input type="text" class="form-control form-control-sm column-search" placeholder="Motivo"></th>
                         <th><input type="text" class="form-control form-control-sm column-search" placeholder="Quién"></th>
                         <th><input type="text" class="form-control form-control-sm column-search" placeholder="Doc."></th>
@@ -93,6 +81,7 @@
                             <td>{{ $rejection->id }}</td>
                             <td>{{ $rejection->internal_sample_code ?? '-' }}</td>
                             <td>{{ $rejection->sample_identifier ?? '-' }}</td>
+                            <td>{{ $rejection->client ?? '-' }}</td>
                             <td>
                                 <span class="badge bg-danger text-wrap" style="max-width: 200px;">
                                     {{ Str::limit($rejection->reason_for_rejection, 30) ?? '-' }}
@@ -143,10 +132,9 @@
 @endsection
 
 @push('styles')
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.css') }}" rel="stylesheet">
 
     <style>
         /* Centrar contenido de celdas y encabezados */
@@ -223,32 +211,6 @@
         /* Ajustar columna de acciones para botones en línea */
         #rejectionsTable td:last-child {
             white-space: nowrap;
-        }
-
-        /* Estilos para breadcrumb */
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            content: ">";
-            color: #6b7280;
-        }
-
-        .breadcrumb-item a {
-            color: #1d4ed8;
-            transition: color 0.2s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: #1e40af;
-        }
-
-        .breadcrumb-item.active {
-            color: #6b7280;
         }
 
         /* Estilos para la barra de controles */
@@ -424,60 +386,6 @@
             transform: translateY(-2px);
         }
 
-        /* Estilos personalizados para Toastr */
-        .toast-success {
-            background-color: #15803d !important;
-        }
-
-        .toast-error {
-            background-color: #b91c1c !important;
-        }
-
-        .toast-info {
-            background-color: #1d4ed8 !important;
-        }
-
-        .toast-warning {
-            background-color: #f59e0b !important;
-        }
-
-        #toast-container > div {
-            opacity: 1;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
-        }
-
-        #toast-container > .toast {
-            background-image: none !important;
-            padding: 15px 20px 15px 50px;
-        }
-
-        #toast-container > .toast:before {
-            position: absolute;
-            font-family: 'Bootstrap Icons';
-            font-size: 24px;
-            line-height: 24px;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        #toast-container > .toast-success:before {
-            content: "\f26b";
-        }
-
-        #toast-container > .toast-error:before {
-            content: "\f659";
-        }
-
-        #toast-container > .toast-info:before {
-            content: "\f431";
-        }
-
-        #toast-container > .toast-warning:before {
-            content: "\f33a";
-        }
-
         /* Badge de motivo de rechazo */
         .badge.bg-danger {
             font-size: 0.8rem;
@@ -499,55 +407,17 @@
 @endpush
 
 @push('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('vendor/jszip/jszip.min.js') }}"></script>
 
     <script>
         $(document).ready(function() {
-            // Configuración de Toastr
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-
-            // Mostrar notificación de sesión si existe
-            @if(session('success'))
-                toastr.success("{{ session('success') }}");
-            @endif
-
-            @if(session('error'))
-                toastr.error("{{ session('error') }}");
-            @endif
-
-            @if(session('info'))
-                toastr.info("{{ session('info') }}");
-            @endif
-
-            @if(session('warning'))
-                toastr.warning("{{ session('warning') }}");
-            @endif
-
             // Inicializar DataTable
             const table = $('#rejectionsTable').DataTable({
                 paging: true,
@@ -559,11 +429,11 @@
                 columnDefs: [
                     {
                         orderable: false,
-                        targets: [0, 7]
+                        targets: [0, 8]
                     },
                     {
                         searchable: false,
-                        targets: [0, 7]
+                        targets: [0, 8]
                     }
                 ],
                 language: {
@@ -621,13 +491,11 @@
             $('#exportExcel').on('click', function(e) {
                 e.preventDefault();
                 table.button(0).trigger();
-                toastr.success('Exportando a Excel...', 'Éxito');
             });
 
             $('#exportPrint').on('click', function(e) {
                 e.preventDefault();
                 table.button(1).trigger();
-                toastr.info('Preparando impresión...', 'Información');
             });
 
             // Checkboxes
@@ -646,7 +514,7 @@
 
                 Swal.fire({
                     title: '¿Eliminar rechazo?',
-                    text: "Esta acción no se puede deshacer.",
+                    text: "Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarlo.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#b91c1c',
@@ -662,16 +530,11 @@
 
             // Notificaciones
             $(document).on('click', '.btn-view', function() {
-                toastr.info('Cargando detalles del rechazo...', 'Información');
             });
 
             $(document).on('click', '.btn-edit', function() {
-                toastr.info('Abriendo formulario de edición...', 'Información');
             });
 
-            $('.btn-add').on('click', function() {
-                toastr.info('Abriendo formulario para nuevo rechazo...', 'Información');
-            });
         });
     </script>
 @endpush

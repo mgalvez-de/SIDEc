@@ -3,19 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\BioassayRecord;
+use App\Models\Concerns\HasTestDuration;
 use Illuminate\Database\Eloquent\Model;
 
 class DaphniaMagnaChronic extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTestDuration, BioassayRecord;
+
+    // Etapa => [etiqueta, campo de inicio, campo de término, minutos que debe durar según el protocolo]
+    public const DURATION_PHASES = [
+        'bioassay' => ['Duración del ensayo', 'bioassay_start', 'bioassay_end', 21 * 24 * 60],
+    ];
 
     protected $table = 'daphnia_magna_chronic';
 
     protected $fillable = [
         'template_id',
-
-        // Temporizador
-        'timer_start',
+        'sample_entry_id',
+        'created_by',
+        'validated_by',
+        'validated_at',
 
         // Datos generales
         'sample',
@@ -78,6 +86,7 @@ class DaphniaMagnaChronic extends Model
      * Los atributos que deben ser convertidos a tipos nativos.
      */
     protected $casts = [
+        'validated_at' => 'datetime',
         'bioassay_start'            => 'datetime',
         'bioassay_end'              => 'datetime',
         'sample_temperature'        => 'decimal:1',
@@ -101,52 +110,6 @@ class DaphniaMagnaChronic extends Model
      */
     public function sampleEntry()
     {
-        return $this->hasOne(SampleEntry::class, 'internal_sample_code', 'sample');
-    }
-
-    /**
-     * Obtener el estado del temporizador.
-     * Este bioensayo tiene un tiempo límite de 21 días + 1 día de gracia.
-     */
-    public function getTimerStatusAttribute()
-    {
-        if (!$this->timer_start) {
-            return 'not_started';
-        }
-
-        $elapsed = now()->timestamp * 1000 - (int) $this->timer_start;
-        $limitMs = 21 * 24 * 60 * 60 * 1000;  // 21 días
-        $totalMs = 22 * 24 * 60 * 60 * 1000;  // 22 días (21 + 1 gracia)
-
-        if ($elapsed >= $totalMs) {
-            return 'expired';
-        } elseif ($elapsed >= $limitMs) {
-            return 'grace';
-        } elseif ($elapsed >= $limitMs * 0.9) {
-            return 'warning';
-        }
-
-        return 'running';
-    }
-
-    /**
-     * Obtener el día actual del ensayo.
-     */
-    public function getCurrentDayAttribute()
-    {
-        if (!$this->timer_start) {
-            return 0;
-        }
-
-        $elapsed = now()->timestamp * 1000 - (int) $this->timer_start;
-        return min(floor($elapsed / (24 * 60 * 60 * 1000)), 22);
-    }
-
-    /**
-     * Verificar si el control cumple el criterio (≥ 40 juveniles).
-     */
-    public function getControlMeetsCriteriaAttribute()
-    {
-        return ($this->control_total_reproduction ?? 0) >= 40;
+        return $this->belongsTo(SampleEntry::class);
     }
 }

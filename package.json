@@ -1,5 +1,6 @@
 {
     "private": true,
+
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
@@ -22,5 +23,8 @@
     },
     "dependencies": {
         "jquery": "^3.7.1"
+    },
+    "overrides": {
+        "webpack": "5.99.9"
     }
 }

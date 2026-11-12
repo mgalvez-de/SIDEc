@@ -3,12 +3,12 @@
 @section('content')
     <div class="container">
         <!-- Logo -->
-        <img src="{{ asset('storage/images/xd.webp') }}" alt="Logo SIDEc"
+        <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
             style="height: 80px; display: block; margin: 0 auto 20px auto;">
         <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Tisbe longicornis Sus</small></h2>
         <p class="text-center text-black">RT-01.05 | Versión: 01 | Vigencia: 06.10.2025</p>
 
-        <form action="{{ route('tisbe-longicornis-substance.store') }}" method="POST">
+        <form action="{{ route('tisbe-longicornis-riles.store') }}" method="POST">
             @csrf
 
             {{-- ================= FORMULARIO PRINCIPAL ================= --}}
@@ -47,7 +47,7 @@
                     <table class="table table-bordered text-center mb-0" style="table-layout: fixed;">
                         <thead class="table-light">
                             <tr>
-                                <th>Volumen inóculo inicial (10⁴ cel/ml)</th>
+                                <th>Volumen inóculo inicial (10⁴ cel/mL)</th>
                                 <th>Fecha de Cultivo (Stock)</th>
                             </tr>
                         </thead>
@@ -145,7 +145,7 @@
 @endsection
 
 @push('head')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
 @endpush
 
 @push('styles')
@@ -218,9 +218,8 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -235,7 +234,7 @@
                 locale: "es"
             });
 
-            $('form').on('submit', function(e) {
+            document.querySelector('main form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: '¿Confirmar guardado?',

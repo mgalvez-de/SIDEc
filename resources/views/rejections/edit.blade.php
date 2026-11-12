@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <!-- Logo -->
-        <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
+        <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
 
         <!-- Título -->
         <h1 class="mb-4 text-secondary text-center"
@@ -24,7 +24,7 @@
                 </div>
                 <div class="card-body bg-light">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Código Interno de Muestra</label>
                             <input type="text" name="internal_sample_code" class="form-control navigable"
                                 value="{{ old('internal_sample_code', $rejection->internal_sample_code) }}" 
@@ -33,7 +33,7 @@
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Identificación de la Muestra</label>
                             <input type="text" name="sample_identifier" class="form-control navigable"
                                 value="{{ old('sample_identifier', $rejection->sample_identifier) }}" 
@@ -41,6 +41,12 @@
                             @error('sample_identifier')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Cliente</label>
+                            <input type="text" name="client" class="form-control navigable"
+                                value="{{ old('client', $rejection->client) }}"
+                                placeholder="Ej: Acuícola Mar Austral SpA">
                         </div>
                     </div>
 
@@ -143,7 +149,8 @@
 
             {{-- ===================== BASE TEMPLATE ===================== --}}
             <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-                <div class="card-header bg-primary text-white"
+                {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+                <div class="card-header bg-primary text-white d-none d-print-block"
                     style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                     <i class="bi bi-file-earmark-text me-2"></i>Información de la Plantilla
                 </div>
@@ -151,15 +158,15 @@
                     <div class="d-flex flex-wrap align-items-center gap-4">
                         <div class="flex-grow-1">
                             <label class="form-label fw-bold mb-1">Título</label>
-                            <input type="text" name="title" class="form-control navigable"
-                                value="{{ old('title', $rejection->template->title ?? 'RECHAZO DE MUESTRAS') }}" required>
+                            <input type="text" name="title" class="form-control"
+                                value="{{ old('title', $rejection->template->title ?? 'RECHAZO DE MUESTRAS') }}">
                             @error('title')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
                         <div style="min-width: 150px;">
                             <label class="form-label fw-bold mb-1">Código</label>
-                            <input type="text" name="code" class="form-control navigable"
+                            <input type="text" name="code" class="form-control"
                                 value="{{ old('code', $rejection->template->code ?? 'RO-02.02') }}">
                             @error('code')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -167,15 +174,15 @@
                         </div>
                         <div style="min-width: 100px;">
                             <label class="form-label fw-bold mb-1">Versión</label>
-                            <input type="number" name="version" class="form-control navigable" min="1"
-                                value="{{ old('version', $rejection->template->version ?? 1) }}" required>
+                            <input type="number" name="version" class="form-control" min="1"
+                                value="{{ old('version', $rejection->template->version ?? 1) }}">
                             @error('version')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
                         <div style="min-width: 150px;">
                             <label class="form-label fw-bold mb-1">Vigencia</label>
-                            <input type="text" name="validity" class="form-control navigable"
+                            <input type="text" name="validity" class="form-control"
                                 value="{{ old('validity', $rejection->template->validity ?? '') }}" 
                                 placeholder="dd.mm.yyyy">
                             @error('validity')
@@ -232,7 +239,7 @@
 
 @push('head')
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
     
     <style>
         /* Focus highlight para navegación */
@@ -309,7 +316,6 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

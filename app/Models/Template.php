@@ -20,10 +20,4 @@ class Template extends Model
     {
         return $this->hasOne(ReceptionTemplate::class);
     }
-
-    public function daphniaMagnaTemplates()
-    {
-        return $this->hasMany(DaphniaMagnaTemplate::class);
-    }
-
 }

@@ -17,12 +17,12 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * "Inicio": lleva a la página principal de cada rol (antes mostraba una página vacía de Laravel)
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('home');
+        return $request->user()->hasAnyRole(\App\Models\User::ADMIN_ROLES)
+            ? redirect()->route('dashboard')
+            : redirect()->route('sample_entries.index');
     }
 }

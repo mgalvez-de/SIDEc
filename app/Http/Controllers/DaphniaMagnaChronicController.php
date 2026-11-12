@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DaphniaMagnaChronic;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class DaphniaMagnaChronicController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = DaphniaMagnaChronic::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.daphnia_magna_chronic.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -46,6 +36,7 @@ class DaphniaMagnaChronicController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = DaphniaMagnaChronic::create($validated);
 
@@ -58,7 +49,8 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function show(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
-        return view('bioassays.daphnia_magna_chronic.show', compact('daphnia_magna_chronic'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('daphnia-magna-chronic.edit', $daphnia_magna_chronic);
     }
 
     /**
@@ -74,6 +66,8 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function update(Request $request, DaphniaMagnaChronic $daphnia_magna_chronic)
     {
+        $this->authorize('update', $daphnia_magna_chronic);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -85,8 +79,6 @@ class DaphniaMagnaChronicController extends Controller
             'bioassay_end' => 'nullable|date',
             'analyst' => 'nullable|string|max:255',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Datos preliminares
             'sample_temperature' => 'nullable|numeric',
@@ -119,8 +111,6 @@ class DaphniaMagnaChronicController extends Controller
             'bioassay_end' => $validated['bioassay_end'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Datos preliminares
             'sample_temperature' => $validated['sample_temperature'] ?? null,
@@ -150,7 +140,7 @@ class DaphniaMagnaChronicController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $daphnia_magna_chronic->sample)->first();
+        $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -166,7 +156,9 @@ class DaphniaMagnaChronicController extends Controller
      */
     public function destroy(DaphniaMagnaChronic $daphnia_magna_chronic)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $daphnia_magna_chronic->sample)->first();
+        $this->authorize('delete', $daphnia_magna_chronic);
+
+        $sampleEntry = $daphnia_magna_chronic->sampleEntry;
 
         $daphnia_magna_chronic->delete();
 
@@ -177,5 +169,17 @@ class DaphniaMagnaChronicController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(DaphniaMagnaChronic $daphnia_magna_chronic)
+    {
+        $this->authorize('validateBioassay', $daphnia_magna_chronic);
+
+        $daphnia_magna_chronic->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArbaciaFertilization;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class ArbaciaFertilizationController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = ArbaciaFertilization::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.arbacia_fertilization.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -46,6 +36,7 @@ class ArbaciaFertilizationController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = ArbaciaFertilization::create($validated);
 
@@ -58,7 +49,8 @@ class ArbaciaFertilizationController extends Controller
      */
     public function show(ArbaciaFertilization $arbacia_fertilization)
     {
-        return view('bioassays.arbacia_fertilization.show', compact('arbacia_fertilization'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('arbacia-fertilization.edit', $arbacia_fertilization);
     }
 
     /**
@@ -74,6 +66,8 @@ class ArbaciaFertilizationController extends Controller
      */
     public function update(Request $request, ArbaciaFertilization $arbacia_fertilization)
     {
+        $this->authorize('update', $arbacia_fertilization);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -85,8 +79,6 @@ class ArbaciaFertilizationController extends Controller
             'analyst' => 'nullable|string|max:255',
             'control_fertilization_percentage' => 'nullable|numeric',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Tiempos del ensayo
             'sperm_addition_time' => 'nullable|string',
@@ -113,8 +105,6 @@ class ArbaciaFertilizationController extends Controller
             'analyst' => $validated['analyst'] ?? null,
             'control_fertilization_percentage' => $validated['control_fertilization_percentage'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Tiempos del ensayo
             'sperm_addition_time' => $validated['sperm_addition_time'] ?? null,
@@ -138,7 +128,7 @@ class ArbaciaFertilizationController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_fertilization->sample)->first();
+        $sampleEntry = $arbacia_fertilization->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -154,7 +144,9 @@ class ArbaciaFertilizationController extends Controller
      */
     public function destroy(ArbaciaFertilization $arbacia_fertilization)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_fertilization->sample)->first();
+        $this->authorize('delete', $arbacia_fertilization);
+
+        $sampleEntry = $arbacia_fertilization->sampleEntry;
 
         $arbacia_fertilization->delete();
 
@@ -165,5 +157,17 @@ class ArbaciaFertilizationController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(ArbaciaFertilization $arbacia_fertilization)
+    {
+        $this->authorize('validateBioassay', $arbacia_fertilization);
+
+        $arbacia_fertilization->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

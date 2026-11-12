@@ -3,12 +3,12 @@
 @section('content')
 <div class="container">
     <!-- Logo -->
-    <img src="{{ asset('storage/images/xd.webp') }}" alt="Logo SIDEc"
+    <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc"
         style="height: 80px; display: block; margin: 0 auto 20px auto;">
     <h2 class="mb-4 text-center text-black">ANÁLISIS BIOENSAYO <br> <small>Arbacia spatuligera (Fecundación)</small></h2>
     <p class="text-center text-black">RT-XX.XX | Versión: 01 | Vigencia: XX.XX.XXXX</p>
 
-    <form action="{{ route('arbacia_fertilization.store') }}" method="POST">
+    <form action="{{ route('arbacia-fertilization.store') }}" method="POST">
         @csrf
 
         {{-- ================= DATOS GENERALES ================= --}}
@@ -120,7 +120,7 @@
         {{-- ================= BOTONES ================= --}}
         <div class="text-center d-flex justify-content-center gap-3 mb-5">
             <button type="submit" class="btn btn-success btn-lg">Guardar Bioensayo</button>
-            <a href="{{ route('arbacia_fertilization.index') }}" class="btn btn-secondary btn-lg">Cancelar</a>
+            <a href="{{ route('arbacia-fertilization.index') }}" class="btn btn-secondary btn-lg">Cancelar</a>
             <button type="button" class="btn btn-outline-primary btn-lg" onclick="window.print()">Imprimir</button>
         </div>
     </form>
@@ -128,7 +128,7 @@
 @endsection
 
 @push('head')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
 @endpush
 
 @push('styles')
@@ -199,9 +199,8 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -220,7 +219,7 @@
                 locale: "es"
             });
 
-            $('form').on('submit', function(e) {
+            document.querySelector('main form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: '¿Confirmar guardado?',

@@ -1,0 +1,364 @@
+/* =====================================================================
+   SIDEc · Tema institucional (rojo UCSC y blanco)
+
+   Se carga al FINAL de todas las páginas (layouts/app.blade.php), así que manda por sobre los colores
+   que traía cada vista (verde, azul, rosado, morado, lima...). Se usa "#content" delante para que estas
+   reglas ganen aunque la vista tenga las suyas.
+
+   Se mantienen los colores de ESTADO, porque comunican algo:
+   verde = validado / completada, amarillo = en curso / por vencer, rojo = vencido / error.
+   ===================================================================== */
+
+:root {
+    --ucsc-red: #D12421;
+    --ucsc-red-dark: #9E1B19;
+    --ucsc-red-soft: #fdecec;
+    --ucsc-red-line: #f2c4c3;
+    --ucsc-gray: #6c757d;
+}
+
+/* ---------- Enlaces ---------- */
+#content a:not(.btn):not(.nav-link):not(.dropdown-item):not(.page-link) {
+    color: var(--ucsc-red-dark);
+}
+
+#content a:not(.btn):not(.nav-link):not(.dropdown-item):not(.page-link):hover {
+    color: var(--ucsc-red);
+}
+
+/* ---------- Títulos ---------- */
+/* Nombre del bioensayo bajo el título (cada vista lo tenía de un color distinto) */
+#content h2[style*="color"],
+#content h3[style*="color"] {
+    color: var(--ucsc-red) !important;
+}
+
+#content .section-title,
+#content .section-title span {
+    color: var(--ucsc-red-dark) !important;
+}
+
+#content .section-title::before,
+#content .section-title::after {
+    background: var(--ucsc-red-line) !important;
+}
+
+/* ---------- Tarjetas: encabezado rojo con texto blanco (como el título del menú) ---------- */
+#content .card > .card-header {
+    background: var(--ucsc-red) !important;
+    color: #fff !important;
+    border-bottom: 0 !important;
+}
+
+#content .card > .card-header *:not(.btn):not(.btn *):not(.badge):not(.form-control):not(.form-select):not(option) {
+    color: #fff !important;
+}
+
+#content .card > .card-header .text-muted,
+#content .card > .card-header small {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Botones dentro de un encabezado rojo: blancos con texto rojo */
+#content .card > .card-header .btn {
+    background: #fff !important;
+    color: var(--ucsc-red) !important;
+    border-color: #fff !important;
+}
+
+/* ---------- Fondos decorativos de cada módulo -> rojo muy suave ---------- */
+#content .bg-success-subtle,
+#content .bg-info-subtle,
+#content .bg-primary-subtle,
+#content .bg-warning-subtle,
+#content .bg-pink-subtle,
+#content .bg-purple-subtle,
+#content .bg-teal-subtle,
+#content .bg-lime-subtle,
+#content .bg-orange-subtle,
+#content .table-success,
+#content .table-info,
+#content .table-primary {
+    background-color: var(--ucsc-red-soft) !important;
+    --bs-table-bg: var(--ucsc-red-soft);
+}
+
+/* Íconos decorativos de etiquetas y títulos (antes verdes, azules, lilas...) */
+#content label i.bi,
+#content .form-label i.bi,
+#content h4 i.bi,
+#content h5 i.bi,
+#content .page-title i.bi,
+#content .bioassay-icon i.bi {
+    color: var(--ucsc-red) !important;
+}
+
+/* ---------- Tablas: encabezado institucional y más compactas ---------- */
+#content table thead th,
+#content table thead td {
+    background-color: var(--ucsc-red-soft) !important;
+    color: var(--ucsc-red-dark) !important;
+    border-color: var(--ucsc-red-line) !important;
+    white-space: normal;
+    vertical-align: middle;
+}
+
+#content .table {
+    font-size: 0.875rem;
+}
+
+#content .table > :not(caption) > * > * {
+    padding: 0.4rem 0.4rem;
+}
+
+/* Casillas dentro de las tablas de los bioensayos: más angostas (antes mínimo 80 px).
+   48 px alcanzan para valores como "1.234" o "90,00". */
+#content .table .form-control,
+#content .table .form-select,
+#content .modern-table input,
+#content .modern-table .form-control {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.3rem;
+    min-width: 48px !important;
+}
+
+/* Casillas dobles tipo "Larva / Total" */
+#content .fraction-input > .form-control {
+    min-width: 44px !important;
+}
+
+/* El calendario necesita espacio para "2026-10-28 14:00" */
+#content .table input.flatpickr-input {
+    min-width: 150px !important;
+}
+
+/* ---------- Botones ---------- */
+/* Acción principal (guardar, nuevo, filtrar...): rojo institucional */
+.btn-primary,
+.btn-success,
+.btn-info,
+.btn-ucsc {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--ucsc-red);
+    --bs-btn-border-color: var(--ucsc-red);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--ucsc-red-dark);
+    --bs-btn-hover-border-color: var(--ucsc-red-dark);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--ucsc-red-dark);
+    --bs-btn-active-border-color: var(--ucsc-red-dark);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--ucsc-red);
+    --bs-btn-disabled-border-color: var(--ucsc-red);
+    --bs-btn-focus-shadow-rgb: 209, 36, 33;
+}
+
+#content .btn-success,
+#content .btn-primary,
+#content .btn-info {
+    background-color: var(--bs-btn-bg) !important;
+    border-color: var(--bs-btn-border-color) !important;
+    color: #fff !important;
+}
+
+#content .btn-success:hover,
+#content .btn-primary:hover,
+#content .btn-info:hover {
+    background-color: var(--ucsc-red-dark) !important;
+    border-color: var(--ucsc-red-dark) !important;
+}
+
+/* Validar y otras acciones destacadas: rojo oscuro */
+.btn-warning {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--ucsc-red-dark);
+    --bs-btn-border-color: var(--ucsc-red-dark);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #7c1513;
+    --bs-btn-hover-border-color: #7c1513;
+    --bs-btn-active-bg: #7c1513;
+    --bs-btn-disabled-bg: var(--ucsc-red-dark);
+    --bs-btn-disabled-color: #fff;
+}
+
+/* Botones de contorno: rojo */
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-info,
+.btn-outline-warning {
+    --bs-btn-color: var(--ucsc-red);
+    --bs-btn-border-color: var(--ucsc-red);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--ucsc-red);
+    --bs-btn-hover-border-color: var(--ucsc-red);
+    --bs-btn-active-bg: var(--ucsc-red-dark);
+    --bs-btn-active-color: #fff;
+    --bs-btn-disabled-color: var(--ucsc-red);
+    --bs-btn-disabled-border-color: var(--ucsc-red);
+}
+
+/* Botones de las listas (Ver, Editar, Eliminar, Exportar): blancos, al pasar el mouse rojo suave */
+#content .btn-light:hover,
+#content .btn-view:hover,
+#content .btn-edit:hover,
+#content .btn-add:hover,
+#content .btn-export:hover,
+#content .btn-action:hover {
+    background-color: var(--ucsc-red-soft) !important;
+    color: var(--ucsc-red-dark) !important;
+    border-color: var(--ucsc-red-line) !important;
+}
+
+#content .btn-delete:hover,
+#content .btn-reject:hover {
+    background-color: var(--ucsc-red) !important;
+    color: #fff !important;
+    border-color: var(--ucsc-red) !important;
+}
+
+/* ---------- Insignias decorativas (no las de estado) ---------- */
+#content .badge.bg-primary,
+#content .badge.bg-info {
+    background-color: var(--ucsc-red) !important;
+    color: #fff !important;
+}
+
+/* ---------- Formularios ---------- */
+.form-control:focus,
+.form-select:focus {
+    border-color: #e58f8d;
+    box-shadow: 0 0 0 0.2rem rgba(209, 36, 33, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: var(--ucsc-red);
+    border-color: var(--ucsc-red);
+}
+
+.form-check-input:focus {
+    border-color: #e58f8d;
+    box-shadow: 0 0 0 0.2rem rgba(209, 36, 33, 0.15);
+}
+
+/* Selección de bioensayos en la recepción */
+#content .bioassay-checkbox:checked + .bioassay-label {
+    border-color: var(--ucsc-red) !important;
+    background-color: var(--ucsc-red-soft) !important;
+}
+
+#content .bioassay-checkbox:checked + .bioassay-label .bioassay-icon {
+    background-color: var(--ucsc-red) !important;
+}
+
+#content .bioassay-checkbox:checked + .bioassay-label .bioassay-icon i.bi {
+    color: #fff !important;
+}
+
+/* ---------- Paginación y pestañas ---------- */
+.pagination {
+    --bs-pagination-color: var(--ucsc-red-dark);
+    --bs-pagination-hover-color: var(--ucsc-red);
+    --bs-pagination-focus-color: var(--ucsc-red);
+    --bs-pagination-active-bg: var(--ucsc-red);
+    --bs-pagination-active-border-color: var(--ucsc-red);
+    --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(209, 36, 33, 0.15);
+}
+
+.nav-tabs .nav-link.active,
+.nav-pills .nav-link.active {
+    color: var(--ucsc-red) !important;
+    border-color: var(--ucsc-red-line) var(--ucsc-red-line) #fff !important;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--ucsc-red) !important;
+    color: #fff !important;
+}
+
+/* ---------- Calendario (flatpickr) ---------- */
+.flatpickr-calendar {
+    background: #fff !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.flatpickr-calendar .flatpickr-months,
+.flatpickr-calendar .flatpickr-months .flatpickr-month,
+.flatpickr-calendar .flatpickr-weekdays,
+.flatpickr-calendar span.flatpickr-weekday,
+.flatpickr-calendar .flatpickr-monthDropdown-months {
+    background: var(--ucsc-red) !important;
+    color: #fff !important;
+    fill: #fff !important;
+}
+
+.flatpickr-calendar .flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-calendar .flatpickr-months .flatpickr-next-month svg {
+    fill: #fff !important;
+}
+
+.flatpickr-calendar .flatpickr-day {
+    color: #212529 !important;
+}
+
+.flatpickr-calendar .flatpickr-day.prevMonthDay,
+.flatpickr-calendar .flatpickr-day.nextMonthDay {
+    color: #adb5bd !important;
+}
+
+.flatpickr-calendar .flatpickr-day:hover {
+    background: var(--ucsc-red-soft) !important;
+    border-color: var(--ucsc-red-soft) !important;
+}
+
+.flatpickr-calendar .flatpickr-day.today {
+    border-color: var(--ucsc-red) !important;
+}
+
+.flatpickr-calendar .flatpickr-day.selected,
+.flatpickr-calendar .flatpickr-day.selected:hover {
+    background: var(--ucsc-red) !important;
+    border-color: var(--ucsc-red) !important;
+    color: #fff !important;
+}
+
+.flatpickr-calendar .flatpickr-time,
+.flatpickr-calendar .flatpickr-time input,
+.flatpickr-calendar .flatpickr-time .flatpickr-time-separator {
+    background: #fff !important;
+    color: #212529 !important;
+}
+
+/* ---------- Más espacio para las tablas en computador ---------- */
+@media (min-width: 1200px) {
+    body.has-sidebar #content .container {
+        max-width: 100%;
+    }
+
+    /* Algunas páginas tenían márgenes laterales de 3 rem; con 1 rem cabe más tabla */
+    body.has-sidebar #content .container-fluid.px-5,
+    body.has-sidebar #content .container-fluid.px-4 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+/* ---------- Avisos y confirmaciones (SweetAlert) ---------- */
+/* Cada página les ponía su color al botón (verde, rosado, azul); "!important" gana al color que trae cada aviso */
+.swal2-popup .swal2-styled.swal2-confirm {
+    background-color: var(--ucsc-red) !important;
+}
+
+.swal2-popup .swal2-styled.swal2-confirm:hover {
+    background-color: var(--ucsc-red-dark) !important;
+    background-image: none !important;
+}
+
+.swal2-popup .swal2-styled.swal2-cancel {
+    background-color: var(--ucsc-gray) !important;
+}
+
+.swal2-popup .swal2-icon.swal2-question,
+.swal2-popup .swal2-icon.swal2-info {
+    border-color: var(--ucsc-red-line) !important;
+    color: var(--ucsc-red) !important;
+}

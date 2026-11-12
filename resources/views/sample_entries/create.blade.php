@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <!-- Logo -->
-        <img src="{{ asset('img/xd.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
+        <img src="{{ asset('img/logo.crea.webp') }}" alt="Logo SIDEc" style="height: 80px; display: block; margin: 0 auto 20px auto;">
 
         <!-- Título -->
         <h1 class="mb-4 text-secondary text-center"
@@ -17,7 +17,7 @@
             {{-- Mostrar errores de validación si existen --}}
             @if ($errors->any())
                 <div class="alert alert-danger mb-4">
-                    <strong><i class="fas fa-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
+                    <strong><i class="bi bi-exclamation-triangle"></i> Por favor corrige los siguientes errores:</strong>
                     <ul class="mb-0 mt-2">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -104,8 +104,8 @@
                                                 <input type="number" step="any" min="0" 
                                                     id="concentration_ppm" 
                                                     class="form-control concentration-input" 
-                                                    placeholder="PPM">
-                                                <span class="input-group-text">PPM</span>
+                                                    placeholder="ppm">
+                                                <span class="input-group-text">ppm</span>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -113,15 +113,15 @@
                                                 <input type="number" step="any" min="0" 
                                                     id="concentration_ppb" 
                                                     class="form-control concentration-input" 
-                                                    placeholder="PPB">
-                                                <span class="input-group-text">PPB</span>
+                                                    placeholder="ppb">
+                                                <span class="input-group-text">ppb</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> Ingrese en cualquier formato, los demás se calcularán automáticamente.
+                                <i class="bi bi-info-circle"></i> Ingrese en cualquier formato, los demás se calcularán automáticamente.
                             </small>
                         </div>
                     </div>
@@ -196,7 +196,7 @@
                 </div>
                 <div class="card-body bg-light">
                     <div class="alert alert-info mb-3" role="alert">
-                        <i class="fas fa-info-circle"></i> La muestra debe ser ingresada para completar los bioensayos.
+                        <i class="bi bi-info-circle"></i> La muestra debe ser ingresada para completar los bioensayos.
                     </div>
                     
                     <div class="row" id="bioassaysContainer">
@@ -235,7 +235,8 @@
 
             {{-- ===================== BASE TEMPLATE (AL FONDO) ===================== --}}
             <div class="card mb-4 shadow-sm border-0" style="border-radius: 10px;">
-                <div class="card-header bg-primary text-white"
+                {{-- Código, versión y vigencia de la planilla: se guardan y se imprimen, pero no se muestran en pantalla --}}
+                <div class="card-header bg-primary text-white d-none d-print-block"
                     style="font-size: 1.5rem; border-top-left-radius: 10px; border-top-right-radius: 10px;">
                     Información de la Plantilla
                 </div>
@@ -275,10 +276,8 @@
 
 @push('head')
     <!-- Flatpickr - Tema Dark -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <link rel="stylesheet" href="{{ asset('vendor/flatpickr/flatpickr.min.css') }}">
     <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* ============================================
@@ -489,9 +488,8 @@
 
 @push('scripts')
     <!-- Flatpickr -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('vendor/flatpickr/l10n/es.js') }}"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -673,7 +671,7 @@
             }
 
             // ============= SWEETALERT PARA CONFIRMACIÓN DEL ENVÍO =============
-            $('#entryForm').on('submit', function(e) {
+            document.getElementById('entryForm').addEventListener('submit', function(e) {
                 e.preventDefault();
 
                 Swal.fire({

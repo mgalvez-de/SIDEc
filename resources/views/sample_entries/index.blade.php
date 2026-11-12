@@ -3,59 +3,30 @@
 @section('content')
     <div class="container-fluid px-5">
 
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="mt-3">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Inicio</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Ingreso de Muestras</li>
-            </ol>
-        </nav>
-
-        <!-- Encabezado con título -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="text-secondary"
-                style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 700;">
-                Ingreso de Muestras
-            </h1>
-        </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show d-none" role="alert" id="successAlert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show d-none" role="alert" id="errorAlert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
+<x-page-header title="Ingreso de muestras" icon="bi-journal-plus" />
 
         <!-- Primera fila: Nuevas / En proceso -->
         <div class="row mb-5">
             <!-- Muestras Nuevas -->
-            <div class="col-md-6 mb-5">
+            <div class="col-xxl-6 mb-5">
                 <div class="table-card">
                     <div class="card-header-custom mb-3">
                         <h3 class="text-secondary mb-0">Muestras Nuevas (Sin ingresar)</h3>
                     </div>
 
                     <!-- Barra de controles -->
-                    <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                    <div
+                        class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3 flex-grow-1">
                             <div id="nuevasLengthContainer"></div>
                             <div id="nuevasSearchContainer" class="flex-grow-1" style="max-width: 300px;"></div>
                         </div>
-                        <a href="{{ route('sample_entries.create') }}"
-                            class="btn btn-sm btn-light text-dark border d-inline-flex align-items-center gap-1 btn-add">
-                            <i class="bi bi-plus-lg"></i> Nuevo Ingreso
-                        </a>
+
                     </div>
 
                     <div class="table-responsive table-box-scroll">
-                        <table id="nuevasTable" class="table table-bordered table-striped table-hover align-middle text-center">
+                        <table id="nuevasTable"
+                            class="table table-bordered table-striped table-hover align-middle text-center">
                             <thead>
                                 <tr>
                                     <th>Fecha de Recepción</th>
@@ -93,14 +64,15 @@
             </div>
 
             <!-- Muestras en Proceso -->
-            <div class="col-md-6 mb-5">
+            <div class="col-xxl-6 mb-5">
                 <div class="table-card">
                     <div class="card-header-custom mb-3">
                         <h3 class="text-secondary mb-0">Muestras en Proceso</h3>
                     </div>
 
                     <!-- Barra de controles -->
-                    <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                    <div
+                        class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3 flex-grow-1">
                             <div id="procesoLengthContainer"></div>
                             <div id="procesoSearchContainer" class="flex-grow-1" style="max-width: 300px;"></div>
@@ -116,15 +88,15 @@
                                     <th>ID</th>
                                     <th>Código Interno</th>
                                     <th>Estado</th>
-                                    <th style="width: 150px;">Tiempo Restante</th>
+                                    <th style="width: 150px;">Avance</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sampleEntries as $index => $sampleEntry)
+                                @foreach ($inProcessEntries as $sampleEntry)
                                     @php
-                                        // Datos de prueba para temporizadores (10 segundos para testing)
-                                        $tiempoRestante = 10;
+                                        $totalBioassays = $sampleEntry->assignedBioassays()->count();
+                                        $validatedBioassays = $sampleEntry->validatedBioassaysCount();
                                     @endphp
                                     <tr>
                                         <td><input type="checkbox" class="row-select-proceso" value="{{ $sampleEntry->id }}">
@@ -133,20 +105,13 @@
                                         <td>{{ $sampleEntry->internal_sample_code ?? 'Nulo' }}</td>
                                         <td><span class="badge bg-warning text-dark">Bioensayos Pendientes</span></td>
                                         <td>
-                                            <div class="timer-container" data-tiempo="{{ $tiempoRestante }}">
-                                                <!-- Timer de Barra con borde -->
-                                                <div class="timer-view timer-bar-wrapper">
-                                                    <div class="timer-bar-container">
-                                                        <div class="timer-bar-fill"></div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Timer Circular con texto -->
-                                                <div class="timer-view timer-circle-wrapper">
-                                                    <canvas class="timer-canvas" width="20" height="20"></canvas>
-                                                    <div class="timer-text"></div>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success"
+                                                    style="width: {{ $totalBioassays ? $validatedBioassays / $totalBioassays * 100 : 0 }}%">
                                                 </div>
                                             </div>
+                                            <small class="text-muted">{{ $validatedBioassays }} de {{ $totalBioassays }}
+                                                validados</small>
                                         </td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
@@ -158,6 +123,18 @@
                                                     class="btn btn-sm btn-light text-dark border btn-edit">
                                                     <i class="bi bi-pencil-square"></i> Corregir
                                                 </a>
+                                                @role('Supervisor|Area Manager')
+                                                    @unless ($sampleEntry->hasValidatedBioassays())
+                                                <form action="{{ route('sample_entries.destroy', $sampleEntry) }}" method="POST"
+                                                    class="d-inline form-delete">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-light text-dark border btn-delete">
+                                                        <i class="bi bi-trash3"></i> Eliminar
+                                                    </button>
+                                                </form>
+                                                    @endunless
+                                                @endrole
                                             </div>
                                         </td>
                                     </tr>
@@ -184,7 +161,8 @@
                     </div>
 
                     <!-- Barra de controles -->
-                    <div class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                    <div
+                        class="table-controls-wrapper d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
                         <div class="d-flex align-items-center gap-3 flex-grow-1">
                             <div id="historialLengthContainer"></div>
                             <div id="historialSearchContainer" class="flex-grow-1" style="max-width: 400px;"></div>
@@ -217,38 +195,32 @@
                                 <tr>
                                     <th style="width: 30px;"><input type="checkbox" id="selectAllHistorial"></th>
                                     <th>ID</th>
-                                    <th>Título</th>
-                                    <th>Código</th>
-                                    <th>Versión</th>
-                                    <th>Vigencia</th>
+                                    <th>Código Interno</th>
+                                    <th>Tipo de Muestra</th>
+                                    <th>Analista</th>
+                                    <th>Fecha de Recepción</th>
+                                    <th>Bioensayos</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sampleEntries as $sampleEntry)
+                                @foreach ($completedEntries as $sampleEntry)
                                     <tr>
-                                        <td><input type="checkbox" class="row-select-historial"
-                                                value="{{ $sampleEntry->id }}">
+                                        <td><input type="checkbox" class="row-select-historial" value="{{ $sampleEntry->id }}">
                                         </td>
                                         <td>{{ $sampleEntry->id }}</td>
-                                        <td>{{ $sampleEntry->template->title ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->template->code ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->template->version ?? 'Nulo' }}</td>
-                                        <td>{{ $sampleEntry->template->validity ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->internal_sample_code ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->sample_type ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->analyst ?? 'Nulo' }}</td>
+                                        <td>{{ $sampleEntry->received_at ? \Carbon\Carbon::parse($sampleEntry->received_at)->format('d/m/Y H:i') : 'Nulo' }}
+                                        </td>
+                                        <td>{{ $sampleEntry->assignedBioassays()->keys()->implode(', ') }}</td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-1">
                                                 <a href="{{ route('sample_entries.show', $sampleEntry) }}"
                                                     class="btn btn-sm btn-light text-dark border btn-view">
                                                     <i class="bi bi-eye"></i> Ver
                                                 </a>
-                                                <form action="{{ route('sample_entries.destroy', $sampleEntry) }}" method="POST"
-                                                    class="d-inline form-delete">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                        class="btn btn-sm btn-light text-dark border btn-delete">
-                                                        <i class="bi bi-trash3"></i> Eliminar
-                                                    </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -271,10 +243,9 @@
 @endsection
 
 @push('styles')
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.css') }}" rel="stylesheet">
 
     <style>
         /* Centrar contenido de celdas y encabezados */
@@ -322,32 +293,6 @@
             background-color: rgba(29, 78, 216, 0.1);
             color: #1d4ed8 !important;
             transition: all 0.2s ease;
-        }
-
-        /* Estilos para breadcrumb */
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            content: ">";
-            color: #6b7280;
-        }
-
-        .breadcrumb-item a {
-            color: #1d4ed8;
-            transition: color 0.2s ease;
-        }
-
-        .breadcrumb-item a:hover {
-            color: #1e40af;
-        }
-
-        .breadcrumb-item.active {
-            color: #6b7280;
         }
 
         /* Estilos para la barra de controles */
@@ -584,159 +529,10 @@
             animation: slideDown 0.4s ease-out;
         }
 
-        /* Estilos para Toastr */
-        .toast-success {
-            background-color: #15803d !important;
-        }
-
-        .toast-error {
-            background-color: #b91c1c !important;
-        }
-
-        .toast-info {
-            background-color: #1d4ed8 !important;
-        }
-
-        .toast-warning {
-            background-color: #f59e0b !important;
-        }
-
-        #toast-container>div {
-            opacity: 1;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            border-radius: 8px;
-        }
-
-        #toast-container>.toast {
-            background-image: none !important;
-            padding: 15px 20px 15px 50px;
-        }
-
-        #toast-container>.toast:before {
-            position: absolute;
-            font-family: 'Bootstrap Icons';
-            font-size: 24px;
-            line-height: 24px;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        #toast-container>.toast-success:before {
-            content: "\f26b";
-        }
-
-        #toast-container>.toast-error:before {
-            content: "\f659";
-        }
-
-        #toast-container>.toast-info:before {
-            content: "\f431";
-        }
-
-        #toast-container>.toast-warning:before {
-            content: "\f33a";
-        }
-
         /* Badge personalizado */
         .badge {
             padding: 0.35em 0.65em;
             font-weight: 600;
-        }
-
-        /* Estilos para temporizadores */
-        .timer-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 40px;
-            position: relative;
-        }
-
-        .timer-view {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .timer-view.active {
-            opacity: 1;
-        }
-
-        /* Timer Circular - 20x20px */
-        .timer-circle-wrapper {
-            width: auto;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .timer-canvas {
-            flex-shrink: 0;
-        }
-
-        .timer-text {
-            font-size: 14px;
-            font-weight: 700;
-            color: #000000;
-            white-space: nowrap;
-            min-width: 45px;
-            text-align: left;
-        }
-
-        /* Timer de Barra - 20x160px con borde */
-        .timer-bar-wrapper {
-            width: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .timer-bar-container {
-            width: 160px;
-            height: 20px;
-            background-color: #ffffff;
-            border: 2px solid #000000;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .timer-bar-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #10b981, #3b82f6);
-            transition: width 1s linear;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-        }
-
-        .timer-text-bar {
-            font-size: 14px;
-            font-weight: 700;
-            color: #000000;
-            white-space: nowrap;
-        }
-
-        /* Animación de pulsación */
-        @keyframes pulse {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.05);
-            }
-        }
-
-        .timer-warning .timer-view.active {
-            animation: pulse 1s ease-in-out infinite;
         }
 
         /* Responsive */
@@ -752,67 +548,25 @@
                 max-width: 100% !important;
             }
 
-            .timer-text,
-            .timer-text-bar,
-            .timer-digital-text {
-                font-size: 11px;
-            }
         }
     </style>
 @endpush
 
 @push('scripts')
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/buttons/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('vendor/jszip/jszip.min.js') }}"></script>
 
     <script>
-        $(document).ready(function() {
-            // Configuración de Toastr
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "newestOnTop": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": false,
-                "onclick": null,
-                "showDuration": "300",
-                "hideDuration": "1000",
-                "timeOut": "5000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
-
+        $(document).ready(function () {
             // Mostrar notificaciones de sesión
-            @if (session('success'))
-                toastr.success("{{ session('success') }}");
-            @endif
-
-            @if (session('error'))
-                toastr.error("{{ session('error') }}");
-            @endif
-
-            @if (session('info'))
-                toastr.info("{{ session('info') }}");
-            @endif
-
-            @if (session('warning'))
-                toastr.warning("{{ session('warning') }}");
-            @endif
-
-            // Configuración común para DataTables
-            const commonConfig = {
+                // Configuración común para DataTables
+                const commonConfig = {
                 paging: true,
                 ordering: true,
                 info: true,
@@ -844,7 +598,7 @@
             const nuevasTable = $('#nuevasTable').DataTable({
                 ...commonConfig,
                 dom: 'lfrtip',
-                initComplete: function() {
+                initComplete: function () {
                     $('.dataTables_length').eq(0).appendTo('#nuevasLengthContainer');
                     $('.dataTables_filter').eq(0).appendTo('#nuevasSearchContainer');
                     $('.dataTables_info').eq(0).appendTo('#nuevasInfo');
@@ -860,14 +614,12 @@
                     orderable: false,
                     targets: [0, -1]
                 }],
-                initComplete: function() {
+                initComplete: function () {
                     $('.dataTables_length').eq(1).appendTo('#procesoLengthContainer');
                     $('.dataTables_filter').eq(1).appendTo('#procesoSearchContainer');
                     $('.dataTables_info').eq(1).appendTo('#procesoInfo');
                     $('.dataTables_paginate').eq(1).appendTo('#procesoPagination');
-                    
-                    // Inicializar temporizadores después de que la tabla esté lista
-                    initTimers();
+
                 }
             });
 
@@ -876,27 +628,27 @@
                 ...commonConfig,
                 dom: "<'row'<'col-sm-12'B>>lfrtip",
                 buttons: [{
-                        extend: 'excelHtml5',
-                        title: 'Historial_Muestras_' + new Date().toISOString().slice(0, 10),
-                        className: 'd-none',
-                        exportOptions: {
-                            columns: ':visible:not(:first-child):not(:last-child)'
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        title: 'Historial de Muestras Completadas',
-                        className: 'd-none',
-                        exportOptions: {
-                            columns: ':visible:not(:first-child):not(:last-child)'
-                        }
+                    extend: 'excelHtml5',
+                    title: 'Historial_Muestras_' + new Date().toISOString().slice(0, 10),
+                    className: 'd-none',
+                    exportOptions: {
+                        columns: ':visible:not(:first-child):not(:last-child)'
                     }
+                },
+                {
+                    extend: 'print',
+                    title: 'Historial de Muestras Completadas',
+                    className: 'd-none',
+                    exportOptions: {
+                        columns: ':visible:not(:first-child):not(:last-child)'
+                    }
+                }
                 ],
                 columnDefs: [{
                     orderable: false,
                     targets: [0, -1]
                 }],
-                initComplete: function() {
+                initComplete: function () {
                     $('.dataTables_length').eq(2).appendTo('#historialLengthContainer');
                     $('.dataTables_filter').eq(2).appendTo('#historialSearchContainer');
                     $('.dataTables_info').eq(2).appendTo('#historialInfo');
@@ -904,197 +656,34 @@
                 }
             });
 
-            // Sistema de temporizadores
-            const timers = [];
-            const viewChangeIntervals = [];
-
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            }
-
-            function getColorByTime(percentage) {
-                if (percentage > 50) return '#10b981'; // Verde
-                if (percentage > 25) return '#f59e0b'; // Amarillo
-                return '#ef4444'; // Rojo
-            }
-
-            function drawCircularTimer(canvas, percentage, color) {
-                const ctx = canvas.getContext('2d');
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const radius = 7;
-                
-                // Limpiar canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Círculo de fondo (gris claro - siempre completo)
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.strokeStyle = '#e5e7eb';
-                ctx.lineWidth = 4;
-                ctx.stroke();
-                
-                // Círculo de progreso (se desllena de 100% a 0%)
-                // Comienza en la parte superior (-90 grados) y va en sentido horario
-                const startAngle = -Math.PI / 2;
-                const endAngle = startAngle + (2 * Math.PI * percentage / 100);
-                
-                if (percentage > 0) {
-                    ctx.beginPath();
-                    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-                    ctx.strokeStyle = color;
-                    ctx.lineWidth = 4;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
-                }
-            }
-
-            function updateTimer(container, remainingTime, totalTime) {
-                const percentage = (remainingTime / totalTime) * 100;
-                const color = getColorByTime(percentage);
-                const timeText = formatTime(remainingTime);
-                
-                // 1. ACTUALIZAR TEXTO DEL TEMPORIZADOR (sin animaciones, solo cambio directo)
-                const circleText = container.find('.timer-circle-wrapper .timer-text');
-                circleText.text(timeText);
-                
-                // 2. ACTUALIZAR CÍRCULO ANIMADO (se desllena según el porcentaje)
-                const canvas = container.find('.timer-canvas')[0];
-                if (canvas) {
-                    drawCircularTimer(canvas, percentage, color);
-                }
-                
-                // 3. ACTUALIZAR BARRA DE PROGRESO (se desllena de 100% a 0%)
-                const barFill = container.find('.timer-bar-fill');
-                
-                // Si el timer se acaba de reiniciar, hacer reset instantáneo
-                if (remainingTime === totalTime) {
-                    barFill.css({
-                        'transition': 'none',
-                        'width': '100%',
-                        'background': `linear-gradient(90deg, ${color}, #3b82f6)`
-                    });
-                    
-                    // Restaurar transición después de 50ms
-                    setTimeout(function() {
-                        barFill.css('transition', 'width 1s linear');
-                    }, 50);
-                } else {
-                    // Actualizar normalmente
-                    barFill.css({
-                        'width': percentage + '%',
-                        'background': `linear-gradient(90deg, ${color}, #3b82f6)`
-                    });
-                }
-                
-                // 4. ANIMACIÓN DE ADVERTENCIA (últimos 5 segundos)
-                if (remainingTime <= 5 && remainingTime > 0) {
-                    container.addClass('timer-warning');
-                } else {
-                    container.removeClass('timer-warning');
-                }
-            }
-
-            function cycleTimerViews(container) {
-                const views = container.find('.timer-view');
-                let currentIndex = 0;
-                
-                // Asegurarse de que solo hay 2 vistas
-                if (views.length !== 2) {
-                    console.error('Se esperan exactamente 2 vistas de timer');
-                    return;
-                }
-                
-                // Mostrar la primera vista inmediatamente
-                views.eq(currentIndex).addClass('active');
-                
-                // Cambiar entre las 2 vistas cada 3 segundos
-                const cycleInterval = setInterval(function() {
-                    // Remover active de la vista actual
-                    views.eq(currentIndex).removeClass('active');
-                    
-                    // Cambiar al siguiente índice (0 o 1)
-                    currentIndex = (currentIndex + 1) % 2;
-                    
-                    // Agregar active a la nueva vista
-                    views.eq(currentIndex).addClass('active');
-                }, 3000);
-                
-                viewChangeIntervals.push(cycleInterval);
-            }
-
-            function initTimers() {
-                $('.timer-container').each(function() {
-                    const container = $(this);
-                    const totalTime = parseInt(container.data('tiempo'));
-                    let remainingTime = totalTime;
-                    
-                    console.log('Inicializando timer con totalTime:', totalTime);
-                    
-                    // Iniciar ciclo de vistas
-                    cycleTimerViews(container);
-                    
-                    // Actualizar inmediatamente con el tiempo inicial
-                    updateTimer(container, remainingTime, totalTime);
-                    
-                    // Crear intervalo para actualizar cada segundo (1000ms)
-                    const interval = setInterval(function() {
-                        remainingTime--;
-                        
-                        console.log('Tiempo restante:', remainingTime);
-                        
-                        if (remainingTime < 0) {
-                            // Modo debug: reiniciar el timer al llegar a 0
-                            console.log('Timer reiniciado');
-                            toastr.warning('¡Tiempo agotado! Reiniciando timer...', 'Debug');
-                            remainingTime = totalTime;
-                        }
-                        
-                        updateTimer(container, remainingTime, totalTime);
-                    }, 1000);
-                    
-                    timers.push(interval);
-                });
-            }
-
-            // Limpiar intervalos al salir
-            $(window).on('beforeunload', function() {
-                timers.forEach(timer => clearInterval(timer));
-                viewChangeIntervals.forEach(interval => clearInterval(interval));
-            });
-
             // Botones de exportación
-            $('#exportExcel').on('click', function(e) {
+            $('#exportExcel').on('click', function (e) {
                 e.preventDefault();
                 historialTable.button(0).trigger();
-                toastr.success('Exportando a Excel...', 'Éxito');
             });
 
-            $('#exportPrint').on('click', function(e) {
+            $('#exportPrint').on('click', function (e) {
                 e.preventDefault();
                 historialTable.button(1).trigger();
-                toastr.info('Preparando impresión...', 'Información');
             });
 
             // Checkboxes
-            $('#selectAllProceso').on('click', function() {
+            $('#selectAllProceso').on('click', function () {
                 $('.row-select-proceso').prop('checked', this.checked);
             });
 
-            $('#selectAllHistorial').on('click', function() {
+            $('#selectAllHistorial').on('click', function () {
                 $('.row-select-historial').prop('checked', this.checked);
             });
 
             // Confirmación de eliminación
-            $('.form-delete').on('submit', function(e) {
+            $('.form-delete').on('submit', function (e) {
                 e.preventDefault();
                 const form = this;
 
                 Swal.fire({
                     title: '¿Eliminar muestra?',
-                    text: "Esta acción no se puede deshacer.",
+                    text: "Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarlo.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#b91c1c',
@@ -1110,29 +699,10 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
-                        toastr.success('Muestra eliminada correctamente', 'Éxito');
-                    } else if (result.isDismissed) {
-                        toastr.info('Eliminación cancelada', 'Información');
                     }
                 });
             });
 
-            // Notificaciones para botones de acción
-            $('.btn-action').on('click', function() {
-                toastr.info('Procesando ingreso de muestra...', 'Información');
-            });
-
-            $('.btn-view').on('click', function() {
-                toastr.info('Cargando detalles de la muestra...', 'Información');
-            });
-
-            $('.btn-edit').on('click', function() {
-                toastr.info('Abriendo formulario de edición...', 'Información');
-            });
-
-            $('.btn-add').on('click', function() {
-                toastr.info('Abriendo formulario para nuevo ingreso...', 'Información');
-            });
         });
     </script>
 @endpush

@@ -4,21 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArbaciaLarvalStage;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class ArbaciaLarvalStageController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     */
-    public function index()
-    {
-        $bioassays = ArbaciaLarvalStage::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.arbacia_larval_stage.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      */
@@ -46,6 +36,7 @@ class ArbaciaLarvalStageController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = ArbaciaLarvalStage::create($validated);
 
@@ -58,7 +49,8 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function show(ArbaciaLarvalStage $arbacia_larval_stage)
     {
-        return view('bioassays.arbacia_larval_stage.show', compact('arbacia_larval_stage'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('arbacia-larval-stage.edit', $arbacia_larval_stage);
     }
 
     /**
@@ -74,6 +66,8 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function update(Request $request, ArbaciaLarvalStage $arbacia_larval_stage)
     {
+        $this->authorize('update', $arbacia_larval_stage);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN
         // ==========================================
@@ -84,8 +78,6 @@ class ArbaciaLarvalStageController extends Controller
             'bioassay_start' => 'nullable|date',
             'analyst' => 'nullable|string|max:255',
 
-            // Temporizador
-            'timer_start' => 'nullable|string',
 
             // Tiempos del ensayo
             'fertilization_time' => 'nullable|string',
@@ -114,8 +106,6 @@ class ArbaciaLarvalStageController extends Controller
             'bioassay_start' => $validated['bioassay_start'] ?? null,
             'analyst' => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Tiempos del ensayo
             'fertilization_time' => $validated['fertilization_time'] ?? null,
@@ -142,7 +132,7 @@ class ArbaciaLarvalStageController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_larval_stage->sample)->first();
+        $sampleEntry = $arbacia_larval_stage->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -158,7 +148,9 @@ class ArbaciaLarvalStageController extends Controller
      */
     public function destroy(ArbaciaLarvalStage $arbacia_larval_stage)
     {
-        $sampleEntry = SampleEntry::where('internal_sample_code', $arbacia_larval_stage->sample)->first();
+        $this->authorize('delete', $arbacia_larval_stage);
+
+        $sampleEntry = $arbacia_larval_stage->sampleEntry;
 
         $arbacia_larval_stage->delete();
 
@@ -169,5 +161,17 @@ class ArbaciaLarvalStageController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(ArbaciaLarvalStage $arbacia_larval_stage)
+    {
+        $this->authorize('validateBioassay', $arbacia_larval_stage);
+
+        $arbacia_larval_stage->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }

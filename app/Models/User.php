@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,6 +12,22 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    // Nombre del rol en el sistema => nombre del cargo en el laboratorio (se muestra en la barra superior)
+    public const ROLE_LABELS = [
+        'Analist'      => 'Analista',
+        'Manager'      => 'Encargado de área',
+        'Supervisor'   => 'Supervisor',
+        'Area Manager' => 'Jefe de Área',
+    ];
+
+    // Roles que ven datos de clientes y administran usuarios (Supervisor y Jefe de Área)
+    public const ADMIN_ROLES = ['Supervisor', 'Area Manager'];
+
+    // Igual que el valor por defecto de la columna: un usuario nuevo nace activo
+    protected $attributes = [
+        'active' => true,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -22,6 +37,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'active',
     ];
 
     /**
@@ -41,5 +57,11 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'active' => 'boolean',
     ];
+
+    public function roleLabel(): string
+    {
+        return self::ROLE_LABELS[$this->getRoleNames()->first()] ?? 'Sin rol';
+    }
 }

@@ -4,22 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\IsochrysisGalbana;
-use App\Models\SampleEntry;
 use App\Models\Template;
 use Illuminate\Http\Request;
 
 class IsochrysisGalbanaController extends Controller
 {
-    /**
-     * Display a listing of the bioassays.
-     * Nota: No se usa normalmente, se accede desde sample_entries.show
-     */
-    public function index()
-    {
-        $bioassays = IsochrysisGalbana::orderBy('created_at', 'desc')->paginate(10);
-        return view('bioassays.isochrysis_galbana.index', compact('bioassays'));
-    }
-
     /**
      * Show the form for creating a new bioassay.
      * Nota: Los bioensayos se crean automáticamente desde SampleEntryController@store
@@ -49,6 +38,7 @@ class IsochrysisGalbanaController extends Controller
         ]);
 
         $validated['template_id'] = $template->id;
+        $validated['created_by'] = auth()->id();
 
         $bioassay = IsochrysisGalbana::create($validated);
 
@@ -61,7 +51,8 @@ class IsochrysisGalbanaController extends Controller
      */
     public function show(IsochrysisGalbana $isochrysis_galbana)
     {
-        return view('bioassays.isochrysis_galbana.show', compact('isochrysis_galbana'));
+        // No hay vista de detalle: el formulario del bioensayo hace de detalle
+        return redirect()->route('isochrysis-galbana.edit', $isochrysis_galbana);
     }
 
     /**
@@ -77,6 +68,8 @@ class IsochrysisGalbanaController extends Controller
      */
     public function update(Request $request, IsochrysisGalbana $isochrysis_galbana)
     {
+        $this->authorize('update', $isochrysis_galbana);
+
         // ==========================================
         // 1️⃣ VALIDACIÓN DE TODOS LOS CAMPOS
         // ==========================================
@@ -89,7 +82,6 @@ class IsochrysisGalbanaController extends Controller
             'analyst'        => 'nullable|string|max:255',
 
             // === TEMPORIZADOR ===
-            'timer_start' => 'nullable|string',
 
             // === DATOS PRELIMINARES ===
             'initial_inoculum_vol' => 'nullable|numeric',
@@ -129,8 +121,6 @@ class IsochrysisGalbanaController extends Controller
             'bioassay_end'   => $validated['bioassay_end'] ?? null,
             'analyst'        => $validated['analyst'] ?? null,
 
-            // Temporizador
-            'timer_start' => $request->input('timer_start'),
 
             // Datos preliminares
             'initial_inoculum_vol' => $validated['initial_inoculum_vol'] ?? null,
@@ -167,7 +157,7 @@ class IsochrysisGalbanaController extends Controller
         // ==========================================
         // 4️⃣ REDIRIGIR A SAMPLE_ENTRIES.SHOW
         // ==========================================
-        $sampleEntry = SampleEntry::where('internal_sample_code', $isochrysis_galbana->sample)->first();
+        $sampleEntry = $isochrysis_galbana->sampleEntry;
 
         if ($sampleEntry) {
             return redirect()->route('sample_entries.show', $sampleEntry->id)
@@ -184,8 +174,10 @@ class IsochrysisGalbanaController extends Controller
      */
     public function destroy(IsochrysisGalbana $isochrysis_galbana)
     {
+        $this->authorize('delete', $isochrysis_galbana);
+
         // Obtener sample_entry antes de eliminar
-        $sampleEntry = SampleEntry::where('internal_sample_code', $isochrysis_galbana->sample)->first();
+        $sampleEntry = $isochrysis_galbana->sampleEntry;
 
         $isochrysis_galbana->delete();
 
@@ -196,5 +188,17 @@ class IsochrysisGalbanaController extends Controller
 
         return redirect()->route('sample_entries.index')
             ->with('success', 'Bioensayo eliminado correctamente.');
+    }
+
+    public function validateBioassay(IsochrysisGalbana $isochrysis_galbana)
+    {
+        $this->authorize('validateBioassay', $isochrysis_galbana);
+
+        $isochrysis_galbana->update([
+            'validated_by' => auth()->id(),
+            'validated_at' => now(),
+        ]);
+
+        return back()->with('success', 'Bioensayo marcado como validado.');
     }
 }
