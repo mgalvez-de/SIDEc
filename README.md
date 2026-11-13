@@ -16,9 +16,9 @@ Registra el recorrido de cada muestra en el laboratorio: **Recepción → Ingres
 |---|---|
 | Analista | Ingresar muestras y llenar las planillas de los bioensayos |
 | Encargado de área | Lo anterior, validar bioensayos y ver el Dashboard (sin clientes) |
-| Supervisor / Jefe de Área | Todo: recepciones, rechazos, usuarios, reabrir bioensayos, eliminar y restaurar desde la Papelera |
+| Supervisor / Jefe de Área | Todo: recepciones, rechazos, usuarios, reabrir y eliminar bioensayos |
 
-Un bioensayo validado queda en solo lectura hasta que un Supervisor o Jefe de Área lo reabre. Lo que se elimina va a la Papelera y se puede restaurar.
+Un bioensayo validado queda en solo lectura hasta que un Supervisor o Jefe de Área lo reabre, y no se puede eliminar.
 
 ## Instalación local
 
@@ -51,7 +51,7 @@ Corren en SQLite en memoria (ver `phpunit.xml`); nunca tocan la base de datos re
 | Listado único de bioensayos y reabrir | `app/Http/Controllers/BioassayController.php` |
 | Planilla de cada bioensayo | `app/Http/Controllers/*Controller.php` y `resources/views/bioassays/*` |
 | Reglas de validar, modificar y eliminar bioensayos | `app/Policies/BioassayPolicy.php` |
-| Papelera, bloqueo y "última modificación" | `app/Models/Concerns/BioassayRecord.php` |
+| Bloqueo y "última modificación" | `app/Models/Concerns/BioassayRecord.php` |
 | Duración exigida de cada ensayo | `DURATION_PHASES` en cada modelo de `app/Models` |
 | Menú, barra de ubicación y títulos | `app/Support/Navigation.php` |
 | Colores institucionales | `public/css/sidec-theme.css` |

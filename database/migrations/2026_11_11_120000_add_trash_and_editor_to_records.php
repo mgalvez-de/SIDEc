@@ -5,9 +5,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Papelera y trazabilidad:
- * - deleted_at: lo eliminado queda oculto (no se borra) y se puede restaurar.
- * - updated_by: quién modificó por última vez cada bioensayo.
+ * Trazabilidad: updated_by guarda quién modificó por última vez cada bioensayo.
+ *
+ * (Esta migración también agregaba la Papelera, que se quitó el 13-11. Las bases que alcanzaron
+ * a correr esa versión la limpian con 2026_11_13_120000_remove_trash_from_records.)
  */
 class AddTrashAndEditorToRecords extends Migration
 {
@@ -22,20 +23,11 @@ class AddTrashAndEditorToRecords extends Migration
         'arbacia_larval_stages',
     ];
 
-    private const OTHER_TABLES = ['sample_entries', 'reception_templates', 'rejection_templates'];
-
     public function up()
     {
         foreach (self::BIOASSAY_TABLES as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {
                 $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
-                $table->softDeletes();
-            });
-        }
-
-        foreach (self::OTHER_TABLES as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) {
-                $table->softDeletes();
             });
         }
     }
@@ -45,13 +37,6 @@ class AddTrashAndEditorToRecords extends Migration
         foreach (self::BIOASSAY_TABLES as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {
                 $table->dropConstrainedForeignId('updated_by');
-                $table->dropSoftDeletes();
-            });
-        }
-
-        foreach (self::OTHER_TABLES as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) {
-                $table->dropSoftDeletes();
             });
         }
     }

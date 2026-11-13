@@ -408,12 +408,6 @@
                                 <i class="bi bi-people me-2"></i> Usuarios
                             </a>
                         </li>
-                        <li class="nav-item mb-1">
-                            <a href="{{ route('trash.index') }}"
-                                class="nav-link {{ request()->is('papelera') ? 'active' : '' }}">
-                                <i class="bi bi-trash3 me-2"></i> Papelera
-                            </a>
-                        </li>
                     @endrole
                 </ul>
             </nav>

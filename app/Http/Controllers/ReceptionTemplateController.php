@@ -171,7 +171,7 @@ class ReceptionTemplateController extends Controller
             ->with('success', 'Recepción actualizada correctamente.');
     }
 
-    // Elimina SOLO esta muestra (va a la papelera). Antes se borraba la plantilla compartida
+    // Elimina SOLO esta muestra. Antes se borraba la plantilla compartida
     // y con ella todas las muestras registradas en el mismo lote.
     public function destroy(ReceptionTemplate $reception)
     {
@@ -181,6 +181,6 @@ class ReceptionTemplateController extends Controller
 
         $reception->delete();
 
-        return redirect()->route('receptions.index')->with('success', 'Recepción enviada a la papelera.');
+        return redirect()->route('receptions.index')->with('success', 'Recepción eliminada correctamente.');
     }
 }

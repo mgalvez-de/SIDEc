@@ -18,7 +18,6 @@ class Navigation
         'sample_entries' => 'Ingreso de muestras',
         'rejections'     => 'Rechazos',
         'bioassays'      => 'Bioensayos',
-        'trash'          => 'Papelera',
         'account'        => 'Cambiar mi contraseña',
     ];
 

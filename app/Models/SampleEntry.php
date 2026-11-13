@@ -3,12 +3,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
 class SampleEntry extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     // Nombre del bioensayo tal como se guarda en ReceptionTemplate::assigned_bioassays => modelo
     public const BIOASSAY_MODELS = [
@@ -39,24 +38,6 @@ class SampleEntry extends Model
         'temperature',
         'observations',
     ];
-
-    // Papelera: al eliminar o restaurar una muestra, sus bioensayos van con ella
-    protected static function booted()
-    {
-        static::deleted(function (SampleEntry $entry) {
-            foreach (self::BIOASSAY_MODELS as $model) {
-                $model::where('sample_entry_id', $entry->id)->get()->each->delete();
-            }
-        });
-
-        static::restoring(function (SampleEntry $entry) {
-            foreach (self::BIOASSAY_MODELS as $model) {
-                // Solo los que se fueron a la papelera junto con la muestra (no los eliminados antes, uno a uno)
-                $model::onlyTrashed()->where('sample_entry_id', $entry->id)
-                    ->where('deleted_at', '>=', $entry->deleted_at)->get()->each->restore();
-            }
-        });
-    }
 
     public function hasValidatedBioassays(): bool
     {

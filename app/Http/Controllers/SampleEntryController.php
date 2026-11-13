@@ -6,7 +6,6 @@ use App\Models\Template;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Validation\Rule;
 
 class SampleEntryController extends Controller
 {
@@ -52,18 +51,13 @@ class SampleEntryController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::exists('reception_templates', 'internal_sample_code')->whereNull('deleted_at'),
+                'exists:reception_templates,internal_sample_code',
             ],
         ]);
 
-        // Evitar duplicados (también si el ingreso anterior está en la papelera)
-        $existing = SampleEntry::withTrashed()->where('internal_sample_code', $validated['internal_sample_code'])->first();
-        if ($existing) {
-            $message = $existing->trashed()
-                ? 'Esta muestra ya fue ingresada y está en la papelera. Pídele al Supervisor o Jefe de Área que la restaure.'
-                : 'Esta muestra ya fue ingresada.';
-
-            return back()->withErrors(['internal_sample_code' => $message])->withInput();
+        // Evitar duplicados
+        if (SampleEntry::where('internal_sample_code', $validated['internal_sample_code'])->exists()) {
+            return back()->withErrors(['internal_sample_code' => 'Esta muestra ya fue ingresada.'])->withInput();
         }
 
         // Crear plantilla base
@@ -230,7 +224,6 @@ class SampleEntryController extends Controller
         return redirect()->route('sample_entries.index')->with('success', 'Ingreso de muestra actualizado correctamente.');
     }
 
-    // Eliminar manda a la papelera el ingreso y sus bioensayos (se pueden restaurar)
     public function destroy(SampleEntry $sampleEntry)
     {
         abort_unless(auth()->user()->hasAnyRole(User::ADMIN_ROLES), 403,
@@ -240,10 +233,15 @@ class SampleEntryController extends Controller
             return back()->with('error', 'No se puede eliminar: la muestra tiene bioensayos validados. Primero hay que reabrirlos.');
         }
 
-        $sampleEntry->delete();
+        // Primero sus bioensayos (no se deja a la cascada de la base de datos, que no todas aplican)
+        // y después su plantilla, que borra en cascada el ingreso
+        foreach (SampleEntry::BIOASSAY_MODELS as $model) {
+            $model::where('sample_entry_id', $sampleEntry->id)->delete();
+        }
+        $sampleEntry->template->delete();
 
         return redirect()->route('sample_entries.index')
-            ->with('success', 'Ingreso de muestra enviado a la papelera.');
+            ->with('success', 'Ingreso de muestra eliminado correctamente.');
     }
 
     // Campos del formulario de ingreso (crear y corregir)

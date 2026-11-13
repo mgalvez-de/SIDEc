@@ -4,46 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArbaciaLarvalStage;
-use App\Models\Template;
 use Illuminate\Http\Request;
 
 class ArbaciaLarvalStageController extends Controller
 {
-    /**
-     * Show the form for creating a new bioassay.
-     */
-    public function create()
-    {
-        return view('bioassays.arbacia_larval_stage.create');
-    }
-
-    /**
-     * Store a newly created bioassay.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'sample' => 'required|string|max:255',
-            'matrix' => 'nullable|string|max:255',
-        ]);
-
-        $template = Template::create([
-            'title'    => 'Análisis Bioensayo - Arbacia spatuligera (Estado Larval)',
-            'code'     => 'RT-01.05',
-            'version'  => '01',
-            'validity' => '06.10.2025',
-            'type'     => 'bioassay',
-        ]);
-
-        $validated['template_id'] = $template->id;
-        $validated['created_by'] = auth()->id();
-
-        $bioassay = ArbaciaLarvalStage::create($validated);
-
-        return redirect()->route('arbacia-larval-stage.edit', $bioassay->id)
-            ->with('success', 'Bioensayo creado correctamente. Complete los datos.');
-    }
-
     /**
      * Display the specified bioassay.
      */
