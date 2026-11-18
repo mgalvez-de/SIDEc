@@ -78,7 +78,8 @@ class AccessByRoleTest extends TestCase
     {
         $analist = $this->userWithRole('Analist');
 
-        $html = $this->actingAs($analist)->get(route('daphnia-magna-chronic.create'))->assertOk()->getContent();
+        $bioassay = \App\Models\DaphniaMagnaChronic::create(['sample' => 'MENU-1']);
+        $html = $this->actingAs($analist)->get(route('daphnia-magna-chronic.edit', $bioassay))->assertOk()->getContent();
         $this->assertTrue($this->linkIsActive($html, route('bioassays.index')));
         $this->assertFalse($this->linkIsActive($html, route('sample_entries.index')));
 

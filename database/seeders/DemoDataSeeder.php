@@ -26,16 +26,17 @@ use Illuminate\Support\Facades\Schema;
  */
 class DemoDataSeeder extends Seeder
 {
-    // Nombre en assigned_bioassays => [modelo, título, código, versión, vigencia, método que genera los datos]
+    // Nombre en assigned_bioassays => [modelo, método que genera los datos]
+    // (título, código, versión y vigencia de cada hoja se leen de config/bioensayos.php)
     private const BIOASSAYS = [
-        'Daphnia magna Agudo'               => [DaphniaMagnaTemplate::class, 'Análisis Bioensayo Agudo - Daphnia magna', 'RT-01.05', 3, '01.09.2023', 'daphniaAgudo'],
-        'Daphnia magna Crónico'             => [DaphniaMagnaChronic::class, 'Análisis Bioensayo - Daphnia magna Crónico', 'RT-02.01', 3, '01.10.2025', 'daphniaCronico'],
-        'Isochrysis galbana'                => [IsochrysisGalbana::class, 'Análisis Bioensayo - Isochrysis galbana', 'RT-01.05', 3, '01.10.2025', 'isochrysis'],
-        'Selenastrum capricornutum'         => [SelenastrumCapricornutum::class, 'Análisis Bioensayo - Selenastrum capricornutum', 'RT-01.XX', 1, '01.01.2025', 'selenastrum'],
-        'Tisbe biconicornis Agua'           => [TisbeLongicornisWater::class, 'Análisis Bioensayo - Tisbe longicornis (Agua)', 'RT-01.05', 1, '06.10.2025', 'tisbeAgua'],
-        'Tisbe biconicornis Sedimento'      => [TisbeLongicornisRiles::class, 'Análisis Bioensayo - Tisbe biconicornis (Sedimento)', 'RT-01.XX', 1, '01.01.2025', 'tisbeRiles'],
-        'Arbacia spatuligera Fecundación'   => [ArbaciaFertilization::class, 'Análisis Bioensayo - Arbacia spatuligera (Fecundación)', 'RT-01.XX', 1, '01.01.2025', 'arbaciaFecundacion'],
-        'Arbacia spatuligera Estado Larval' => [ArbaciaLarvalStage::class, 'Análisis Bioensayo - Arbacia spatuligera (Estado Larval)', 'RT-01.XX', 1, '01.01.2025', 'arbaciaLarval'],
+        'Daphnia magna Agudo'                         => [DaphniaMagnaTemplate::class, 'daphniaAgudo'],
+        'Daphnia magna Crónico'                       => [DaphniaMagnaChronic::class, 'daphniaCronico'],
+        'Isochrysis galbana'                          => [IsochrysisGalbana::class, 'isochrysis'],
+        'Selenastrum capricornutum'                   => [SelenastrumCapricornutum::class, 'selenastrum'],
+        'Tisbe longicornis Aguas marinas'             => [TisbeLongicornisWater::class, 'tisbeAgua'],
+        'Tisbe longicornis Sustancias químicas/Riles' => [TisbeLongicornisRiles::class, 'tisbeRiles'],
+        'Arbacia spatuligera Fecundación'             => [ArbaciaFertilization::class, 'arbaciaFecundacion'],
+        'Arbacia spatuligera Estado Larval'           => [ArbaciaLarvalStage::class, 'arbaciaLarval'],
     ];
 
     private const MATRICES = [
@@ -91,7 +92,7 @@ class DemoDataSeeder extends Seeder
                 'identifier' => 'Agua de mar, estación E-3 de la bahía',
                 'entry' => ['at' => $this->ago(71, '15:30'), 'analyst' => 'Diego Fuentes', 'observations' => 'Salinidad adecuada para especies marinas, no requiere ajuste.'],
                 'bioassays' => [
-                    'Tisbe biconicornis Agua'         => ['stage' => 'validated', 'ec50' => null, 'ec50_24' => null],
+                    'Tisbe longicornis Aguas marinas'         => ['stage' => 'validated', 'ec50' => null, 'ec50_24' => null],
                     'Arbacia spatuligera Fecundación' => ['stage' => 'validated', 'ec50' => null],
                 ],
             ],
@@ -136,7 +137,7 @@ class DemoDataSeeder extends Seeder
                 'identifier' => 'Sedimento marino, punto de descarga del emisario',
                 'entry' => ['at' => $this->ago(31, '13:00'), 'analyst' => 'Diego Fuentes', 'observations' => 'Ensayo sobre elutriado 1:4 (sedimento:agua de mar).'],
                 'bioassays' => [
-                    'Tisbe biconicornis Sedimento' => ['stage' => 'complete', 'ec50' => 18, 'ec50_24' => 34, 'control_dead' => 0], // sin validar: semana 5 (amarillo)
+                    'Tisbe longicornis Sustancias químicas/Riles' => ['stage' => 'complete', 'ec50' => 18, 'ec50_24' => 34, 'control_dead' => 0], // sin validar: semana 5 (amarillo)
                 ],
             ],
             [
@@ -155,7 +156,7 @@ class DemoDataSeeder extends Seeder
                 'identifier' => 'Agua de mar, toma de agua del hatchery',
                 'entry' => ['at' => $this->ago(10, '09:20'), 'analyst' => 'Diego Fuentes', 'observations' => 'Sin observaciones.'],
                 'bioassays' => [
-                    'Tisbe biconicornis Agua' => ['stage' => 'validated', 'ec50' => 72, 'ec50_24' => null, 'control_dead' => 1],
+                    'Tisbe longicornis Aguas marinas' => ['stage' => 'validated', 'ec50' => 72, 'ec50_24' => null, 'control_dead' => 1],
                     'Isochrysis galbana'      => ['stage' => 'complete', 'ec50' => 55],
                 ],
             ],
@@ -197,7 +198,7 @@ class DemoDataSeeder extends Seeder
                 'code' => 'M-2026-014', 'received' => $this->now->copy()->subHours(3)->minute(15), 'client' => 'Salmonera Fiordo Sur SpA',
                 'delivered_by' => 'Carolina Díaz', 'received_by' => 'Andrea Muñoz', 'matrix' => 'AM', 'temp' => 3.3,
                 'identifier' => 'Agua de mar, centro de engorda, 5 m de profundidad',
-                'assigned' => ['Tisbe biconicornis Agua', 'Isochrysis galbana'],
+                'assigned' => ['Tisbe longicornis Aguas marinas', 'Isochrysis galbana'],
             ],
         ];
     }
@@ -244,7 +245,8 @@ class DemoDataSeeder extends Seeder
         ] + $chem, $enteredAt);
 
         foreach ($s['bioassays'] as $name => $spec) {
-            [$model, $title, $code, $version, $validity, $builder] = self::BIOASSAYS[$name];
+            [$model, $builder] = self::BIOASSAYS[$name];
+            $sheet = config('bioensayos')[$name];
 
             $start = $spec['stage'] === 'running'
                 ? $this->now->copy()->subHours($spec['hours'] ?? 0)->minute(0)
@@ -253,7 +255,7 @@ class DemoDataSeeder extends Seeder
             [$data, $finishedAt] = $this->$builder($spec, $start, $chem);
 
             $attributes = $data + [
-                'template_id'     => $this->template($title, $code, $version, $validity, 'bioassay', $enteredAt),
+                'template_id'     => $this->template($sheet['title'], $sheet['code'], $sheet['version'], $sheet['validity'], 'bioassay', $enteredAt),
                 'sample'          => $s['code'],
                 'matrix'          => self::MATRICES[$s['matrix']],
                 'analyst'         => $s['entry']['analyst'],

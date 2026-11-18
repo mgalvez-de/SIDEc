@@ -683,7 +683,7 @@
 
                 Swal.fire({
                     title: '¿Eliminar muestra?',
-                    text: "Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarlo.",
+                    text: "Esta acción no se puede deshacer.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#b91c1c',

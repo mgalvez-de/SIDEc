@@ -15,22 +15,7 @@
 <div class="container-fluid px-4">
 
     <x-page-header title="Bioensayos" icon="bi-eyedropper"
-        subtitle="Ensayos de todos los organismos. Filtra por organismo o por estado.">
-        <div class="dropdown">
-            <button class="btn btn-ucsc dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-plus-circle me-1"></i> Nuevo bioensayo
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                @foreach ($types as $section => [$label, $icon])
-                    <li>
-                        <a class="dropdown-item" href="{{ route("$section.create") }}">
-                            <i class="bi {{ $icon }} me-2"></i>{{ $label }}
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
-    </x-page-header>
+        subtitle="Ensayos de todos los organismos. Filtra por organismo o por estado." />
 
     {{-- Filtros: organismo (lista) y estado (botones con la cantidad de cada uno) --}}
     <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">

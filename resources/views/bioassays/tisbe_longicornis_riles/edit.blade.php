@@ -16,7 +16,7 @@
     <h2 class="mb-3 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-style: italic; color: #fd7e14;">
         Tisbe longicornis (Sustancias Químicas/Riles)
     </h2>
-    <p class="text-center text-muted mb-4">RT-01.05 | Versión: 01 | Vigencia: 06.10.2025</p>
+    @include('bioassays._sheet_code', ['bioassay' => $tisbe_longicornis_riles])
 
     {{-- Mostrar errores de validación --}}
     @if ($errors->any())

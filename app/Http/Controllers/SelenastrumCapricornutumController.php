@@ -4,46 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\SelenastrumCapricornutum;
-use App\Models\Template;
 use Illuminate\Http\Request;
 
 class SelenastrumCapricornutumController extends Controller
 {
-    /**
-     * Show the form for creating a new bioassay.
-     */
-    public function create()
-    {
-        return view('bioassays.selenastrum_capricornutum.create');
-    }
-
-    /**
-     * Store a newly created bioassay.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'sample' => 'required|string|max:255',
-            'matrix' => 'nullable|string|max:255',
-        ]);
-
-        $template = Template::create([
-            'title'    => 'Análisis Bioensayo - Selenastrum capricornutum',
-            'code'     => 'RT-01.05',
-            'version'  => '03',
-            'validity' => '01.10.2025',
-            'type'     => 'bioassay',
-        ]);
-
-        $validated['template_id'] = $template->id;
-        $validated['created_by'] = auth()->id();
-
-        $bioassay = SelenastrumCapricornutum::create($validated);
-
-        return redirect()->route('selenastrum-capricornutum.edit', $bioassay->id)
-            ->with('success', 'Bioensayo creado correctamente. Complete los datos.');
-    }
-
     /**
      * Display the specified bioassay.
      */

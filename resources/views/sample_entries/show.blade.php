@@ -158,8 +158,8 @@
                             'Daphnia magna Crónico',
                             'Isochrysis galbana',
                             'Selenastrum capricornutum',
-                            'Tisbe biconicornis Agua',
-                            'Tisbe biconicornis Sedimento',
+                            'Tisbe longicornis Aguas marinas',
+                            'Tisbe longicornis Sustancias químicas/Riles',
                             'Arbacia spatuligera Estado Larval',
                             'Arbacia spatuligera Fecundación',
                         ];
@@ -186,12 +186,12 @@
                                 'route' => 'selenastrum-capricornutum.edit',
                                 'color' => 'secondary',
                             ],
-                            'Tisbe biconicornis Agua' => [
+                            'Tisbe longicornis Aguas marinas' => [
                                 'model' => \App\Models\TisbeLongicornisWater::class,
                                 'route' => 'tisbe-longicornis-water.edit',
                                 'color' => 'purple', // Púrpura (necesita CSS: .bg-purple { background-color: #6f42c1 !important; })
                             ],
-                            'Tisbe biconicornis Sedimento' => [
+                            'Tisbe longicornis Sustancias químicas/Riles' => [
                                 'model' => \App\Models\TisbeLongicornisRiles::class,
                                 'route' => 'tisbe-longicornis-riles.edit',
                                 'color' => 'warning', // Naranja
