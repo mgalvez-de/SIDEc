@@ -219,8 +219,8 @@
                         ['name' => 'Daphnia magna Crónico', 'icon' => 'bi-droplet-half', 'color' => 'success'],
                         ['name' => 'Isochrysis galbana', 'icon' => 'bi-water', 'color' => 'info'],
                         ['name' => 'Selenastrum capricornutum', 'icon' => 'bi-flower3', 'color' => 'lime'],
-                        ['name' => 'Tisbe biconicornis Agua', 'icon' => 'bi-bug', 'color' => 'purple'],
-                        ['name' => 'Tisbe biconicornis Sedimento', 'icon' => 'bi-bezier2', 'color' => 'orange'],
+                        ['name' => 'Tisbe longicornis Aguas marinas', 'icon' => 'bi-bug', 'color' => 'purple'],
+                        ['name' => 'Tisbe longicornis Sustancias químicas/Riles', 'icon' => 'bi-bezier2', 'color' => 'orange'],
                         ['name' => 'Arbacia spatuligera Estado Larval', 'icon' => 'bi-egg', 'color' => 'pink'],
                         ['name' => 'Arbacia spatuligera Fecundación', 'icon' => 'bi-egg-fried', 'color' => 'pink'],
                     ];

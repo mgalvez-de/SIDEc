@@ -59,7 +59,8 @@ class BioassayModulesTest extends TestCase
         $this->assertSame('Revisado en QA', $bioassay->refresh()->observations);
         $this->assertSame($analist->id, $bioassay->updated_by); // queda registrado quién lo modificó
 
-        $this->actingAs($this->userWithRole('Manager'))
+        $manager = $this->userWithRole('Manager');
+        $this->actingAs($manager)
             ->patch(route("$slug.validate", $bioassay))
             ->assertRedirect();
         $this->assertNotNull($bioassay->refresh()->validated_at);
@@ -73,7 +74,8 @@ class BioassayModulesTest extends TestCase
         $this->assertSame('Revisado en QA', $bioassay->refresh()->observations);
         $this->actingAs($analist)->get(route("$slug.edit", $bioassay))
             ->assertOk()
-            ->assertSee('Bioensayo validado: solo lectura.')
+            ->assertSee("Bioensayo validado por {$manager->name}")
+            ->assertSee('solo lectura.')
             ->assertDontSee(route('bioassays.reopen', ['tipo' => $slug, 'id' => $bioassay->id]), false);
 
         // Solo Supervisor o Jefe de Área lo reabren

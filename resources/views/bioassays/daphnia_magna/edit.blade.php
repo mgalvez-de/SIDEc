@@ -17,7 +17,7 @@
             style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-style: italic; color: #198754;">
             Daphnia magna
         </h2>
-        <p class="text-center text-muted mb-4">RT-01.05 | Versión: 03 | Vigencia: 01.09.2023</p>
+        @include('bioassays._sheet_code', ['bioassay' => $daphnia_magna])
 
         {{-- Mostrar errores de validación --}}
         @if ($errors->any())

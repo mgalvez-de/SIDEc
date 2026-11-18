@@ -95,67 +95,11 @@ class SampleEntryController extends Controller
      */
     private function createAssignedBioassays(array $bioassays, SampleEntry $sampleEntry): void
     {
-        $bioassayConfig = [
-            'Daphnia magna Agudo' => [
-                'model' => \App\Models\DaphniaMagnaTemplate::class,
-                'title' => 'Análisis Bioensayo Agudo - Daphnia magna',
-                'code' => 'RT-01.05',
-                'version' => '03',
-                'validity' => '01.09.2023',
-            ],
-            'Daphnia magna Crónico' => [
-                'model' => \App\Models\DaphniaMagnaChronic::class,
-                'title' => 'Análisis Bioensayo - Daphnia magna Crónico',
-                'code' => 'RT-02.01',
-                'version' => '03',
-                'validity' => '01.10.2025',
-            ],
-            'Isochrysis galbana' => [
-                'model' => \App\Models\IsochrysisGalbana::class,
-                'title' => 'Análisis Bioensayo - Isochrysis galbana',
-                'code' => 'RT-01.05',
-                'version' => '03',
-                'validity' => '01.10.2025',
-            ],
-            'Tisbe biconicornis Agua' => [
-                'model' => \App\Models\TisbeLongicornisWater::class,
-                'title' => 'Análisis Bioensayo - Tisbe longicornis (Agua)',
-                'code' => 'RT-01.05',
-                'version' => '01',
-                'validity' => '06.10.2025',
-            ],
-            'Tisbe biconicornis Sedimento' => [
-                'model' => \App\Models\TisbeLongicornisRiles::class,
-                'title' => 'Análisis Bioensayo - Tisbe biconicornis (Sedimento)',
-                'code' => 'RT-01.XX',
-                'version' => '01',
-                'validity' => '01.01.2025',
-            ],
-            'Selenastrum capricornutum' => [
-                'model' => \App\Models\SelenastrumCapricornutum::class,
-                'title' => 'Análisis Bioensayo - Selenastrum capricornutum',
-                'code' => 'RT-01.XX',
-                'version' => '01',
-                'validity' => '01.01.2025',
-            ],
-            'Arbacia spatuligera Fecundación' => [
-                'model' => \App\Models\ArbaciaFertilization::class,
-                'title' => 'Análisis Bioensayo - Arbacia spatuligera (Fecundación)',
-                'code' => 'RT-01.XX',
-                'version' => '01',
-                'validity' => '01.01.2025',
-            ],
-            'Arbacia spatuligera Estado Larval' => [
-                'model' => \App\Models\ArbaciaLarvalStage::class,
-                'title' => 'Análisis Bioensayo - Arbacia spatuligera (Estado Larval)',
-                'code' => 'RT-01.XX',
-                'version' => '01',
-                'validity' => '01.01.2025',
-            ],
-        ];
+        // Código, versión y vigencia de cada hoja oficial: config/bioensayos.php
+        $bioassayConfig = config('bioensayos');
 
         foreach ($bioassays as $bioassay) {
-            // Un nombre que no está en la lista de arriba no tiene formulario: se avisa en el log
+            // Un nombre que no está en config/bioensayos.php no tiene formulario: se avisa en el log
             if (!isset($bioassayConfig[$bioassay])) {
                 \Log::warning("Bioensayo no implementado: {$bioassay}");
                 continue;

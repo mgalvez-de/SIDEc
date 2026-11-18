@@ -6,6 +6,7 @@ use App\Models\DaphniaMagnaTemplate;
 use App\Models\IsochrysisGalbana;
 use App\Models\ReceptionTemplate;
 use App\Models\SampleEntry;
+use App\Models\SelenastrumCapricornutum;
 use App\Models\Template;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -38,6 +39,45 @@ class SampleEntryTest extends TestCase
         $this->assertSame($entry->id, IsochrysisGalbana::firstOrFail()->sample_entry_id);
         $this->assertSame($analist->id, DaphniaMagnaTemplate::firstOrFail()->created_by);
         $this->assertSame($analist->id, IsochrysisGalbana::firstOrFail()->created_by);
+    }
+
+    public function test_bioassays_are_created_with_the_official_sheet_code_version_and_validity()
+    {
+        ReceptionTemplate::create([
+            'template_id' => Template::create(['title' => 'Recepción', 'type' => 'reception'])->id,
+            'internal_sample_code' => 'M-200',
+            'assigned_bioassays' => array_keys(config('bioensayos')),
+        ]);
+
+        $analist = $this->userWithRole('Analist');
+
+        $this->actingAs($analist)->post(route('sample_entries.store'), [
+            'title' => 'Ingreso de muestra',
+            'version' => '1',
+            'internal_sample_code' => 'M-200',
+        ]);
+
+        foreach (config('bioensayos') as $name => $sheet) {
+            $template = $sheet['model']::firstOrFail()->template;
+
+            $this->assertSame($sheet['code'], $template->code, $name);
+            $this->assertEquals($sheet['version'], $template->version, $name);
+            $this->assertSame($sheet['validity'], $template->validity, $name);
+        }
+
+        $this->actingAs($analist)
+            ->get(route('selenastrum-capricornutum.edit', SelenastrumCapricornutum::firstOrFail()))
+            ->assertOk()
+            ->assertSee('RT-04.04 | Versión: 08 | Vigencia: 01.04.2024');
+    }
+
+    public function test_every_bioassay_has_its_official_sheet_configured()
+    {
+        // Mismos nombres y mismos modelos (sin importar el orden)
+        $this->assertEquals(
+            SampleEntry::BIOASSAY_MODELS,
+            collect(config('bioensayos'))->map(fn ($sheet) => $sheet['model'])->all()
+        );
     }
 
     public function test_the_same_sample_cannot_be_entered_twice()

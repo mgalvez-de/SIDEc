@@ -11,14 +11,14 @@ class SampleEntry extends Model
 
     // Nombre del bioensayo tal como se guarda en ReceptionTemplate::assigned_bioassays => modelo
     public const BIOASSAY_MODELS = [
-        'Daphnia magna Agudo'               => DaphniaMagnaTemplate::class,
-        'Daphnia magna Crónico'             => DaphniaMagnaChronic::class,
-        'Isochrysis galbana'                => IsochrysisGalbana::class,
-        'Tisbe biconicornis Agua'           => TisbeLongicornisWater::class,
-        'Tisbe biconicornis Sedimento'      => TisbeLongicornisRiles::class,
-        'Selenastrum capricornutum'         => SelenastrumCapricornutum::class,
-        'Arbacia spatuligera Fecundación'   => ArbaciaFertilization::class,
-        'Arbacia spatuligera Estado Larval' => ArbaciaLarvalStage::class,
+        'Daphnia magna Agudo'                         => DaphniaMagnaTemplate::class,
+        'Daphnia magna Crónico'                       => DaphniaMagnaChronic::class,
+        'Isochrysis galbana'                          => IsochrysisGalbana::class,
+        'Tisbe longicornis Aguas marinas'             => TisbeLongicornisWater::class,
+        'Tisbe longicornis Sustancias químicas/Riles' => TisbeLongicornisRiles::class,
+        'Selenastrum capricornutum'                   => SelenastrumCapricornutum::class,
+        'Arbacia spatuligera Fecundación'             => ArbaciaFertilization::class,
+        'Arbacia spatuligera Estado Larval'           => ArbaciaLarvalStage::class,
     ];
 
     private $assignedBioassays;

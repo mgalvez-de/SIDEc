@@ -193,8 +193,8 @@
                                 'Daphnia magna Crónico',
                                 'Isochrysis galbana',
                                 'Selenastrum capricornutum',
-                                'Tisbe biconicornis Agua',
-                                'Tisbe biconicornis Sedimento',
+                                'Tisbe longicornis Aguas marinas',
+                                'Tisbe longicornis Sustancias químicas/Riles',
                                 'Arbacia spatuligera Estado Larval',
                                 'Arbacia spatuligera Fecundación',
                             ];
@@ -205,8 +205,8 @@
                                 'Daphnia magna Crónico' => 'daphnia-magna-chronic.edit',
                                 'Isochrysis galbana' => 'isochrysis-galbana.edit',
                                 'Selenastrum capricornutum' => 'selenastrum-capricornutum.edit',
-                                'Tisbe biconicornis Agua' => 'tisbe-longicornis-water.edit',
-                                'Tisbe biconicornis Sedimento' => 'tisbe-longicornis-riles.edit',
+                                'Tisbe longicornis Aguas marinas' => 'tisbe-longicornis-water.edit',
+                                'Tisbe longicornis Sustancias químicas/Riles' => 'tisbe-longicornis-riles.edit',
                                 'Arbacia spatuligera Fecundación' => 'arbacia-fertilization.edit',
                                 'Arbacia spatuligera Estado Larval' => 'arbacia-larval-stage.edit',
                             ];
