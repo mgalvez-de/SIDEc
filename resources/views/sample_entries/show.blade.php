@@ -182,7 +182,7 @@
                                 'color' => 'info',
                             ],
                             'Selenastrum capricornutum' => [
-                                'model' => \App\Models\SelenastrumCapricornutum::class, // No implementado aún
+                                'model' => \App\Models\SelenastrumCapricornutum::class,
                                 'route' => 'selenastrum-capricornutum.edit',
                                 'color' => 'secondary',
                             ],
