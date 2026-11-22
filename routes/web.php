@@ -15,7 +15,6 @@ use App\Http\Controllers\SampleEntryController;
 use App\Http\Controllers\SelenastrumCapricornutumController;
 use App\Http\Controllers\TisbeLongicornisRilesController;
 use App\Http\Controllers\TisbeLongicornisWaterController;
-use App\Http\Controllers\TrashController;
 use App\Http\Controllers\UserController;
 use App\Models\ImageAnalysis;
 use Illuminate\Support\Facades\Route;
@@ -51,10 +50,6 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('users', UserController::class)->except(['show', 'destroy']);
         Route::patch('users/{user}/toggle-active', [UserController::class, 'toggleActive'])
             ->name('users.toggle-active');
-
-        // Papelera: lo eliminado se puede restaurar
-        Route::get('/papelera', [TrashController::class, 'index'])->name('trash.index');
-        Route::patch('/papelera/{tipo}/{id}/restaurar', [TrashController::class, 'restore'])->name('trash.restore');
     });
 
     // Dashboard -> Manager, Supervisor y Area Manager (el Manager lo ve sin datos de clientes)
@@ -79,39 +74,39 @@ Route::middleware(['auth', 'active'])->group(function () {
                 ->defaults('tipo', $section);
         }
 
-        Route::resource('daphnia-magna', DaphniaMagnaTemplateController::class)->except('index');
+        Route::resource('daphnia-magna', DaphniaMagnaTemplateController::class)->except(['index', 'create', 'store']);
         Route::patch('daphnia-magna/{daphnia_magna}/validate', [DaphniaMagnaTemplateController::class, 'validateBioassay'])
             ->name('daphnia-magna.validate');
         Route::resource('daphnia-magna-chronic', DaphniaMagnaChronicController::class)
-            ->parameters(['daphnia-magna-chronic' => 'daphnia_magna_chronic'])->except('index');
+            ->parameters(['daphnia-magna-chronic' => 'daphnia_magna_chronic'])->except(['index', 'create', 'store']);
         Route::patch('daphnia-magna-chronic/{daphnia_magna_chronic}/validate', [DaphniaMagnaChronicController::class, 'validateBioassay'])
             ->name('daphnia-magna-chronic.validate');
 
-        Route::resource('isochrysis-galbana', IsochrysisGalbanaController::class)->except('index');
+        Route::resource('isochrysis-galbana', IsochrysisGalbanaController::class)->except(['index', 'create', 'store']);
         Route::patch('isochrysis-galbana/{isochrysis_galbana}/validate', [IsochrysisGalbanaController::class, 'validateBioassay'])
             ->name('isochrysis-galbana.validate');
 
         Route::resource('selenastrum-capricornutum', SelenastrumCapricornutumController::class)
-            ->parameters(['selenastrum-capricornutum' => 'selenastrum_capricornutum'])->except('index');
+            ->parameters(['selenastrum-capricornutum' => 'selenastrum_capricornutum'])->except(['index', 'create', 'store']);
         Route::patch('selenastrum-capricornutum/{selenastrum_capricornutum}/validate', [SelenastrumCapricornutumController::class, 'validateBioassay'])
             ->name('selenastrum-capricornutum.validate');
 
-        Route::resource('tisbe-longicornis-water', TisbeLongicornisWaterController::class)->except('index');
+        Route::resource('tisbe-longicornis-water', TisbeLongicornisWaterController::class)->except(['index', 'create', 'store']);
         Route::patch('tisbe-longicornis-water/{tisbe_longicornis_water}/validate', [TisbeLongicornisWaterController::class, 'validateBioassay'])
             ->name('tisbe-longicornis-water.validate');
 
         Route::resource('tisbe-longicornis-riles', TisbeLongicornisRilesController::class)
-            ->parameters(['tisbe-longicornis-riles' => 'tisbe_longicornis_riles'])->except('index');
+            ->parameters(['tisbe-longicornis-riles' => 'tisbe_longicornis_riles'])->except(['index', 'create', 'store']);
         Route::patch('tisbe-longicornis-riles/{tisbe_longicornis_riles}/validate', [TisbeLongicornisRilesController::class, 'validateBioassay'])
             ->name('tisbe-longicornis-riles.validate');
 
         Route::resource('arbacia-fertilization', ArbaciaFertilizationController::class)
-            ->parameters(['arbacia-fertilization' => 'arbacia_fertilization'])->except('index');
+            ->parameters(['arbacia-fertilization' => 'arbacia_fertilization'])->except(['index', 'create', 'store']);
         Route::patch('arbacia-fertilization/{arbacia_fertilization}/validate', [ArbaciaFertilizationController::class, 'validateBioassay'])
             ->name('arbacia-fertilization.validate');
 
         Route::resource('arbacia-larval-stage', ArbaciaLarvalStageController::class)
-            ->parameters(['arbacia-larval-stage' => 'arbacia_larval_stage'])->except('index');
+            ->parameters(['arbacia-larval-stage' => 'arbacia_larval_stage'])->except(['index', 'create', 'store']);
         Route::patch('arbacia-larval-stage/{arbacia_larval_stage}/validate', [ArbaciaLarvalStageController::class, 'validateBioassay'])
             ->name('arbacia-larval-stage.validate');
 

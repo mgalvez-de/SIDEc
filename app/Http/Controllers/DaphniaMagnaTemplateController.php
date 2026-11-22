@@ -4,48 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DaphniaMagnaTemplate;
-use App\Models\Template;
 use Illuminate\Http\Request;
 
 class DaphniaMagnaTemplateController extends Controller
 {
-    /**
-     * Show the form for creating a new bioassay.
-     * Nota: Normalmente los bioensayos se crean automáticamente desde SampleEntryController@store
-     */
-    public function create()
-    {
-        return view('bioassays.daphnia_magna.create');
-    }
-
-    /**
-     * Store a newly created bioassay.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'sample' => 'required|string|max:255',
-            'matrix' => 'nullable|string|max:255',
-        ]);
-
-        // Crear template por defecto
-        $template = Template::create([
-            'title' => 'Análisis Bioensayo Agudo - Daphnia magna',
-            'code' => 'RT-01.05',
-            'version' => '03',
-            'validity' => '01.09.2023',
-            'type' => 'bioassay',
-        ]);
-
-        $validated['template_id'] = $template->id;
-        $validated['created_by'] = auth()->id();
-
-        $bioassay = DaphniaMagnaTemplate::create($validated);
-
-        return redirect()->route('daphnia-magna.edit', $bioassay->id)
-            ->with('success', 'Bioensayo creado correctamente. Complete los datos.');
-    }
-
     /**
      * Show the form for editing a bioassay.
      */

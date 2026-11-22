@@ -43,12 +43,6 @@ class DataProtectionTest extends TestCase
 
         $this->assertNull(ReceptionTemplate::find($first->id));
         $this->assertTrue(ReceptionTemplate::where('internal_sample_code', 'L-2')->exists());
-
-        // Y la eliminada se puede restaurar desde la papelera
-        $this->actingAs($this->admin)
-            ->patch(route('trash.restore', ['tipo' => 'receptions', 'id' => $first->id]))
-            ->assertRedirect();
-        $this->assertNotNull(ReceptionTemplate::find($first->id));
     }
 
     public function test_reception_with_an_entered_sample_cannot_be_deleted()
@@ -72,17 +66,11 @@ class DataProtectionTest extends TestCase
         $this->actingAs($this->admin)->delete(route('sample_entries.destroy', $completed))->assertSessionHas('error');
         $this->assertNotNull(SampleEntry::find($completed->id));
 
-        // Sin bioensayos validados: va a la papelera con sus bioensayos, y vuelve con ellos
+        // Sin bioensayos validados: se elimina junto con sus bioensayos
         $bioassays = $pending->assignedBioassays()->filter();
         $this->actingAs($this->admin)->delete(route('sample_entries.destroy', $pending))->assertRedirect();
         $this->assertNull(SampleEntry::find($pending->id));
-        $bioassays->each(fn ($bioassay) => $this->assertNull($bioassay->newQuery()->find($bioassay->id)));
-
-        $this->actingAs($this->admin)
-            ->patch(route('trash.restore', ['tipo' => 'sample_entries', 'id' => $pending->id]))
-            ->assertRedirect();
-        $this->assertNotNull(SampleEntry::find($pending->id));
-        $bioassays->each(fn ($bioassay) => $this->assertNotNull($bioassay->newQuery()->find($bioassay->id)));
+        $bioassays->each(fn ($bioassay) => $this->assertNull($bioassay->fresh()));
     }
 
     // Antes "Corregir" nunca guardaba: la versión "01" no pasaba la regla de número entero
@@ -105,12 +93,6 @@ class DataProtectionTest extends TestCase
         $this->actingAs($this->analist)
             ->put(route('sample_entries.update', $entry), ['title' => 'T', 'version' => '01', 'ph' => 'abc'])
             ->assertSessionHasErrors('ph');
-    }
-
-    public function test_trash_is_only_for_supervisor_and_area_manager()
-    {
-        $this->actingAs($this->analist)->get(route('trash.index'))->assertForbidden();
-        $this->actingAs($this->admin)->get(route('trash.index'))->assertOk();
     }
 
     public function test_user_can_change_their_own_password()

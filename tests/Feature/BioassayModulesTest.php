@@ -33,18 +33,12 @@ class BioassayModulesTest extends TestCase
         // El listado de cada organismo es la página Bioensayos filtrada
         $list = route('bioassays.index', ['tipo' => $slug]);
         $this->actingAs($analist)->get(route("$slug.index"))->assertRedirect($list);
-        $this->actingAs($analist)->get($list)
-            ->assertOk()
-            ->assertSee(route("$slug.create"), false);
-        $this->actingAs($analist)->get(route("$slug.create"))
-            ->assertOk()
-            ->assertSee(route("$slug.store"), false);
+        $this->actingAs($analist)->get($list)->assertOk();
 
-        $this->actingAs($analist)
-            ->post(route("$slug.store"), ['sample' => 'QA-1', 'matrix' => 'Agua de mar'])
-            ->assertRedirect();
-        $bioassay = $model::where('sample', 'QA-1')->firstOrFail();
-        $this->assertSame($analist->id, $bioassay->created_by);
+        // Los bioensayos no se crean a mano: los crea el ingreso de la muestra
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has("$slug.create"));
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has("$slug.store"));
+        $bioassay = $model::create(['sample' => 'QA-1', 'created_by' => $analist->id]);
 
         $supervisor = $this->userWithRole('Supervisor');
         $deleteForm = 'action="' . route("$slug.destroy", $bioassay) . '"';
@@ -65,7 +59,8 @@ class BioassayModulesTest extends TestCase
         $this->assertSame('Revisado en QA', $bioassay->refresh()->observations);
         $this->assertSame($analist->id, $bioassay->updated_by); // queda registrado quién lo modificó
 
-        $this->actingAs($this->userWithRole('Manager'))
+        $manager = $this->userWithRole('Manager');
+        $this->actingAs($manager)
             ->patch(route("$slug.validate", $bioassay))
             ->assertRedirect();
         $this->assertNotNull($bioassay->refresh()->validated_at);
@@ -79,7 +74,8 @@ class BioassayModulesTest extends TestCase
         $this->assertSame('Revisado en QA', $bioassay->refresh()->observations);
         $this->actingAs($analist)->get(route("$slug.edit", $bioassay))
             ->assertOk()
-            ->assertSee('Bioensayo validado: solo lectura.')
+            ->assertSee("Bioensayo validado por {$manager->name}")
+            ->assertSee('solo lectura.')
             ->assertDontSee(route('bioassays.reopen', ['tipo' => $slug, 'id' => $bioassay->id]), false);
 
         // Solo Supervisor o Jefe de Área lo reabren
@@ -89,16 +85,9 @@ class BioassayModulesTest extends TestCase
         $this->actingAs($supervisor)->patch($reopen)->assertRedirect();
         $this->assertNull($bioassay->refresh()->validated_at);
 
-        // Eliminar: solo Supervisor / Jefe de Área, y va a la papelera (se puede restaurar)
+        // Eliminar: solo Supervisor / Jefe de Área
         $this->actingAs($analist)->delete(route("$slug.destroy", $bioassay))->assertForbidden();
         $this->actingAs($supervisor)->delete(route("$slug.destroy", $bioassay))->assertRedirect();
         $this->assertNull($model::find($bioassay->id));
-        $this->assertNotNull($model::onlyTrashed()->find($bioassay->id));
-
-        $this->actingAs($supervisor)->get(route('trash.index'))->assertOk()->assertSee('QA-1');
-        $this->actingAs($supervisor)
-            ->patch(route('trash.restore', ['tipo' => $slug, 'id' => $bioassay->id]))
-            ->assertRedirect();
-        $this->assertNotNull($model::find($bioassay->id));
     }
 }

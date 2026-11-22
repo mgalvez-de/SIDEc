@@ -3,23 +3,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
 class SampleEntry extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     // Nombre del bioensayo tal como se guarda en ReceptionTemplate::assigned_bioassays => modelo
     public const BIOASSAY_MODELS = [
-        'Daphnia magna Agudo'               => DaphniaMagnaTemplate::class,
-        'Daphnia magna Crónico'             => DaphniaMagnaChronic::class,
-        'Isochrysis galbana'                => IsochrysisGalbana::class,
-        'Tisbe biconicornis Agua'           => TisbeLongicornisWater::class,
-        'Tisbe biconicornis Sedimento'      => TisbeLongicornisRiles::class,
-        'Selenastrum capricornutum'         => SelenastrumCapricornutum::class,
-        'Arbacia spatuligera Fecundación'   => ArbaciaFertilization::class,
-        'Arbacia spatuligera Estado Larval' => ArbaciaLarvalStage::class,
+        'Daphnia magna Agudo'                         => DaphniaMagnaTemplate::class,
+        'Daphnia magna Crónico'                       => DaphniaMagnaChronic::class,
+        'Isochrysis galbana'                          => IsochrysisGalbana::class,
+        'Tisbe longicornis Aguas marinas'             => TisbeLongicornisWater::class,
+        'Tisbe longicornis Sustancias químicas/Riles' => TisbeLongicornisRiles::class,
+        'Selenastrum capricornutum'                   => SelenastrumCapricornutum::class,
+        'Arbacia spatuligera Fecundación'             => ArbaciaFertilization::class,
+        'Arbacia spatuligera Estado Larval'           => ArbaciaLarvalStage::class,
     ];
 
     private $assignedBioassays;
@@ -39,24 +38,6 @@ class SampleEntry extends Model
         'temperature',
         'observations',
     ];
-
-    // Papelera: al eliminar o restaurar una muestra, sus bioensayos van con ella
-    protected static function booted()
-    {
-        static::deleted(function (SampleEntry $entry) {
-            foreach (self::BIOASSAY_MODELS as $model) {
-                $model::where('sample_entry_id', $entry->id)->get()->each->delete();
-            }
-        });
-
-        static::restoring(function (SampleEntry $entry) {
-            foreach (self::BIOASSAY_MODELS as $model) {
-                // Solo los que se fueron a la papelera junto con la muestra (no los eliminados antes, uno a uno)
-                $model::onlyTrashed()->where('sample_entry_id', $entry->id)
-                    ->where('deleted_at', '>=', $entry->deleted_at)->get()->each->restore();
-            }
-        });
-    }
 
     public function hasValidatedBioassays(): bool
     {

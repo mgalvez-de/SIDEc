@@ -3,18 +3,14 @@
 namespace App\Models\Concerns;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Común a los 8 modelos de bioensayo:
- * - Papelera: al eliminar, el registro queda oculto y se puede restaurar (SoftDeletes).
  * - Trazabilidad: guarda quién lo modificó por última vez (updated_by).
  * - Bloqueo: un bioensayo validado no se modifica hasta que un Supervisor o Jefe de Área lo reabra.
  */
 trait BioassayRecord
 {
-    use SoftDeletes;
-
     protected static function bootBioassayRecord(): void
     {
         static::updating(function ($bioassay) {

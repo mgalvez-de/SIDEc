@@ -21,17 +21,17 @@ class NavigationTest extends TestCase
         $this->assertSame([
             ['label' => 'Bioensayos', 'url' => route('bioassays.index')],
             ['label' => 'Daphnia magna (crónico)', 'url' => route('daphnia-magna-chronic.index')],
-            ['label' => 'Nuevo', 'url' => null],
-        ], Navigation::breadcrumb('daphnia-magna-chronic.create'));
+            ['label' => 'Editar', 'url' => null],
+        ], Navigation::breadcrumb('daphnia-magna-chronic.edit'));
 
         $this->assertSame('Recepciones · SIDEc', Navigation::pageTitle('receptions.index'));
         $this->assertSame('Bioensayos · SIDEc', Navigation::pageTitle('bioassays.index'));
         $this->assertSame('SIDEc', Navigation::pageTitle('login'));
 
         $this->actingAs($this->userWithRole('Analist'))
-            ->get(route('daphnia-magna-chronic.create'))
+            ->get(route('daphnia-magna-chronic.edit', \App\Models\DaphniaMagnaChronic::create(['sample' => 'NAV-1'])))
             ->assertOk()
-            ->assertSee('<title>Daphnia magna (crónico) › Nuevo · SIDEc</title>', false)
+            ->assertSee('<title>Daphnia magna (crónico) › Editar · SIDEc</title>', false)
             ->assertSee('aria-label="Ubicación"', false);
     }
 

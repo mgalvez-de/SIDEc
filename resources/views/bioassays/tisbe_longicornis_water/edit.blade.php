@@ -16,7 +16,7 @@
     <h2 class="mb-3 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-style: italic; color: #6f42c1;">
         Tisbe longicornis (Agua)
     </h2>
-    <p class="text-center text-muted mb-4">RT-01.05 | Versión: 01 | Vigencia: 06.10.2025</p>
+    @include('bioassays._sheet_code', ['bioassay' => $tisbe_longicornis_water])
 
     {{-- Mostrar errores de validación --}}
     @if ($errors->any())

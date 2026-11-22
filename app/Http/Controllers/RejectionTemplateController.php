@@ -103,7 +103,7 @@ class RejectionTemplateController extends Controller
 
     public function destroy(RejectionTemplate $rejection)
     {
-        $rejection->delete(); // va a la papelera
-        return redirect()->route('rejections.index')->with('success', 'Rechazo enviado a la papelera.');
+        $rejection->template->delete(); // cascada elimina rejection
+        return redirect()->route('rejections.index')->with('success', 'Rechazo eliminado correctamente.');
     }
 }

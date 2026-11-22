@@ -272,7 +272,7 @@
 
                 Swal.fire({
                     title: '¿Eliminar rechazo?',
-                    text: "Irá a la papelera. El Supervisor o el Jefe de Área puede restaurarlo.",
+                    text: "Esta acción no se puede deshacer.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc3545',

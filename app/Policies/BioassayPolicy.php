@@ -32,7 +32,7 @@ class BioassayPolicy
         return $bioassay->isLocked() && $user->hasAnyRole(User::ADMIN_ROLES);
     }
 
-    // Eliminar (va a la papelera): solo Supervisor y Jefe de Área, y nunca uno validado
+    // Eliminar: solo Supervisor y Jefe de Área, y nunca uno validado
     public function delete(User $user, $bioassay)
     {
         if (! $user->hasAnyRole(User::ADMIN_ROLES)) {

@@ -4,11 +4,10 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ReceptionTemplate extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     // Plazo de entrega al cliente: 6 semanas desde la recepción. Desde la semana 5 se avisa en amarillo.
     public const DELIVERY_WEEKS = 6;

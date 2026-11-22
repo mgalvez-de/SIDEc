@@ -44,7 +44,7 @@ sudo docker compose ps                # los dos contenedores "Up (healthy)"
 
 ## 5. Migrar la base de datos
 
-Esta versión agrega columnas (papelera y "última modificación"). Sin este paso las páginas dan error 500.
+Esta versión agrega la columna "última modificación" (`updated_by`). Sin este paso las páginas dan error 500.
 
 ```bash
 sudo docker compose exec app php artisan migrate --force
@@ -66,7 +66,7 @@ Si se edita el archivo: después `sudo chgrp 33 production.env` y `sudo docker c
 curl -I http://localhost              # 302 Found hacia /login
 ```
 
-Y desde un PC de la red de la U: abrir `http://10.105.0.47`, iniciar sesión y revisar Bioensayos, Papelera y "Cambiar mi contraseña".
+Y desde un PC de la red de la U: abrir `http://10.105.0.47`, iniciar sesión y revisar Bioensayos y "Cambiar mi contraseña".
 
 ---
 

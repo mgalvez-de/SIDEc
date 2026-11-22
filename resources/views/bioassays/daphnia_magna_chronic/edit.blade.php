@@ -16,7 +16,7 @@
     <h2 class="mb-3 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 400; font-style: italic; color: #198754;">
         Daphnia magna - Crónico (21 días)
     </h2>
-    <p class="text-center text-muted mb-4">RT-02.01 | Versión: 03 | Vigencia: 01.10.2025</p>
+    @include('bioassays._sheet_code', ['bioassay' => $daphnia_magna_chronic])
 
     {{-- Mostrar errores de validación --}}
     @if ($errors->any())

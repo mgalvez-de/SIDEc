@@ -4,46 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DaphniaMagnaChronic;
-use App\Models\Template;
 use Illuminate\Http\Request;
 
 class DaphniaMagnaChronicController extends Controller
 {
-    /**
-     * Show the form for creating a new bioassay.
-     */
-    public function create()
-    {
-        return view('bioassays.daphnia_magna_chronic.create');
-    }
-
-    /**
-     * Store a newly created bioassay.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'sample' => 'required|string|max:255',
-            'matrix' => 'nullable|string|max:255',
-        ]);
-
-        $template = Template::create([
-            'title'    => 'Análisis Bioensayo - Daphnia magna Crónico',
-            'code'     => 'RT-02.01',
-            'version'  => '03',
-            'validity' => '01.10.2025',
-            'type'     => 'bioassay',
-        ]);
-
-        $validated['template_id'] = $template->id;
-        $validated['created_by'] = auth()->id();
-
-        $bioassay = DaphniaMagnaChronic::create($validated);
-
-        return redirect()->route('daphnia-magna-chronic.edit', $bioassay->id)
-            ->with('success', 'Bioensayo creado correctamente. Complete los datos.');
-    }
-
     /**
      * Display the specified bioassay.
      */

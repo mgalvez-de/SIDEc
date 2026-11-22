@@ -2,29 +2,21 @@
     Estado del bioensayo, común a las 8 planillas. Uso:
     @include('bioassays._status', ['bioassay' => $daphnia_magna, 'section' => 'daphnia-magna'])
 
-    - Muestra quién lo creó, quién lo modificó por última vez y quién lo validó.
-    - Si está validado: la planilla queda en solo lectura y aparece "Reabrir" (Supervisor / Jefe de Área).
+    - Si está validado: muestra quién lo validó y cuándo, la planilla queda en solo lectura
+      y aparece "Reabrir" (Supervisor / Jefe de Área).
     - Si no: avisa antes de salir de la página con cambios sin guardar.
+    No se muestra quién lo creó ni quién lo modificó: en un bioensayo pueden trabajar varios
+    analistas, cuyos nombres se anotan en el campo "Analista" de la planilla.
 --}}
 @php $locked = $bioassay->isLocked(); @endphp
 
 <div class="container d-print-none mb-3">
-    <p class="small text-muted mb-2">
-        <i class="bi bi-clock-history me-1"></i>
-        Creado por {{ optional($bioassay->creator)->name ?? 'el sistema' }} el {{ $bioassay->created_at->format('d/m/Y H:i') }}
-        @if ($bioassay->editor)
-            · Última modificación: {{ $bioassay->editor->name }}, {{ $bioassay->updated_at->format('d/m/Y H:i') }}
-        @endif
-        @if ($locked)
-            · Validado por {{ optional($bioassay->validator)->name ?? '—' }} el {{ $bioassay->validated_at->format('d/m/Y H:i') }}
-        @endif
-    </p>
-
     @if ($locked)
         <div class="alert alert-secondary d-flex flex-wrap align-items-center justify-content-between gap-3 mb-0" role="status">
             <span>
                 <i class="bi bi-lock-fill me-1"></i>
-                <strong>Bioensayo validado: solo lectura.</strong>
+                <strong>Bioensayo validado por {{ optional($bioassay->validator)->name ?? '—' }}
+                    el {{ $bioassay->validated_at->format('d/m/Y H:i') }}: solo lectura.</strong>
                 Para corregir un dato, un Supervisor o Jefe de Área debe reabrirlo.
             </span>
             @can('reopen', $bioassay)
