@@ -174,6 +174,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\LarvasApiServiceProvider::class, // Integración con API_larvas (Arbacia)
 
     ],
 

@@ -379,6 +379,9 @@
             @method('PATCH')
         </form>
     @endif
+
+    {{-- Análisis de imágenes con API_larvas (fuera del formulario de la planilla; solo si está en larvas_api.enabled_sections) --}}
+    @includeWhen(\App\Models\ImageAnalysis::sectionEnabled('arbacia-fertilization'), 'bioassays.arbacia._analyses_panel', ['bioassay' => $arbacia_fertilization, 'section' => 'arbacia-fertilization'])
 </div>
 @endsection
 

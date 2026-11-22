@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArbaciaFertilizationController;
+use App\Http\Controllers\ArbaciaImageAnalysisController;
 use App\Http\Controllers\ArbaciaLarvalStageController;
 use App\Http\Controllers\BioassayController;
 use App\Http\Controllers\DaphniaMagnaTemplateController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\TisbeLongicornisRilesController;
 use App\Http\Controllers\TisbeLongicornisWaterController;
 use App\Http\Controllers\TrashController;
 use App\Http\Controllers\UserController;
+use App\Models\ImageAnalysis;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -112,5 +114,19 @@ Route::middleware(['auth', 'active'])->group(function () {
             ->parameters(['arbacia-larval-stage' => 'arbacia_larval_stage'])->except('index');
         Route::patch('arbacia-larval-stage/{arbacia_larval_stage}/validate', [ArbaciaLarvalStageController::class, 'validateBioassay'])
             ->name('arbacia-larval-stage.validate');
+
+        // Análisis de imágenes con API_larvas (solo las 2 planillas de Arbacia): subir, ver, reemplazar y anular fotos
+        foreach (array_keys(ImageAnalysis::SECTIONS) as $section) {
+            Route::post("$section/{bioassay}/analisis", [ArbaciaImageAnalysisController::class, 'store'])
+                ->where('bioassay', '[0-9]+')->name("$section.analyses.store")->defaults('tipo', $section);
+            Route::get("$section/analisis/{analysis}", [ArbaciaImageAnalysisController::class, 'show'])
+                ->name("$section.analyses.show")->defaults('tipo', $section);
+            Route::get("$section/analisis/{analysis}/imagen", [ArbaciaImageAnalysisController::class, 'image'])
+                ->name("$section.analyses.image")->defaults('tipo', $section);
+            Route::post("$section/analisis/{analysis}/reemplazar", [ArbaciaImageAnalysisController::class, 'supersede'])
+                ->name("$section.analyses.supersede")->defaults('tipo', $section);
+            Route::patch("$section/analisis/{analysis}/anular", [ArbaciaImageAnalysisController::class, 'void'])
+                ->name("$section.analyses.void")->defaults('tipo', $section);
+        }
     });
 });

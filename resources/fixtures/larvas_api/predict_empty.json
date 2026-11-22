@@ -1,0 +1,45 @@
+{
+    "status": "success",
+    "api_version": "0.3.0",
+    "request_id": "0000000000000000000000000051de03",
+    "timestamp_utc": "2026-11-12T15:00:00.000000Z",
+    "model_info": {
+        "model_file": "larvas_v1_yolo11n_seg_640.onnx",
+        "model_sha256": "7e04090e5bfaba158bd9f5a2a01c0ae0981a029dc6c5fcae09306c8b4a3ac3c7",
+        "architecture": "yolo11n-seg",
+        "runtime": "onnxruntime-cpu",
+        "input_size": 640,
+        "num_classes": 2,
+        "available_classes": {
+            "0": "pluteus",
+            "1": "otro"
+        }
+    },
+    "params": {
+        "conf": 0.8,
+        "iou": 0.5,
+        "imgsz": 640,
+        "um_per_px": null
+    },
+    "image_metadata": {
+        "width": 1280,
+        "height": 1024,
+        "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "inference_time_ms": 351.2,
+    "summary": {
+        "total_instances": 0,
+        "complete_instances": 0,
+        "border_touching_instances": 0,
+        "counts_by_class": {
+            "pluteus": 0,
+            "otro": 0
+        },
+        "complete_counts_by_class": {
+            "pluteus": 0,
+            "otro": 0
+        }
+    },
+    "instances": [],
+    "annotated_image_base64": null
+}
