@@ -91,12 +91,12 @@ class ImageAnalysis extends Model
 
     public function analyzable()
     {
-        return $this->morphTo()->withTrashed();
+        return $this->morphTo();
     }
 
     public function sampleEntry()
     {
-        return $this->belongsTo(SampleEntry::class)->withTrashed();
+        return $this->belongsTo(SampleEntry::class);
     }
 
     public function performer()
@@ -155,6 +155,32 @@ class ImageAnalysis extends Model
     public static function nextPhotoNumber(Model $bioassay, string $rowKey, int $replica): int
     {
         return (int) self::forBioassay($bioassay)->where('row_key', $rowKey)->where('replica', $replica)->max('photo_number') + 1;
+    }
+
+    // ===== Bloqueo de eliminación =====
+    // Un bioensayo o un ingreso de muestra con análisis no se elimina. Cuentan todos los registros
+    // (vigentes, fallidos, reemplazados y anulados), porque ninguno se borra nunca.
+
+    public const DELETE_BLOCKED_MESSAGE = 'No se puede eliminar: tiene fotografías analizadas con IA, que se conservan siempre (NCh-ISO/IEC 17025).';
+
+    public static function existsForBioassay(Model $bioassay): bool
+    {
+        return self::forBioassay($bioassay)->exists();
+    }
+
+    public static function existsForSampleEntry(SampleEntry $sampleEntry): bool
+    {
+        return self::where(function ($query) use ($sampleEntry) {
+            $query->where('sample_entry_id', $sampleEntry->getKey());
+
+            // También los análisis de sus bioensayos de Arbacia, aunque no tengan sample_entry_id
+            foreach (self::SECTIONS as $config) {
+                $ids = $config['model']::where('sample_entry_id', $sampleEntry->getKey())->pluck('id');
+                if ($ids->isNotEmpty()) {
+                    $query->orWhere(fn ($q) => $q->where('analyzable_type', $config['model'])->whereIn('analyzable_id', $ids));
+                }
+            }
+        })->exists();
     }
 
     // ===== Estado =====

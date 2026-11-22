@@ -109,6 +109,9 @@ class ArbaciaFertilizationController extends Controller
     public function destroy(ArbaciaFertilization $arbacia_fertilization)
     {
         $this->authorize('delete', $arbacia_fertilization);
+        if (\App\Models\ImageAnalysis::existsForBioassay($arbacia_fertilization)) {
+            return back()->with('error', \App\Models\ImageAnalysis::DELETE_BLOCKED_MESSAGE);
+        }
 
         $sampleEntry = $arbacia_fertilization->sampleEntry;
 

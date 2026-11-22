@@ -8,6 +8,8 @@ use App\Models\Equipment;
 use App\Models\ImageAnalysis;
 use App\Models\OpticalCalibration;
 use App\Models\OpticalConfiguration;
+use App\Models\SampleEntry;
+use App\Models\Template;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request as PsrRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -533,6 +535,90 @@ class ArbaciaImageAnalysisTest extends TestCase
                   'tisbe-longicornis-water', 'tisbe-longicornis-riles'] as $section) {
             $this->assertFalse(Route::has("$section.analyses.store"), $section);
         }
+    }
+
+    // ===== Bloqueo de eliminación =====
+
+    private function sampleEntry(): SampleEntry
+    {
+        $template = Template::create(['title' => 'Ingreso de muestra', 'type' => 'sample_entry']);
+
+        return SampleEntry::create(['template_id' => $template->id, 'internal_sample_code' => 'M-ARB-9']);
+    }
+
+    // Intenta eliminar el bioensayo y luego su ingreso: ambos quedan bloqueados, sin error 500, y nada se borra
+    private function assertDeletionBlocked(string $section, $bioassay, SampleEntry $entry): void
+    {
+        $supervisor = $this->userWithRole('Supervisor');
+        $analyses = ImageAnalysis::count();
+
+        $this->actingAs($supervisor)->from(route("$section.edit", $bioassay))
+            ->delete(route("$section.destroy", $bioassay))
+            ->assertRedirect(route("$section.edit", $bioassay))
+            ->assertSessionHas('error', ImageAnalysis::DELETE_BLOCKED_MESSAGE);
+
+        $this->actingAs($supervisor)->from(route('sample_entries.show', $entry))
+            ->delete(route('sample_entries.destroy', $entry))
+            ->assertRedirect(route('sample_entries.show', $entry))
+            ->assertSessionHas('error', ImageAnalysis::DELETE_BLOCKED_MESSAGE);
+
+        $this->assertNotNull($bioassay->fresh());
+        $this->assertNotNull($entry->fresh());
+        $this->assertNotNull($entry->template->fresh());
+        $this->assertSame($analyses, ImageAnalysis::count());
+    }
+
+    public function test_bioassay_and_sample_entry_with_analyses_cannot_be_deleted()
+    {
+        $entry = $this->sampleEntry();
+        $bioassay = ArbaciaLarvalStage::create(['sample' => 'M-ARB-9', 'sample_entry_id' => $entry->id]);
+        $file = $this->photo();
+        Http::fake(['larvas.test/*' => Http::response($this->predictBody($file), 200)]);
+        $this->upload($this->userWithRole('Analist'), $bioassay, $file);
+        $this->assertSame($entry->id, (int) ImageAnalysis::sole()->sample_entry_id);
+
+        $this->assertDeletionBlocked('arbacia-larval-stage', $bioassay, $entry);
+    }
+
+    public function test_deletion_stays_blocked_when_the_only_photo_is_voided_or_failed()
+    {
+        $analist = $this->userWithRole('Analist');
+
+        // La única foto está anulada
+        $entry = $this->sampleEntry();
+        $bioassay = ArbaciaLarvalStage::create(['sample' => 'M-ARB-9', 'sample_entry_id' => $entry->id]);
+        $file = $this->photo();
+        // Http::fake() acumula stubs en Laravel 8: uno solo cuya respuesta cambia en cada paso
+        $next = Http::response($this->predictBody($file), 200);
+        Http::fake(function () use (&$next) {
+            return $next;
+        });
+        $this->upload($analist, $bioassay, $file);
+        $this->actingAs($analist)->patch(route('arbacia-larval-stage.analyses.void', ImageAnalysis::sole()), ['reason' => 'Réplica equivocada']);
+        $this->assertSame(0, ImageAnalysis::current()->count());
+
+        $this->assertDeletionBlocked('arbacia-larval-stage', $bioassay, $entry);
+
+        // La única foto falló (en Fecundación, reactivada para la prueba)
+        config(['larvas_api.enabled_sections' => ['arbacia-larval-stage', 'arbacia-fertilization']]);
+        $other = SampleEntry::create(['template_id' => Template::create(['title' => 'Otro ingreso', 'type' => 'sample_entry'])->id]);
+        $fertilization = ArbaciaFertilization::create(['sample' => 'M-ARB-10', 'sample_entry_id' => $other->id]);
+        $next = Http::response($this->fixtureRaw('error_503'), 503);
+        $this->upload($analist, $fertilization, $this->photo(), ['row_key' => '1', 'replica' => 1], 'arbacia-fertilization');
+        $failed = ImageAnalysis::latest('id')->first();
+        $this->assertSame([ImageAnalysis::STATUS_FAILED, 'api_model_not_loaded'], [$failed->status, $failed->error_code]);
+
+        $this->assertDeletionBlocked('arbacia-fertilization', $fertilization, $other);
+    }
+
+    public function test_bioassay_without_analyses_can_still_be_deleted()
+    {
+        $entry = $this->sampleEntry();
+        $bioassay = ArbaciaLarvalStage::create(['sample' => 'M-ARB-9', 'sample_entry_id' => $entry->id]);
+
+        $this->actingAs($this->userWithRole('Supervisor'))->delete(route('arbacia-larval-stage.destroy', $bioassay))
+            ->assertSessionHas('success');
+        $this->assertNull($bioassay->fresh());
     }
 
     // ===== Comando de equipos =====

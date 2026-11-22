@@ -176,6 +176,9 @@ class SampleEntryController extends Controller
         if ($sampleEntry->hasValidatedBioassays()) {
             return back()->with('error', 'No se puede eliminar: la muestra tiene bioensayos validados. Primero hay que reabrirlos.');
         }
+        if (\App\Models\ImageAnalysis::existsForSampleEntry($sampleEntry)) {
+            return back()->with('error', \App\Models\ImageAnalysis::DELETE_BLOCKED_MESSAGE);
+        }
 
         // Primero sus bioensayos (no se deja a la cascada de la base de datos, que no todas aplican)
         // y después su plantilla, que borra en cascada el ingreso

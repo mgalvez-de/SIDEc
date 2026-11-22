@@ -113,6 +113,9 @@ class ArbaciaLarvalStageController extends Controller
     public function destroy(ArbaciaLarvalStage $arbacia_larval_stage)
     {
         $this->authorize('delete', $arbacia_larval_stage);
+        if (\App\Models\ImageAnalysis::existsForBioassay($arbacia_larval_stage)) {
+            return back()->with('error', \App\Models\ImageAnalysis::DELETE_BLOCKED_MESSAGE);
+        }
 
         $sampleEntry = $arbacia_larval_stage->sampleEntry;
 
