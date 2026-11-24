@@ -1,107 +1,129 @@
-# Subir una versión nueva de SIDEc al servidor
+# SIDEc en el servidor: instalar y actualizar
 
-Servidor: `servidor2` · `http://10.105.0.47` · SIDEc corre en Docker (`sidec-app-1` y `sidec-db-1`).
+Servidor: `servidor2` · `10.105.0.47` · SIDEc se abre en **http://10.105.0.47:8081** (solo desde la red de la U).
 
-Los comandos van en el servidor, salvo el paso 1. Donde dice `CARPETA`, es la carpeta del despliegue de SIDEc (paso 2).
+SIDEc corre en Docker con dos contenedores: `sidec-app-1` (la aplicación) y `sidec-db-1` (la base de datos MariaDB).
+Todo se arma con los archivos `Dockerfile` y `compose.yaml` de este repositorio.
 
-## 1. En el PC: dejar el código en GitHub
+---
+
+## A. Primera instalación (servidor nuevo)
+
+Requisitos: el servidor ya tiene Docker, Docker Compose y Git, y tu usuario está en el grupo `docker`.
+
+### 1. Bajar el código
 
 ```bash
-php artisan test          # deben pasar todos
+cd ~
+git clone https://github.com/mgalvez-de/SIDEc.git sidec
+cd sidec
+```
+
+Si el repositorio es privado, GitHub pide usuario y un **token** en vez de contraseña
+(GitHub → Settings → Developer settings → Personal access tokens, con permiso de solo lectura sobre el repositorio).
+
+### 2. Crear la configuración (estos dos archivos NO se suben a GitHub)
+
+```bash
+cp deploy/db.env.example db.env
+cp deploy/production.env.example production.env
+nano db.env              # inventar dos contraseñas largas
+nano production.env      # DB_PASSWORD igual a MARIADB_PASSWORD de db.env
+chmod 600 db.env production.env
+```
+
+### 3. Construir la imagen y generar la clave de la aplicación
+
+```bash
+docker compose build
+docker compose run --rm --no-deps app php artisan key:generate --show
+```
+
+Copiar lo que imprime (empieza con `base64:`) y pegarlo en `production.env` después de `APP_KEY=`.
+
+### 4. Levantar y crear las tablas
+
+```bash
+docker compose up -d
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan db:seed --force      # crea los 4 roles (en producción no crea cuentas de prueba)
+```
+
+### 5. Crear la primera cuenta (Jefe de Área)
+
+```bash
+docker compose exec app php artisan sidec:crear-admin
+```
+
+Pide nombre, correo y contraseña. Con esa cuenta se crean las demás desde la pantalla **Usuarios**.
+
+### 6. Comprobar
+
+```bash
+docker compose ps                  # los dos contenedores "Up", la base de datos "(healthy)"
+curl -I http://localhost:8081      # 302 Found hacia /login
+```
+
+Desde un PC conectado a la red de la U: abrir `http://10.105.0.47:8081` e iniciar sesión.
+
+### 7. Respaldo automático diario (una sola vez)
+
+```bash
+mkdir -p ~/sidec-respaldos
+cp deploy/respaldo.sh ~/sidec-respaldos/
+chmod +x ~/sidec-respaldos/respaldo.sh
+CARPETA=~/sidec-respaldos ~/sidec-respaldos/respaldo.sh     # probarlo a mano
+crontab -e
+```
+
+Y agregar esta línea (respaldo todos los días a las 02:00; cambiar `servidor` si el usuario es otro):
+
+```
+0 2 * * * CARPETA=/home/servidor/sidec-respaldos /home/servidor/sidec-respaldos/respaldo.sh >> /home/servidor/sidec-respaldos/respaldo.log 2>&1
+```
+
+---
+
+## B. Actualizar a una versión nueva
+
+### 1. En el PC: dejar el código en GitHub
+
+```bash
+php artisan test          # deben pasar todas
 git add -A
 git commit -m "..."
 git push
 ```
 
-## 2. En el servidor: ubicar el despliegue
+### 2. En el servidor: respaldar, actualizar y migrar
 
 ```bash
-sudo docker compose ls
+cd ~/sidec
+CARPETA=~/sidec-respaldos ~/sidec-respaldos/respaldo.sh   # respaldo ANTES de tocar nada
+git pull
+docker compose up -d --build
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan optimize:clear
 ```
 
-La columna CONFIG FILES muestra la carpeta del proyecto `sidec`. Entrar a ella y mirar cómo llega el código (un `git pull`, un `code.tgz` o un `deploy.sh`):
-
-```bash
-cd CARPETA
-ls
-```
-
-## 3. Respaldar ANTES de tocar nada
-
-```bash
-sudo docker exec sidec-db-1 sh -c 'mariadb-dump --single-transaction -u root -p"$MARIADB_ROOT_PASSWORD" "$MARIADB_DATABASE"' > antes-de-actualizar-$(date +%F).sql
-ls -lh antes-de-actualizar-*.sql      # debe pesar más de 0
-```
-
-## 4. Actualizar el código y reconstruir
-
-Según lo que se vio en el paso 2 (traer el código nuevo), y después:
-
-```bash
-sudo docker compose up -d --build
-sudo docker compose ps                # los dos contenedores "Up (healthy)"
-```
-
-## 5. Migrar la base de datos
-
-Esta versión agrega la columna "última modificación" (`updated_by`). Sin este paso las páginas dan error 500.
-
-```bash
-sudo docker compose exec app php artisan migrate --force
-sudo docker compose exec app php artisan optimize:clear
-```
-
-## 6. Revisar la configuración
-
-```bash
-grep -E "^APP_(ENV|DEBUG|URL)=" production.env
-```
-
-Debe decir `APP_ENV=production`, `APP_DEBUG=false` y `APP_URL=http://10.105.0.47`.
-Si se edita el archivo: después `sudo chgrp 33 production.env` y `sudo docker compose up -d`.
-
-## 7. Comprobar
-
-```bash
-curl -I http://localhost              # 302 Found hacia /login
-```
-
-Y desde un PC de la red de la U: abrir `http://10.105.0.47`, iniciar sesión y revisar Bioensayos y "Cambiar mi contraseña".
+Los datos no se pierden al actualizar: la base de datos y los archivos viven en volúmenes aparte.
 
 ---
 
-## Solo una vez: dejar la base lista para la marcha blanca
+## Si algo falla
 
-Hacerlo DESPUÉS de la capacitación (los datos de demostración sirven para practicar).
+| Lo que pasa | Qué hacer |
+|---|---|
+| Error 500 en la página | Ver el registro: `docker compose exec app tail -n 50 storage/logs/laravel.log` |
+| `No application encryption key` | Falta `APP_KEY` en `production.env` (paso A.3) y luego `docker compose up -d` |
+| Cambié `production.env` y no pasa nada | `restart` no relee el archivo: usar `docker compose up -d` |
+| `SQLSTATE ... Connection refused` | Revisar `DB_HOST=db` y que la contraseña sea igual en `production.env` y `db.env` |
+| No abre desde mi PC | Estar en la red de la U, y que `docker compose ps` muestre el puerto 8081 |
 
-**a) Crear la cuenta real de Jefe de Área** (pide nombre, correo y contraseña):
+**Nunca usar `docker compose down -v`**: la `-v` borra la base de datos para siempre.
 
-```bash
-sudo docker compose exec app php artisan sidec:crear-admin
-```
-
-**b) Entrar con esa cuenta** y crear las demás desde la pantalla Usuarios.
-
-**c) Borrar las cuentas de prueba y las muestras de demostración.** Primero el respaldo del paso 3. Después:
-
-```bash
-sudo docker compose exec app php artisan tinker
-```
-
-```php
-App\Models\User::whereIn('email', ['analist@a','supervisor@a','manager@a','areamanager@a'])->get()->each->delete();
-App\Models\User::pluck('email');      // deben quedar solo las cuentas reales
-```
-
-Las muestras de demostración (M-2026-001 a 014) se borran con cuidado y con el respaldo hecho: pedir los comandos exactos antes de hacerlo.
-
-## Solo una vez: respaldo automático diario
+Restaurar un respaldo (reemplaza los datos actuales):
 
 ```bash
-mkdir -p /home/servidor/sidec-respaldos
-cp deploy/respaldo.sh /home/servidor/sidec-respaldos/       # o copiar el archivo desde el repositorio
-chmod +x /home/servidor/sidec-respaldos/respaldo.sh
-sudo /home/servidor/sidec-respaldos/respaldo.sh             # probarlo a mano
-sudo crontab -e                                              # y agregar:
-# 0 2 * * * /home/servidor/sidec-respaldos/respaldo.sh >> /home/servidor/sidec-respaldos/respaldo.log 2>&1
+gunzip -c ~/sidec-respaldos/sidec-AAAA-MM-DD_HHMM.sql.gz | docker exec -i sidec-db-1 sh -c 'mariadb -u root -p"$MARIADB_ROOT_PASSWORD" "$MARIADB_DATABASE"'
 ```

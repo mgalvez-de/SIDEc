@@ -1,0 +1,35 @@
+# SIDEc en el servidor: la aplicación (app) y su base de datos (db).
+# Se abre en http://10.105.0.47:8081
+name: sidec
+services:
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    env_file: db.env
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  app:
+    build: .
+    image: sidec:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: production.env
+    ports:
+      - "8081:80"
+    volumes:
+      - storage:/var/www/html/storage
+    environment:
+      TZ: America/Santiago
+
+volumes:
+  database:
+  storage:
