@@ -80,6 +80,19 @@ class SampleEntryTest extends TestCase
         );
     }
 
+    public function test_the_database_rejects_a_repeated_internal_sample_code()
+    {
+        $nueva = fn () => ReceptionTemplate::create([
+            'template_id' => Template::create(['title' => 'Recepción', 'type' => 'reception'])->id,
+            'internal_sample_code' => 'M-300',
+        ]);
+
+        $nueva();
+
+        $this->expectException(\Illuminate\Database\QueryException::class);
+        $nueva();
+    }
+
     public function test_the_same_sample_cannot_be_entered_twice()
     {
         ReceptionTemplate::create([
