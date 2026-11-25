@@ -25,6 +25,10 @@ return [
     // Para reactivarla cuando exista un modelo, agregar 'arbacia-fertilization'.
     'enabled_sections' => ['arbacia-larval-stage'],
 
+    // Individuos que se cuentan por réplica. Una réplica acepta fotos hasta llegar a esta cifra; la foto que
+    // la supera se conserva entera (la réplica queda con el conteo real, ej. 116).
+    'replica_target' => 100,
+
     // Dónde se guardan las fotografías originales (disco privado, nunca se borran)
     'disk' => 'local',
     'directory' => 'arbacia/analyses',

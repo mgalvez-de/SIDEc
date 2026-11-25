@@ -10,6 +10,7 @@ use App\Models\OpticalCalibration;
 use App\Models\OpticalConfiguration;
 use App\Models\SampleEntry;
 use App\Models\Template;
+use App\Services\LarvasApi\LarvasApiException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request as PsrRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +25,7 @@ use Tests\TestCase;
 /**
  * Análisis de imágenes de Arbacia con API_larvas.
  * La API se simula con Http::fake() y los fixtures de resources/fixtures/larvas_api.
- * Ningún test supone un número fijo de fotos por réplica.
+ * Con predict_mixed cada foto tiene 13 pluteus + 16 otro = 29 individuos.
  */
 class ArbaciaImageAnalysisTest extends TestCase
 {
@@ -32,6 +33,7 @@ class ArbaciaImageAnalysisTest extends TestCase
 
     private $microscope;
     private $camera;
+    private $photos = 0;
 
     protected function setUp(): void
     {
@@ -54,9 +56,10 @@ class ArbaciaImageAnalysisTest extends TestCase
         return ArbaciaLarvalStage::create(['sample' => 'M-ARB-1', 'matrix' => 'Agua de mar']);
     }
 
+    // Cada foto es distinta (otro ancho, otro SHA-256): las fotos vigentes repetidas se rechazan
     private function photo(string $name = 'foto.jpg'): UploadedFile
     {
-        return UploadedFile::fake()->image($name, 640, 512);
+        return UploadedFile::fake()->image($name, 640 + $this->photos++, 512);
     }
 
     // Fixtures con el formato real de la API (resources/fixtures/larvas_api)
@@ -145,19 +148,305 @@ class ArbaciaImageAnalysisTest extends TestCase
             && $request->hasHeader('X-API-Key', 'clave-de-prueba'));
     }
 
-    public function test_a_replica_accepts_any_number_of_photos()
+    // ===== Conteos por réplica y planilla =====
+
+    // Respuesta exitosa (predict_mixed) con el hash de la foto que llega en cada petición
+    private function fakeApi(): void
+    {
+        Http::fake(fn ($request) => $this->predictResponse($request));
+    }
+
+    private function predictResponse($request)
+    {
+        $contents = collect($request->data())->firstWhere('name', 'file')['contents'];
+        $data = $this->fixture('predict_mixed');
+        $data['image_metadata']['image_sha256'] = hash('sha256', is_resource($contents) ? stream_get_contents($contents, -1, 0) : (string) $contents);
+
+        return Http::response(json_encode($data), 200);
+    }
+
+    // La API responde bien hasta que $fail pasa a true (503)
+    private function fakeApiThatCanFail(bool &$fail): void
+    {
+        Http::fake(function ($request) use (&$fail) {
+            return $fail ? Http::response($this->fixtureRaw('error_503'), 503) : $this->predictResponse($request);
+        });
+    }
+
+    private function uploadJson($user, $bioassay, array $overrides = [], string $section = 'arbacia-larval-stage', ?UploadedFile $file = null)
+    {
+        return $this->actingAs($user)->post(
+            route("$section.analyses.store", $bioassay),
+            $this->fields($overrides) + ['image' => $file ?: $this->photo()],
+            ['Accept' => 'application/json']
+        );
+    }
+
+    public function test_json_upload_returns_photo_and_replica_counts_and_fills_the_sheet()
     {
         $analist = $this->userWithRole('Analist');
         $bioassay = $this->larval();
+        $this->fakeApi();
 
-        foreach (range(1, 5) as $i) {
-            $file = $this->photo("foto{$i}.jpg");
-            Http::fake(['larvas.test/*' => Http::response($this->predictBody($file), 200)]);
-            $this->upload($analist, $bioassay, $file, ['row_key' => 'control', 'replica' => 1])->assertSessionHasNoErrors();
+        $response = $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1])->assertCreated();
+
+        $analysis = ImageAnalysis::sole();
+        $response->assertJson([
+            'status' => 'completed',
+            'warning' => null,
+            'analysis' => [
+                'uuid' => $analysis->uuid, 'photo_number' => 1, 'status' => 'completed', 'error_code' => null, 'error_message' => null,
+                'larva' => 13, 'total' => 29, 'url' => route('arbacia-larval-stage.analyses.show', $analysis),
+            ],
+            'replica' => [
+                'row_key' => 'control', 'replica' => 1, 'larva' => 13, 'total' => 29, 'percent' => 44.83,
+                'target' => 100, 'complete' => false, 'photos' => 1,
+            ],
+        ]);
+
+        $bioassay->refresh();
+        $this->assertSame([13, 29, 44.83], [$bioassay->control_data['r1_larva'], $bioassay->control_data['r1_total'], $bioassay->control_data['r1_percent']]);
+        $this->assertSame($analist->id, (int) $bioassay->updated_by);
+
+        // El panel embebe los totales y muestra el avance de la réplica
+        $this->actingAs($analist)->get(route('arbacia-larval-stage.edit', $bioassay))
+            ->assertOk()
+            ->assertSee('Larva/Total: 13 / 29')
+            ->assertSee('Avance: 29 de 100 individuos')
+            ->assertSee('"control|1":', false);
+    }
+
+    public function test_photos_add_up_and_fill_control_and_numeric_rows_with_average_and_inhibition()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $bioassay->update([
+            'control_data' => ['r2_larva' => 4517, 'r2_total' => 10000, 'r2_percent' => 45.17],
+            'rows_data' => ['1' => ['concentration' => '6.25%', 'ce' => 'x']],
+        ]);
+        $this->fakeApi();
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1]);
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1])
+            ->assertJson(['replica' => ['larva' => 26, 'total' => 58, 'percent' => 44.83, 'photos' => 2]]);
+        $this->uploadJson($analist, $bioassay, ['row_key' => '1', 'replica' => 1]);
+
+        $bioassay->refresh();
+        $control = $bioassay->control_data;
+        $this->assertSame([26, 58, 44.83], [$control['r1_larva'], $control['r1_total'], $control['r1_percent']]);
+        $this->assertSame([4517, 10000, 45.17], [$control['r2_larva'], $control['r2_total'], $control['r2_percent']]); // manual, intacta
+        $this->assertEquals(45.0, $control['larval_pluteus_avg']);
+        $this->assertEquals(45.0, $control['total_larva_percent']);
+
+        $row = $bioassay->rows_data['1'];
+        $this->assertSame([13, 29, 44.83], [$row['r1_larva'], $row['r1_total'], $row['r1_percent']]);
+        $this->assertEquals(44.83, $row['larval_pluteus_percent']);
+        $this->assertEquals(0.38, $row['inhibition_percent']); // (45 − 44.83) / 45 × 100
+        $this->assertSame(['6.25%', 'x'], [$row['concentration'], $row['ce']]);
+        $this->assertSame([1], array_keys($bioassay->rows_data)); // no crea filas vacías
+    }
+
+    public function test_a_replica_accepts_photos_until_it_reaches_the_target()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $this->fakeApi();
+
+        foreach (range(1, 4) as $i) {
+            $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1])->assertCreated();
         }
 
-        $this->assertSame([1, 2, 3, 4, 5], ImageAnalysis::orderBy('id')->pluck('photo_number')->map(fn ($n) => (int) $n)->all());
-        $this->assertSame(5, ImageAnalysis::current()->where('row_key', 'control')->where('replica', 1)->count());
+        // La 4ª foto pasa de 100: se conserva el total real
+        $this->assertSame([52, 116], [$bioassay->fresh()->control_data['r1_larva'], $bioassay->fresh()->control_data['r1_total']]);
+
+        // La 5ª se rechaza sin guardar la imagen ni llamar a la API
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1])
+            ->assertStatus(422)
+            ->assertJsonPath('errors.replica.0', 'La réplica ya llegó a 100 individuos (116). Para cambiar una foto, reemplázala o anúlala.');
+        $this->assertSame(4, ImageAnalysis::count());
+        $this->assertCount(4, Storage::disk('local')->allFiles('arbacia/analyses'));
+        Http::assertSentCount(4);
+
+        // Sin JS (formulario normal) también se rechaza; otra réplica sigue aceptando fotos
+        $this->upload($analist, $bioassay, $this->photo(), ['row_key' => 'control', 'replica' => 1])->assertSessionHasErrors('replica');
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 2])->assertCreated();
+        Http::assertSentCount(5);
+    }
+
+    public function test_a_failed_photo_does_not_count()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $fail = false;
+        $this->fakeApiThatCanFail($fail);
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1]);
+        $fail = true;
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1])
+            ->assertCreated()
+            ->assertJson([
+                'status' => 'failed',
+                'analysis' => [
+                    'status' => 'failed', 'error_code' => 'api_model_not_loaded', 'larva' => null, 'total' => null,
+                    'error_message' => LarvasApiException::MESSAGES['api_model_not_loaded'],
+                ],
+                'replica' => ['larva' => 13, 'total' => 29, 'photos' => 1],
+            ]);
+
+        $this->assertSame([13, 29], [$bioassay->fresh()->control_data['r1_larva'], $bioassay->fresh()->control_data['r1_total']]);
+    }
+
+    public function test_void_and_supersede_recalculate_and_voiding_all_photos_empties_only_that_replica()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $bioassay->update(['control_data' => ['r2_larva' => 40, 'r2_total' => 80, 'r2_percent' => 50]]);
+        $this->fakeApi();
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1]);
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1]);
+        [$first, $second] = ImageAnalysis::orderBy('id')->get();
+
+        // Reemplazar: la réplica sigue con 2 fotos vigentes
+        $this->actingAs($analist)->post(route('arbacia-larval-stage.analyses.supersede', $first), $this->fields() + [
+            'image' => $this->photo(), 'reason' => 'Foto desenfocada',
+        ])->assertSessionHas('success');
+        $this->assertSame([26, 58], [$bioassay->fresh()->control_data['r1_larva'], $bioassay->fresh()->control_data['r1_total']]);
+
+        // Anular: queda 1
+        $this->actingAs($analist)->patch(route('arbacia-larval-stage.analyses.void', $second), ['reason' => 'Réplica equivocada']);
+        $this->assertSame([13, 29], [$bioassay->fresh()->control_data['r1_larva'], $bioassay->fresh()->control_data['r1_total']]);
+
+        // Anular la última: la réplica queda vacía y la manual no cambia
+        $this->actingAs($analist)->patch(route('arbacia-larval-stage.analyses.void', ImageAnalysis::current()->sole()), ['reason' => 'Réplica equivocada']);
+        $control = $bioassay->fresh()->control_data;
+        $this->assertSame([null, null, null], [$control['r1_larva'], $control['r1_total'], $control['r1_percent']]);
+        $this->assertSame([40, 80, 50], [$control['r2_larva'], $control['r2_total'], $control['r2_percent']]);
+        $this->assertEquals(50, $control['larval_pluteus_avg']);
+    }
+
+    public function test_saving_the_sheet_keeps_the_ai_counts_and_manual_replicas_as_sent()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $this->fakeApi();
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1]);
+        $this->uploadJson($analist, $bioassay, ['row_key' => '2', 'replica' => 3]);
+
+        $this->actingAs($analist)->put(route('arbacia-larval-stage.update', $bioassay), [
+            'sample' => 'M-ARB-1',
+            'control' => ['r1_larva' => '99', 'r1_total' => '100', 'r1_percent' => '99.00', 'r2_larva' => '4517', 'r2_total' => '10000', 'r2_percent' => '45.17'],
+            'rows' => ['2' => ['concentration' => '12.5%', 'r3_larva' => '1', 'r3_total' => '1', 'r4_larva' => '5517', 'r4_total' => '10000']],
+        ])->assertSessionHasNoErrors();
+
+        $bioassay->refresh();
+        $control = $bioassay->control_data;
+        $this->assertSame([13, 29, 44.83], [$control['r1_larva'], $control['r1_total'], $control['r1_percent']]);
+        $this->assertSame(['4517', '10000', '45.17'], [$control['r2_larva'], $control['r2_total'], $control['r2_percent']]);
+        $this->assertEquals(45.0, $control['larval_pluteus_avg']); // (44.83 + 45.17) / 2
+
+        $row = $bioassay->rows_data['2'];
+        $this->assertSame([13, 29, 44.83], [$row['r3_larva'], $row['r3_total'], $row['r3_percent']]);
+        $this->assertSame(['12.5%', '5517', '10000'], [$row['concentration'], $row['r4_larva'], $row['r4_total']]);
+        $this->assertEquals(50.0, $row['larval_pluteus_percent']); // (44.83 + 55.17) / 2
+        $this->assertEquals(-11.11, $row['inhibition_percent']); // (45 − 50) / 45 × 100
+    }
+
+    public function test_validated_bioassay_rejects_json_uploads_without_touching_the_sheet()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $bioassay->update(['validated_by' => $this->userWithRole('Manager')->id, 'validated_at' => now()]);
+        Http::fake();
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1])->assertForbidden();
+
+        $this->assertSame(0, ImageAnalysis::count());
+        $this->assertNull($bioassay->fresh()->control_data);
+        Http::assertNothingSent();
+    }
+
+    public function test_fertilization_json_upload_is_still_not_found()
+    {
+        $bioassay = ArbaciaFertilization::create(['sample' => 'M-ARB-2']);
+        Http::fake();
+
+        $this->uploadJson($this->userWithRole('Analist'), $bioassay, ['row_key' => '1', 'replica' => 1], 'arbacia-fertilization')->assertNotFound();
+
+        $this->assertSame(0, ImageAnalysis::count());
+        Http::assertNothingSent();
+    }
+
+    // ===== Fotos repetidas =====
+
+    public function test_a_current_photo_cannot_be_uploaded_again_in_the_same_bioassay()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $file = $this->photo();
+        $this->fakeApi();
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => '3', 'replica' => 2], 'arbacia-larval-stage', $file)->assertCreated();
+
+        // Misma foto en otra réplica (con JSON y sin JS)
+        $this->uploadJson($analist, $bioassay, ['row_key' => 'control', 'replica' => 1], 'arbacia-larval-stage', $file)
+            ->assertStatus(422)
+            ->assertJsonPath('errors.image.0', 'Esta foto ya está analizada en Fila 3, réplica 2, foto 1.');
+        $this->upload($analist, $bioassay, $file, ['row_key' => 'control', 'replica' => 1])->assertSessionHasErrors('image');
+
+        // Tampoco sirve como reemplazo
+        $this->actingAs($analist)->post(route('arbacia-larval-stage.analyses.supersede', ImageAnalysis::sole()), $this->fields() + [
+            'image' => $file, 'reason' => 'Foto desenfocada',
+        ])->assertSessionHasErrors('image');
+
+        $this->assertSame(1, ImageAnalysis::count());
+        $this->assertCount(1, Storage::disk('local')->allFiles('arbacia/analyses'));
+        Http::assertSentCount(1);
+    }
+
+    public function test_a_failed_photo_can_be_uploaded_again()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $file = $this->photo();
+        $fail = true;
+        $this->fakeApiThatCanFail($fail);
+
+        $this->uploadJson($analist, $bioassay, [], 'arbacia-larval-stage', $file)->assertJsonPath('status', 'failed');
+        $fail = false;
+        $this->uploadJson($analist, $bioassay, [], 'arbacia-larval-stage', $file)->assertJsonPath('status', 'completed');
+
+        $this->assertSame(2, ImageAnalysis::where('image_sha256', hash_file('sha256', $file->getRealPath()))->count());
+        $this->assertSame(1, ImageAnalysis::current()->count());
+    }
+
+    public function test_a_voided_photo_can_be_uploaded_again()
+    {
+        $analist = $this->userWithRole('Analist');
+        $bioassay = $this->larval();
+        $file = $this->photo();
+        $this->fakeApi();
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => '3', 'replica' => 2], 'arbacia-larval-stage', $file);
+        $this->actingAs($analist)->patch(route('arbacia-larval-stage.analyses.void', ImageAnalysis::sole()), ['reason' => 'Réplica equivocada']);
+
+        $this->uploadJson($analist, $bioassay, ['row_key' => '3', 'replica' => 1], 'arbacia-larval-stage', $file)->assertCreated();
+
+        $current = ImageAnalysis::current()->sole();
+        $this->assertSame(['3', 1], [$current->row_key, (int) $current->replica]);
+    }
+
+    public function test_the_same_photo_is_accepted_in_another_bioassay()
+    {
+        $analist = $this->userWithRole('Analist');
+        $file = $this->photo();
+        $this->fakeApi();
+
+        $this->uploadJson($analist, $this->larval(), [], 'arbacia-larval-stage', $file)->assertCreated();
+        $this->uploadJson($analist, $this->larval(), [], 'arbacia-larval-stage', $file)->assertCreated();
+
+        $this->assertSame(2, ImageAnalysis::current()->count());
     }
 
     public function test_fertilization_sheet_is_disabled_until_there_is_a_model_but_keeps_its_rows_and_replicas()

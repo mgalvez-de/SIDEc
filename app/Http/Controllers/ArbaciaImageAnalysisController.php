@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Equipment;
 use App\Models\ImageAnalysis;
 use App\Models\OpticalConfiguration;
+use App\Services\ArbaciaReplicaCounts;
 use App\Services\LarvasApi\LarvasApiClient;
 use App\Services\LarvasApi\LarvasApiException;
 use Illuminate\Database\Eloquent\Model;
@@ -21,20 +22,25 @@ use Illuminate\Validation\ValidationException;
  *
  * Cada foto se guarda en el disco privado, se envía a la API y se registra UNA sola vez en
  * image_analyses, con la respuesta completa o con el error. Reemplazar o anular una foto no
- * borra nada: la anterior queda "superseded" con su motivo. Los resultados no se copian a la
- * planilla: los conteos de la planilla se siguen ingresando a mano.
+ * borra nada: la anterior queda "superseded" con su motivo. Después de cada cambio, la réplica se
+ * recalcula con sus fotos vigentes y el resultado se escribe en la planilla (ArbaciaReplicaCounts).
+ * Una réplica acepta fotos hasta llegar a config('larvas_api.replica_target') individuos.
  */
 class ArbaciaImageAnalysisController extends Controller
 {
     /** @var LarvasApiClient */
     private $client;
 
-    public function __construct(LarvasApiClient $client)
+    /** @var ArbaciaReplicaCounts */
+    private $counts;
+
+    public function __construct(LarvasApiClient $client, ArbaciaReplicaCounts $counts)
     {
         $this->client = $client;
+        $this->counts = $counts;
     }
 
-    // Subir y analizar una foto de una réplica
+    // Subir y analizar una foto de una réplica. El panel envía las fotos de a una y espera JSON.
     public function store(Request $request, $bioassay)
     {
         $section = $this->section($request);
@@ -42,7 +48,27 @@ class ArbaciaImageAnalysisController extends Controller
         $this->authorize('update', $record);
 
         $data = $this->validatePhoto($request, $section, true);
-        [$analysis, $warning] = $this->analyze($request, $record, $data, $data['row_key'], (int) $data['replica']);
+        $rowKey = $data['row_key'];
+        $replicaNumber = (int) $data['replica'];
+        $sha256 = $this->uniquePhotoSha256($request, $section, $record);
+
+        // Si dos personas suben a la misma réplica a la vez, ambas fotos pasan esta revisión y la réplica
+        // puede quedar sobre la meta. Se acepta: el total refleja lo que se contó.
+        $replica = $this->counts->replica($this->counts->totals($record), $rowKey, $replicaNumber);
+        if ($replica['complete']) {
+            throw ValidationException::withMessages([
+                'replica' => "La réplica ya llegó a {$replica['target']} individuos ({$replica['total']}). Para cambiar una foto, reemplázala o anúlala.",
+            ]);
+        }
+
+        [$analysis, $warning] = $this->analyze($request, $record, $data, $sha256, $rowKey, $replicaNumber);
+        $totals = $this->counts->applyToSheet($record);
+
+        if ($request->expectsJson()) {
+            $sheetLinked = isset(ImageAnalysis::SECTIONS[$section]['larva_class']);
+
+            return $this->jsonResult($section, $record, $analysis, $warning, $sheetLinked ? $this->counts->replica($totals, $rowKey, $replicaNumber) : null);
+        }
 
         return $this->backToSheet($section, $record, $analysis, $warning, 'Foto analizada');
     }
@@ -95,8 +121,9 @@ class ArbaciaImageAnalysisController extends Controller
 
         $data = $this->validatePhoto($request, $section, false);
         $reason = $data['reason'];
+        $sha256 = $this->uniquePhotoSha256($request, $section, $record);
 
-        [$new, $warning] = $this->analyze($request, $record, $data, $analysis->row_key, (int) $analysis->replica);
+        [$new, $warning] = $this->analyze($request, $record, $data, $sha256, $analysis->row_key, (int) $analysis->replica);
 
         if ($new->status !== ImageAnalysis::STATUS_COMPLETED) {
             return $this->backToSheet($section, $record, $new, $warning, 'Foto de reemplazo', 'La foto anterior sigue vigente.');
@@ -118,6 +145,7 @@ class ArbaciaImageAnalysisController extends Controller
 
             return true;
         });
+        $this->counts->applyToSheet($record);
 
         $extra = $replaced ? null : 'La foto anterior ya había sido reemplazada por otra persona: la nueva quedó como una foto adicional de la réplica.';
 
@@ -148,6 +176,7 @@ class ArbaciaImageAnalysisController extends Controller
             'voided_by' => auth()->id(),
             'voided_at' => now(),
         ]);
+        $this->counts->applyToSheet($record);
 
         return redirect()->to(route("$section.edit", $record) . '#analisis-imagenes')
             ->with('success', 'Foto anulada: ' . $this->photoName($section, $analysis, $record) . '. Queda registrada con su motivo.');
@@ -214,16 +243,34 @@ class ArbaciaImageAnalysisController extends Controller
     }
 
     /**
+     * SHA-256 de la foto subida. La rechaza si ya hay una foto vigente idéntica en el bioensayo
+     * (cualquier fila o réplica); las fallidas, reemplazadas o anuladas no cuentan.
+     */
+    private function uniquePhotoSha256(Request $request, string $section, Model $record): string
+    {
+        $sha256 = hash_file('sha256', $request->file('image')->getRealPath());
+
+        $existing = ImageAnalysis::forBioassay($record)->current()->where('image_sha256', $sha256)->first();
+        if ($existing) {
+            throw ValidationException::withMessages([
+                'image' => 'Esta foto ya está analizada en ' . ImageAnalysis::rowLabel($section, $existing->row_key)
+                    . ", réplica {$existing->replica}, foto {$existing->photo_number}.",
+            ]);
+        }
+
+        return $sha256;
+    }
+
+    /**
      * Guarda la imagen, la analiza y registra el resultado (una sola inserción).
      *
      * @return array{0: ImageAnalysis, 1: string|null} [análisis, advertencia]
      */
-    private function analyze(Request $request, Model $record, array $data, string $rowKey, int $replica): array
+    private function analyze(Request $request, Model $record, array $data, string $sha256, string $rowKey, int $replica): array
     {
         [$optical, $calibration, $warning] = $this->opticalSetup($data);
 
         $file = $request->file('image');
-        $sha256 = hash_file('sha256', $file->getRealPath());
         $uuid = (string) Str::uuid();
         $extension = strtolower($file->getClientOriginalExtension() ?: ($file->extension() ?: 'img'));
 
@@ -320,22 +367,59 @@ class ArbaciaImageAnalysisController extends Controller
 
     private function backToSheet(string $section, Model $record, ImageAnalysis $analysis, ?string $warning, string $verb, ?string $extra = null)
     {
-        $redirect = redirect()->to(route("$section.edit", $record) . '#analisis-imagenes');
-        $name = $this->photoName($section, $analysis, $record);
-
-        if ($analysis->status === ImageAnalysis::STATUS_COMPLETED) {
-            $total = $analysis->summary['total_instances'] ?? 0;
-            $redirect->with('success', "{$verb}: {$name}. Instancias detectadas: {$total}." . ($extra ? " {$extra}" : ''));
-        } else {
-            $message = LarvasApiException::MESSAGES[$analysis->error_code] ?? 'El análisis falló.';
-            $redirect->with('error', "{$verb} — {$name}: {$message} (código {$analysis->error_code}). El intento quedó registrado." . ($extra ? " {$extra}" : ''));
-        }
+        $redirect = redirect()->to(route("$section.edit", $record) . '#analisis-imagenes')
+            ->with(...$this->resultMessage($section, $record, $analysis, $verb, $extra));
 
         if ($warning) {
             $redirect->with('warning', $warning);
         }
 
         return $redirect;
+    }
+
+    // Resultado de una foto para el panel, con el estado de su réplica (null si la planilla no recibe conteos)
+    private function jsonResult(string $section, Model $record, ImageAnalysis $analysis, ?string $warning, ?array $replica)
+    {
+        $larvaClass = ImageAnalysis::SECTIONS[$section]['larva_class'] ?? null;
+        $summary = $analysis->summary;
+
+        return response()->json([
+            'status' => $analysis->status,
+            'message' => $this->resultMessage($section, $record, $analysis, 'Foto analizada')[1],
+            'warning' => $warning,
+            'analysis' => [
+                'uuid' => $analysis->uuid,
+                'photo_number' => (int) $analysis->photo_number,
+                'status' => $analysis->status,
+                'error_code' => $analysis->error_code,
+                'error_message' => $analysis->status === ImageAnalysis::STATUS_FAILED ? $this->errorText($analysis) : null,
+                'larva' => $summary && $larvaClass ? (int) ($summary['counts_by_class'][$larvaClass] ?? 0) : null,
+                'total' => $summary ? (int) ($summary['total_instances'] ?? 0) : null,
+                'url' => route("$section.analyses.show", $analysis),
+            ],
+            'replica' => $replica,
+        ], 201);
+    }
+
+    /** @return array{0: string, 1: string} [tipo de mensaje flash, texto] */
+    private function resultMessage(string $section, Model $record, ImageAnalysis $analysis, string $verb, ?string $extra = null): array
+    {
+        $name = $this->photoName($section, $analysis, $record);
+        $extra = $extra ? " {$extra}" : '';
+
+        if ($analysis->status === ImageAnalysis::STATUS_COMPLETED) {
+            $total = $analysis->summary['total_instances'] ?? 0;
+
+            return ['success', "{$verb}: {$name}. Instancias detectadas: {$total}.{$extra}"];
+        }
+
+        return ['error', "{$verb} — {$name}: {$this->errorText($analysis)} (código {$analysis->error_code}). El intento quedó registrado.{$extra}"];
+    }
+
+    // Mensaje para el usuario según el código de error del análisis
+    private function errorText(ImageAnalysis $analysis): string
+    {
+        return LarvasApiException::MESSAGES[$analysis->error_code] ?? 'El análisis falló.';
     }
 
     private function photoName(string $section, ImageAnalysis $analysis, Model $record): string

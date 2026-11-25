@@ -35,6 +35,8 @@ class ImageAnalysis extends Model
      * Planillas que admiten análisis de imágenes. Clave = prefijo de ruta (igual que Navigation::BIOASSAYS).
      * Solo se ofrecen las que están en config('larvas_api.enabled_sections'): ver sectionEnabled().
      * rows: filas de la planilla que se pueden fotografiar; replicas: réplicas por fila.
+     * larva_class: clase de la API que cuenta como larva. Solo las planillas que la tienen reciben en la
+     * planilla los conteos de la IA (ver App\Services\ArbaciaReplicaCounts).
      */
     public const SECTIONS = [
         'arbacia-larval-stage' => [
@@ -42,6 +44,7 @@ class ImageAnalysis extends Model
             'rows'     => ['control', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
             'replicas' => 4,
             'control'  => 'control',
+            'larva_class' => 'pluteus',
         ],
         'arbacia-fertilization' => [
             'model'    => ArbaciaFertilization::class,

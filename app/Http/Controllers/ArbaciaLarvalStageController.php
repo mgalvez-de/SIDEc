@@ -91,6 +91,7 @@ class ArbaciaLarvalStageController extends Controller
         // ==========================================
         // 3️⃣ ACTUALIZAR MODELO
         // ==========================================
+        $data = app(\App\Services\ArbaciaReplicaCounts::class)->protect($arbacia_larval_stage, $data); // los conteos de la IA no se pisan
         $arbacia_larval_stage->update($data);
 
         // ==========================================
